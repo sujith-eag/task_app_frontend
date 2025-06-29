@@ -5,6 +5,7 @@ import Dashboard from "./components/Dashboard.jsx";
 import Login from "./components/Login.jsx";
 import Register from "./components/Register.jsx";
 import Header from "./components/Header.jsx";
+import TaskList from './components/TaskList.jsx';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path='/alltasks' element={<TaskList />} />
           </Routes>
         </div>
       </Router>
