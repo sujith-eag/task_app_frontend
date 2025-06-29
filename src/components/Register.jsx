@@ -3,7 +3,7 @@ import { FaUser } from 'react-icons/fa'
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { register, reset } from '../features/auth/authSlice.jsx'
+import { register, reset } from '../features/auth/authSlice.js'
 import Spinner from "./Spinner.jsx"
 
 const Register = () => {
@@ -42,11 +42,14 @@ const Register = () => {
     isLoading ? <Spinner /> : (
       <>
         <section className='heading'>
-          <h1><FaUser /> Register</h1>
+          <h1><FaUser /> Register</h1>  
           <p>Please create an account</p>
         </section>
+        
         <section className='form'>
+        
           <form onSubmit={onSubmit}>
+
             <div className='form-group'>
               <input type='text' className='form-control' id='name' name='name' value={name} placeholder='Enter your name' onChange={onChange}
               />
