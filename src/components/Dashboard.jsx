@@ -22,7 +22,9 @@ const Dashboard = () => {
             <button className='btn' onClick={() => navigate('/alltasks')}>Check Tasks</button>
           </div>
       </section>
+      
       <TaskForm />
+    
     </>
   )
 }
