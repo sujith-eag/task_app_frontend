@@ -73,6 +73,14 @@ const Login = () => {
                   className='btn btn-block'>
                     Submit</button>
           </div>
+
+          <div className='form-group'>
+            <p>If Not yet registered</p>
+            <button type='button' 
+                  className='btn btn-block'
+                  onClick={()=>navigate('/register')}>
+                    Register</button>
+          </div>
           
         </form>
       </section>
