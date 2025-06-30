@@ -6,7 +6,8 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-        "/api": "http://localhost:8000",
+        "/api": "https://task-app-backend-8j57.onrender.com"
+        // "/api": "http://localhost:8000",
     }
   }
 })
