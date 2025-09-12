@@ -2,6 +2,10 @@ import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { deleteTask, updateTask, addSubTask, updateSubTask, deleteSubTask } from '../features/tasks/taskSlice.js';
 
+// MUI Components
+import { Card, CardContent, Box, Typography, IconButton, Chip, Select, MenuItem, FormControl, List, ListItem, ListItemText, Checkbox, TextField } from '@mui/material';
+import { Close as CloseIcon, DeleteOutline as DeleteOutlineIcon, Add as AddIcon } from '@mui/icons-material';
+
 const TaskItem = ({ task }) => {
   const [subTaskText, setSubTaskText] = useState('');
   const dispatch = useDispatch();
@@ -16,68 +20,88 @@ const TaskItem = ({ task }) => {
     dispatch(addSubTask({ taskId: task._id, subTaskData: { text: subTaskText } }));
     setSubTaskText('');
   };
+  
+  // Helper to determine chip color based on priority
+  const priorityColor = {
+    High: 'error',
+    Medium: 'warning',
+    Low: 'info',
+  };
 
   return (
-    <div className='task'>
-      <div className='task-header'>
-        <div>
-          <small>Created: {new Date(task.createdAt).toLocaleDateString('en-US')}</small>
-          {task.dueDate && <small> | Due: {new Date(task.dueDate).toLocaleDateString('en-US')}</small>}
-        </div>
-        <button onClick={() => dispatch(deleteTask(task._id))} className='close'>X</button>
-      </div>
-      
-      <h2>{task.title}</h2>
-      {task.description && <p>{task.description}</p>}
+    <Card sx={{ marginBottom: 2, textAlign: 'left' }}>
+      <CardContent>
+        {/* --- HEADER --- */}
+        <Box display="flex" justifyContent="space-between" alignItems="center">
+          <Typography variant="caption" color="text.secondary">
+            Created: {new Date(task.createdAt).toLocaleDateString('en-US')}
+            {task.dueDate && ` | Due: ${new Date(task.dueDate).toLocaleDateString('en-US')}`}
+          </Typography>
+          <IconButton size="small" onClick={() => dispatch(deleteTask(task._id))}>
+            <CloseIcon />
+          </IconButton>
+        </Box>
 
-      <div className='task-meta'>
-        <span className={`priority priority-${task.priority?.toLowerCase()}`}>{task.priority}</span>
-        <select value={task.status} onChange={handleStatusChange} className='status-select'>
-          <option value="To Do">To Do</option>
-          <option value="In Progress">In Progress</option>
-          <option value="Done">Done</option>
-        </select>
-      </div>
+        {/* --- TITLE & DESCRIPTION --- */}
+        <Typography variant="h5" component="h2" sx={{ mt: 1 }}>{task.title}</Typography>
+        {task.description && <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>{task.description}</Typography>}
 
-      <div className='subtasks-section'>
-        <h4>Checklist</h4>
-        {task.subTasks?.map((subTask) => (
-          <div key={subTask._id} className='subtask-item'>
-            <input
-              type="checkbox"
-              checked={subTask.completed}
-              onChange={(e) => dispatch(updateSubTask({
-                taskId: task._id,
-                subTaskId: subTask._id,
-                subTaskData: { completed: e.target.checked }
-              }))}
+        {/* --- METADATA (PRIORITY & STATUS) --- */}
+        <Box display="flex" alignItems="center" gap={2} sx={{ mt: 2 }}>
+          <Chip label={task.priority} color={priorityColor[task.priority]} size="small" />
+          <FormControl size="small">
+            <Select value={task.status} onChange={handleStatusChange}>
+              <MenuItem value="To Do">To Do</MenuItem>
+              <MenuItem value="In Progress">In Progress</MenuItem>
+              <MenuItem value="Done">Done</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
+
+        {/* --- SUB-TASKS --- */}
+        <Box sx={{ mt: 2 }}>
+          <Typography variant="subtitle1">Checklist</Typography>
+          <List dense>
+            {task.subTasks?.map((subTask) => (
+              <ListItem key={subTask._id} disablePadding secondaryAction={
+                <IconButton edge="end" onClick={() => dispatch(deleteSubTask({ taskId: task._id, subTaskId: subTask._id }))}>
+                  <DeleteOutlineIcon />
+                </IconButton>
+              }>
+                <Checkbox
+                  edge="start"
+                  checked={subTask.completed}
+                  onChange={(e) => dispatch(updateSubTask({
+                    taskId: task._id,
+                    subTaskId: subTask._id,
+                    subTaskData: { completed: e.target.checked }
+                  }))}
+                />
+                <ListItemText primary={subTask.text} sx={{ textDecoration: subTask.completed ? 'line-through' : 'none' }} />
+              </ListItem>
+            ))}
+          </List>
+          <Box component="form" onSubmit={handleSubTaskSubmit} sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
+            <TextField
+              fullWidth
+              variant="standard"
+              size="small"
+              placeholder="Add a new sub-task..."
+              value={subTaskText}
+              onChange={(e) => setSubTaskText(e.target.value)}
             />
-            <span className={subTask.completed ? 'completed' : ''}>{subTask.text}</span>
-            <button
-              onClick={() => dispatch(deleteSubTask({ taskId: task._id, subTaskId: subTask._id }))}
-              className="delete-subtask"
-            >
-              &times;
-            </button>
-          </div>
-        ))}
-        <form onSubmit={handleSubTaskSubmit} className='subtask-form'>
-          <input
-            type="text"
-            placeholder="Add a new sub-task..."
-            value={subTaskText}
-            onChange={(e) => setSubTaskText(e.target.value)}
-          />
-          <button type="submit">+</button>
-        </form>
-      </div>
-
-      {task.tags?.length > 0 && (
-        <div className='tags-section'>
-          {task.tags.map((tag, index) => <span key={index} className='tag'>{tag}</span>)}
-        </div>
-      )}
-    </div>
+            <IconButton type="submit" color="primary"><AddIcon /></IconButton>
+          </Box>
+        </Box>
+        
+        {/* --- TAGS --- */}
+        {task.tags?.length > 0 && (
+          <Box sx={{ mt: 2, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+            {task.tags.map((tag, index) => <Chip key={index} label={tag} size="small" />)}
+          </Box>
+        )}
+      </CardContent>
+    </Card>
   );
 };
 

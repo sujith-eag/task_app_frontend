@@ -1,26 +1,37 @@
 import { useSelector } from 'react-redux';
 import TaskForm from './TaskForm.jsx';
 import TaskList from './TaskList.jsx';
-import Spinner from './Spinner.jsx';
+
+// MUI Components
+import { Box, Typography, CircularProgress } from '@mui/material';
 
 const Dashboard = () => {
   const { user, isLoading: authLoading } = useSelector((state) => state.auth);
-  
-  // Handle the initial authentication loading state here
+
+  // Handle the initial authentication loading state with MUI's spinner
   if (authLoading) {
-    return <Spinner />;
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
+        <CircularProgress />
+      </Box>
+    );
   }
 
   return (
-    <>
-      <section className='heading'>
-        <h1>Welcome {user?.name}</h1>
-        <p>Your Personal Task Dashboard</p>
-      </section>
+    <Box>
+      {/* --- HEADING SECTION --- */}
+      <Box sx={{ textAlign: 'center', mb: 4 }}>
+        <Typography variant="h3" component="h1" gutterBottom>
+          Welcome {user?.name}
+        </Typography>
+        <Typography variant="h5" color="text.secondary">
+          Your Personal Task Dashboard
+        </Typography>
+      </Box>
 
       <TaskForm />
-      <TaskList /> 
-    </>
+      <TaskList />
+    </Box>
   );
 };
 

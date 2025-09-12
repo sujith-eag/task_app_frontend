@@ -1,10 +1,12 @@
-import { FaSignInAlt } from 'react-icons/fa';
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate, Link } from 'react-router-dom'; // Import Link
+import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { login, reset } from '../features/auth/authSlice.js';
-import Spinner from './Spinner.jsx';
+
+// MUI Components
+import { Container, Box, Avatar, Typography, TextField, Button, Grid, Backdrop, CircularProgress } from '@mui/material';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -39,64 +41,87 @@ const Login = () => {
     const userData = { email, password };
     dispatch(login(userData));
   };
-  
-  // A small inline spinner can be used inside the button
-  if (isLoading) {
-    return <Spinner />
-  }
 
   return (
-    <>
-      <section className='heading'>
-        <h1><FaSignInAlt /> Login</h1>
-        <p>Login and start managing your tasks</p>
-      </section>
+    <Container component="main" maxWidth="xs">
+      {/* A Backdrop provides a much cleaner loading experience */}
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={isLoading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
 
-      <section className='form'>
-        <form onSubmit={onSubmit}>
-          <div className='form-group'>
-            <input
-              type='email'
-              className='form-control'
-              id='email'
-              name='email'
-              value={email}
-              placeholder='Enter your email'
-              onChange={onChange}
-              required
-            />
-          </div>
+      <Box
+        sx={{
+          marginTop: 8,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+          <LockOutlinedIcon />
+        </Avatar>
+        <Typography component="h1" variant="h5">
+          Sign in
+        </Typography>
+        <Box component="form" onSubmit={onSubmit} noValidate sx={{ mt: 1 }}>
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            id="email"
+            label="Email Address"
+            name="email"
+            autoComplete="email"
+            autoFocus
+            value={email}
+            onChange={onChange}
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            name="password"
+            label="Password"
+            type="password"
+            id="password"
+            autoComplete="current-password"
+            value={password}
+            onChange={onChange}
+          />
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+          >
+            Sign In
+          </Button>
 
-          <div className='form-group'>
-            <input
-              type='password'
-              className='form-control'
-              id='password'
-              name='password'
-              value={password}
-              placeholder='Enter password'
-              onChange={onChange}
-              required
-            />
-          </div>
-
-          <div className='form-group'>
-            <button type='submit' className='btn btn-block' disabled={isLoading}>
-              Submit
-            </button>
-          </div>
-        </form>
-        
-        <div style={{ marginTop: '1rem', textAlign: 'center' }}>
-          <Link to="/forgotpassword">Forgot Password?</Link>
-        </div>
-        
-        <div style={{ marginTop: '1rem', textAlign: 'center' }}>
-          <p>Don't have an account? <Link to="/register">Register</Link></p>
-        </div>
-
-      </section>
-    </>
+          <Box sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            width: '100%',
+            mt: 2 
+          }}>
+            <Link to="/forgotpassword" style={{ textDecoration: 'none' }}>
+              <Typography variant="body2" color="primary">
+                Forgot password?
+              </Typography>
+            </Link>
+            <Link to="/register" style={{ textDecoration: 'none' }}>
+              <Typography variant="body2" color="primary">
+                {"Don't have an account? Sign Up"}
+              </Typography>
+            </Link>
+          </Box>          
+          
+        </Box>
+      </Box>
+    </Container>
   );
 };
 

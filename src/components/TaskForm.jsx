@@ -1,6 +1,10 @@
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { createTask } from '../features/tasks/taskSlice.js';
+
+// MUI Components
+import { Box, Paper, Typography, TextField, FormControl, InputLabel, Select, MenuItem, Button, Stack } from '@mui/material';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
 const TaskForm = () => {
   const [formData, setFormData] = useState({
@@ -13,6 +17,7 @@ const TaskForm = () => {
 
   const { title, description, dueDate, priority, tags } = formData;
   const dispatch = useDispatch();
+  const { isLoading } = useSelector((state) => state.tasks);
 
   const onChange = (e) => {
     setFormData((prevState) => ({
@@ -23,61 +28,84 @@ const TaskForm = () => {
 
   const onSubmit = (e) => {
     e.preventDefault();
-
     const taskData = {
       title,
       description,
       dueDate,
       priority,
-      // Convert comma-separated string to an array of strings
       tags: tags.split(',').map(tag => tag.trim()).filter(tag => tag),
     };
-
     dispatch(createTask(taskData));
-
-    // Reset form to initial state
     setFormData({
-      title: '',
-      description: '',
-      dueDate: '',
-      priority: 'Medium',
-      tags: '',
+      title: '', description: '', dueDate: '', priority: 'Medium', tags: '',
     });
   };
 
   return (
-    <section className="form">
-      <h3>Create a New Task</h3>
-      <form onSubmit={onSubmit}>
-        <div className="form-group">
-          <label htmlFor='title'>Title</label>
-          <input type="text" name="title" id="title" value={title} onChange={onChange} required />
-        </div>
-        <div className="form-group">
-          <label htmlFor='description'>Description</label>
-          <textarea name="description" id="description" value={description} onChange={onChange}></textarea>
-        </div>
-        <div className="form-group">
-          <label htmlFor='dueDate'>Due Date</label>
-          <input type="date" name="dueDate" id="dueDate" value={dueDate} onChange={onChange} />
-        </div>
-        <div className="form-group">
-          <label htmlFor='priority'>Priority</label>
-          <select name="priority" id="priority" value={priority} onChange={onChange}>
-            <option value="Low">Low</option>
-            <option value="Medium">Medium</option>
-            <option value="High">High</option>
-          </select>
-        </div>
-        <div className="form-group">
-          <label htmlFor='tags'>Tags (comma-separated)</label>
-          <input type="text" name="tags" id="tags" value={tags} onChange={onChange} />
-        </div>
-        <div className="form-group">
-          <button className="btn btn-block" type="submit">Add Task</button>
-        </div>
-      </form>
-    </section>
+    <Paper elevation={2} sx={{ p: { xs: 2, sm: 3 }, mb: 4 }}>
+      <Typography variant="h5" gutterBottom>
+        Create a New Task
+      </Typography>
+      <Box component="form" onSubmit={onSubmit}>
+        {/* Use Stack for clean vertical spacing */}
+        <Stack spacing={2}>
+          <TextField
+            fullWidth
+            required
+            name="title"
+            label="Task Title"
+            value={title}
+            onChange={onChange}
+          />
+          <TextField
+            fullWidth
+            multiline
+            rows={3}
+            name="description"
+            label="Description"
+            value={description}
+            onChange={onChange}
+          />
+          {/* Use a Box with flex display to group items side-by-side */}
+          <Box sx={{ display: 'flex', gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
+            <TextField
+              fullWidth
+              type="date"
+              name="dueDate"
+              label="Due Date"
+              value={dueDate}
+              onChange={onChange}
+              InputLabelProps={{ shrink: true }}
+            />
+            <FormControl fullWidth>
+              <InputLabel>Priority</InputLabel>
+              <Select name="priority" value={priority} label="Priority" onChange={onChange}>
+                <MenuItem value="Low">Low</MenuItem>
+                <MenuItem value="Medium">Medium</MenuItem>
+                <MenuItem value="High">High</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+          <TextField
+            fullWidth
+            name="tags"
+            label="Tags (comma-separated)"
+            value={tags}
+            onChange={onChange}
+          />
+          <Button
+            type="submit"
+            variant="contained"
+            fullWidth
+            startIcon={<AddCircleOutlineIcon />}
+            disabled={isLoading}
+            sx={{ mt: 1 }}
+          >
+            Add Task
+          </Button>
+        </Stack>
+      </Box>
+    </Paper>
   );
 };
 

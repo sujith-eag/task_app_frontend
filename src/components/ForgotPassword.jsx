@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
-import { FaEnvelope } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { forgotPassword, reset } from '../features/auth/authSlice';
-import Spinner from './Spinner';
+
+// MUI Components
+import { Container, Box, Avatar, Typography, TextField, Button, Backdrop, CircularProgress } from '@mui/material';
+import MailOutlineIcon from '@mui/icons-material/MailOutline';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
@@ -20,7 +22,6 @@ const ForgotPassword = () => {
     if (isError) {
       toast.error(message);
     }
-    // On success, show a message and redirect the user
     if (isSuccess) {
       toast.success(message || 'Password reset link sent to your email!');
       navigate('/login');
@@ -33,42 +34,63 @@ const ForgotPassword = () => {
     dispatch(forgotPassword({ email }));
   };
 
-  if (isLoading) {
-    return <Spinner />;
-  }
-
   return (
-    <>
-      <section className='heading'>
-        <h1><FaEnvelope /> Forgot Password</h1>
-        <p>Enter your email to receive a reset link</p>
-      </section>
+    <Container component="main" maxWidth="xs">
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={isLoading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
 
-      <section className='form'>
-        <form onSubmit={onSubmit}>
-          <div className='form-group'>
-            <input
-              type='email'
-              className='form-control'
-              id='email'
-              name='email'
-              value={email}
-              placeholder='Enter your email'
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-          <div className='form-group'>
-            <button type='submit' className='btn btn-block'>
-              Send Reset Link
-            </button>
-          </div>
-        </form>
-        <div style={{ marginTop: '1rem', textAlign: 'center' }}>
-            <Link to="/login">Back to Login</Link>
-        </div>
-      </section>
-    </>
+      <Box
+        sx={{
+          marginTop: 8,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+          <MailOutlineIcon />
+        </Avatar>
+        <Typography component="h1" variant="h5">
+          Forgot Password
+        </Typography>
+        <Typography component="p" color="text.secondary" sx={{ mt: 1, textAlign: 'center' }}>
+          Enter your email and we'll send you a link to reset your password.
+        </Typography>
+        <Box component="form" onSubmit={onSubmit} noValidate sx={{ mt: 3, width: '100%' }}>
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            id="email"
+            label="Email Address"
+            name="email"
+            autoComplete="email"
+            autoFocus
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+          >
+            Send Reset Link
+          </Button>
+          <Box sx={{ textAlign: 'center' }}>
+            <Link to="/login" style={{ textDecoration: 'none' }}>
+              <Typography variant="body2" color="primary">
+                Back to Login
+              </Typography>
+            </Link>
+          </Box>
+        </Box>
+      </Box>
+    </Container>
   );
 };
 

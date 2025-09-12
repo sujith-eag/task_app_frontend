@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
-import { FaKey } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { resetPassword, reset } from '../features/auth/authSlice';
-import Spinner from './Spinner';
+
+// MUI Components
+import { Container, Box, Avatar, Typography, TextField, Button, Backdrop, CircularProgress } from '@mui/material';
+import VpnKeyIcon from '@mui/icons-material/VpnKey';
 
 const ResetPassword = () => {
   const [formData, setFormData] = useState({
@@ -48,53 +50,68 @@ const ResetPassword = () => {
     }
   };
 
-  if (isLoading) {
-    return <Spinner />;
-  }
-
   return (
-    <>
-      <section className='heading'>
-        <h1><FaKey /> Reset Password</h1>
-        <p>Enter your new password below</p>
-      </section>
+    <Container component="main" maxWidth="xs">
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={isLoading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
 
-      <section className='form'>
-        <form onSubmit={onSubmit}>
-          <div className='form-group'>
-            <input
-              type='password'
-              className='form-control'
-              id='password'
-              name='password'
-              value={password}
-              placeholder='Enter new password'
-              onChange={onChange}
-              required
-            />
-          </div>
-          <div className='form-group'>
-            <input
-              type='password'
-              className='form-control'
-              id='password2'
-              name='password2'
-              value={password2}
-              placeholder='Confirm new password'
-              onChange={onChange}
-              required
-            />
-          </div>
-          <div className='form-group'>
-            <button type='submit' className='btn btn-block'>
-              Set New Password
-            </button>
-          </div>
-        </form>
-      </section>
-    </>
+      <Box
+        sx={{
+          marginTop: 8,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+          <VpnKeyIcon />
+        </Avatar>
+        <Typography component="h1" variant="h5">
+          Reset Password
+        </Typography>
+        <Typography component="p" color="text.secondary" sx={{ mt: 1 }}>
+          Enter your new password below.
+        </Typography>
+        <Box component="form" onSubmit={onSubmit} noValidate sx={{ mt: 3, width: '100%' }}>
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            name="password"
+            label="New Password"
+            type="password"
+            id="password"
+            autoFocus
+            value={password}
+            onChange={onChange}
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            name="password2"
+            label="Confirm New Password"
+            type="password"
+            id="password2"
+            value={password2}
+            onChange={onChange}
+          />
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+          >
+            Set New Password
+          </Button>
+        </Box>
+      </Box>
+    </Container>
   );
 };
 
 export default ResetPassword;
-
