@@ -1,23 +1,23 @@
 import { AppBar, Toolbar, Typography, Button, Box, Stack } from '@mui/material';
 import { FaSignInAlt, FaSignOutAlt, FaUser } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { logout, reset as resetAuth } from '../features/auth/authSlice.js';
 import { reset as resetTasks } from '../features/tasks/taskSlice.js';
 
-// Import your logo from the assets folder
 import eagleLogo from '../assets/eagle-logo.png';
 
 const Header = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+    const location = useLocation();
   const { user } = useSelector((state) => state.auth);
 
   const onLogout = () => {
     dispatch(logout());
     dispatch(resetAuth());
     dispatch(resetTasks());
-    navigate('/login');
+    navigate('/');
   };
 
   return (
@@ -47,17 +47,27 @@ const Header = () => {
 
         {/* 3. Group the navigation buttons in a Stack for consistent spacing */}
         <Stack direction="row" spacing={1}>
+
           {user ? (
-            <>
+            <Stack direction="row" spacing={1}>
+              {location.pathname !== '/dashboard' && (
+              <Button component={Link} to='/dashboard' color="inherit">
+                Dashboard
+              </Button>
+              )}
               {user.role === 'admin' && (
                 <Button component={Link} to='/admin' color="inherit">
                   Admin
                 </Button>
               )}
-              <Button color="inherit" startIcon={<FaSignOutAlt />} onClick={onLogout}>
-                Logout
+
+              <Button 
+                color="inherit" 
+                startIcon={<FaSignOutAlt />} 
+                onClick={onLogout}>
+              Logout
               </Button>
-            </>
+            </Stack>
           ) : (
             <>
               <Button component={Link} to='/login' color="inherit" startIcon={<FaSignInAlt />}>

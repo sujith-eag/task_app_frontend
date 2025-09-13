@@ -24,7 +24,7 @@ const Login = () => {
       toast.error(message);
     }
     if (isSuccess || user) {
-      navigate('/');
+      navigate('/dashboard');
     }
     dispatch(reset());
   }, [user, isError, isSuccess, message, navigate, dispatch]);
@@ -44,7 +44,6 @@ const Login = () => {
 
   return (
     <Container component="main" maxWidth="xs">
-      {/* A Backdrop provides a much cleaner loading experience */}
       <Backdrop
         sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={isLoading}
