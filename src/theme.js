@@ -1,18 +1,20 @@
 import { createTheme } from '@mui/material/styles';
 
-const theme = createTheme({
+const getDesignTokens = (mode) => ({
   palette: {
-    mode: 'light',
-    primary: {
-      main: '#1976d2', // Classic blue
-    },
-    secondary: {
-      main: '#dc004e', // Vibrant pink
-    },
-    background: {
-      default: '#f4f6f8', // Light grey page background
-      paper: '#ffffff',   // White for cards, etc.
-    },
+    mode,
+    ...(mode === 'light'
+      ? {
+          primary: { main: '#1976d2' },
+          secondary: { main: '#dc004e' },
+          background: { default: '#f4f6f8', paper: '#ffffff' },
+        }
+      : {
+          primary: { main: '#90caf9' },
+          secondary: { main: '#f48fb1' },
+          background: { default: '#121212', paper: '#1e1e1e' },
+          text: { primary: '#ffffff', secondary: '#b0bec5' },
+        }),
   },
   typography: {
     fontFamily: 'Roboto, sans-serif',
@@ -20,9 +22,10 @@ const theme = createTheme({
       fontWeight: 600,
     },
   },
-  // Add global style overrides here
+  shape: {
+    borderRadius: 8, // Default is 4
+  },
   components: {
-    // MuiCssBaseline is the component that applies global resets
     MuiCssBaseline: {
       styleOverrides: `
         a {
@@ -31,13 +34,20 @@ const theme = createTheme({
         }
       `,
     },
-    // You can also set default props for all instances of a component
     MuiButton: {
       defaultProps: {
-        variant: 'contained', // All buttons will be "contained" unless specified otherwise
+        variant: 'contained',
+        disableElevation: true,
       },
     },
+    MuiCard: {
+        styleOverrides: {
+            root: {
+                boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+            }
+        }
+    }
   },
 });
 
-export default theme;
+export default getDesignTokens;

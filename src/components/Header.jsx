@@ -1,4 +1,11 @@
-import { AppBar, Toolbar, Typography, Button, Box, Stack } from '@mui/material';
+import { useContext } from 'react'; // Import useContext
+import { useTheme } from '@mui/material/styles'; // Import useTheme
+
+import { AppBar, Toolbar, Typography, Button, Box, Stack, IconButton } from '@mui/material';
+import Brightness4Icon from '@mui/icons-material/Brightness4'; // Moon icon
+import Brightness7Icon from '@mui/icons-material/Brightness7'; // Sun icon
+import { ColorModeContext } from '../context/ThemeContext'; // Import the context
+
 import { FaSignInAlt, FaSignOutAlt, FaUser } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
@@ -8,9 +15,12 @@ import { reset as resetTasks } from '../features/tasks/taskSlice.js';
 import eagleLogo from '../assets/eagle-logo.png';
 
 const Header = () => {
+  const theme = useTheme(); // Get current theme
+  const colorMode = useContext(ColorModeContext); // Get toggle function
+  
   const navigate = useNavigate();
   const dispatch = useDispatch();
-    const location = useLocation();
+  const location = useLocation();
   const { user } = useSelector((state) => state.auth);
 
   const onLogout = () => {
@@ -21,22 +31,28 @@ const Header = () => {
   };
 
   return (
-    <AppBar position="static" color="default" elevation={1} sx={{ marginBottom: '40px' }}>
-      <Toolbar>
+    <AppBar 
+      position="sticky" 
+      color="default" 
+      elevation={1} 
+      sx={{ marginBottom: '40px' }}
+    >
 
-        <Box sx={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            flexGrow: 1, 
-            textDecoration: 'none',
-            color: 'inherit' 
-        }}>
-        <Link to='/'>
-            <img 
-              src={eagleLogo} 
-              alt="Eagle Tasks Logo" 
-              style={{ height: '40px', marginRight: '10px' }} />
-          </Link>
+    <Toolbar>
+      <Box sx={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        flexGrow: 1, 
+        textDecoration: 'none',
+        color: 'inherit' 
+      }}>
+
+      <Link to='/'>
+          <img 
+            src={eagleLogo} 
+            alt="Eagle Tasks Logo" 
+            style={{ height: '40px', marginRight: '10px' }} />
+        </Link>
 
           <Typography variant="h6" component="div" noWrap>
             <Link to='/'>
@@ -46,7 +62,20 @@ const Header = () => {
         </Box>
 
         {/* 3. Group the navigation buttons in a Stack for consistent spacing */}
-        <Stack direction="row" spacing={1}>
+        <Stack 
+          direction="row" 
+          spacing={1}
+          alignItems="center"
+          >
+            
+            
+          <IconButton 
+            sx={{ ml: 1 }} 
+            onClick={colorMode.toggleColorMode} 
+            color="inherit">
+            {theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
+          </IconButton>
+
 
           {user ? (
             <Stack direction="row" spacing={1}>

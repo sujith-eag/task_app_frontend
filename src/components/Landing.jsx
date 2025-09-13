@@ -69,7 +69,9 @@ const Landing = () => {
       {/* HERO SECTION */}
       <Box
         sx={{
-          background: 'linear-gradient(135deg, #1976d2 0%, #0d47a1 100%)',
+          background: (theme) => theme.palette.mode === 'light'
+            ? 'linear-gradient(135deg, #1976d2 0%, #0d47a1 100%)' // Light mode gradient
+            : 'linear-gradient(135deg, #0d47a1 0%, #002171 100%)', // Dark mode gradient
           color: 'white',
           py: { xs: 10, md: 14 },
           textAlign: 'center',
@@ -216,7 +218,14 @@ const Landing = () => {
 
 
 {/* --- SUJITH'S LIBRARY SECTION --- */}
-<Box sx={{ bgcolor: 'primary.main', color: 'white', py: 8 }}>
+<Box sx={{ 
+  
+  bgcolor: (theme) => theme.palette.mode === 'light' ? 'primary.main' : 'primary.dark',
+      color: 'white',
+      py: 8,
+    }}
+  >
+
   <motion.div
     initial="hidden"
     whileInView="visible"
@@ -294,7 +303,10 @@ const Landing = () => {
 </Box>
 
       {/* DEVELOPER SECTION */}
-      <Box sx={{ bgcolor: 'grey.50', py: 10 }}>
+      <Box sx={{ 
+        bgcolor: 'background.default', 
+        py: 10 
+        }}>
         <motion.div
           initial="hidden"
           whileInView="visible"
@@ -315,7 +327,6 @@ const Landing = () => {
                 p: 5,
                 borderRadius: 3,
                 boxShadow: 3,
-                backgroundColor: 'white',
               }}
             >
               <Grid container spacing={5} alignItems="center">

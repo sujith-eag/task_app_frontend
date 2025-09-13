@@ -7,20 +7,21 @@ import { store } from './app/store.js';
 import App from './App.jsx';
 import './index.css';
 
-// 1. Import ThemeProvider, CssBaseline, and your new theme
-import { ThemeProvider } from '@mui/material/styles';
+import { ColorModeProvider } from './context/ThemeContext.jsx';
 import CssBaseline from '@mui/material/CssBaseline';
-import theme from './theme.js';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <Provider store={store}>
-      {/* 2. Wrap your App in the ThemeProvider */}
-      <ThemeProvider theme={theme}>
-        {/* 3. Add CssBaseline to apply the background color and normalize styles */}
+    <ColorModeProvider>
+      <LocalizationProvider dateAdapter={AdapterDateFns}>
         <CssBaseline />
         <App />
-      </ThemeProvider>
+      </LocalizationProvider>
+    </ColorModeProvider>
     </Provider>
   </StrictMode>
 );

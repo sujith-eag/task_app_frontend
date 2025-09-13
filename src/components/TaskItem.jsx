@@ -82,11 +82,10 @@ const TaskItem = ({ task }) => {
       <CardContent>
         {/* --- HEADER --- */}
         <Box display="flex" justifyContent="space-between" alignItems="center">
-          
           {/* ... typography for dates ... */}
           <Typography variant="caption" color="text.secondary">
-            Created: {new Date(task.createdAt).toLocaleDateString('en-US')}
-            {task.dueDate && ` | Due: ${new Date(task.dueDate).toLocaleDateString('en-US')}`}
+            Created: {new Date(task.createdAt).toLocaleDateString('en-GB')}
+            {task.dueDate && ` | Due: ${new Date(task.dueDate).toLocaleDateString('en-GB')}`}
           </Typography>
 
           {/* --- ACTION BUTTONS (Edit + Delete) --- */}

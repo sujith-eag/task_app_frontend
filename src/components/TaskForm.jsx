@@ -3,14 +3,18 @@ import { useDispatch, useSelector } from "react-redux";
 import { createTask } from '../features/tasks/taskSlice.js';
 
 // MUI Components
-import { Box, Paper, Typography, TextField, FormControl, InputLabel, Select, MenuItem, Button, Stack } from '@mui/material';
+import { Box, Paper, Typography, 
+    TextField, FormControl, InputLabel, 
+    Select, MenuItem, Button, Stack } from '@mui/material';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+
 
 const TaskForm = () => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    dueDate: '',
+    dueDate: null,
     priority: 'Medium',
     tags: '',
   });
@@ -26,6 +30,14 @@ const TaskForm = () => {
     }));
   };
 
+  // Handler for the DatePicker
+  const handleDateChange = (newDate) => {
+    setFormData((prevState) => ({
+      ...prevState,
+      dueDate: newDate,
+    }));
+  };
+  
   const onSubmit = (e) => {
     e.preventDefault();
     const taskData = {
@@ -37,7 +49,7 @@ const TaskForm = () => {
     };
     dispatch(createTask(taskData));
     setFormData({
-      title: '', description: '', dueDate: '', priority: 'Medium', tags: '',
+      title: '', description: '', dueDate: null, priority: 'Medium', tags: '',
     });
   };
 
@@ -46,6 +58,7 @@ const TaskForm = () => {
       <Typography variant="h5" gutterBottom>
         Create a New Task
       </Typography>
+
       <Box component="form" onSubmit={onSubmit}>
 
         <Stack spacing={2}>
@@ -69,20 +82,18 @@ const TaskForm = () => {
             onChange={onChange}
           />
 
-          <Box sx={{ display: 'flex', gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>            
+          <Box sx={{ 
+              display: 'flex', 
+              gap: 2, 
+              flexDirection: { xs: 'column', sm: 'row' } }}>            
 
-          <TextField
-            fullWidth
-            type="date"
-            name="dueDate"
-            id="dueDate"
-            label="Due Date"
-            value={dueDate}
-            onChange={onChange}
-            slotProps={{
-              inputLabel: { shrink: true }
-            }}
-          />
+            <DatePicker
+              label="Due Date"
+              value={dueDate}
+              onChange={handleDateChange}
+              format="dd/MM/yyyy" // This sets the display format!
+              sx={{ width: '100%' }}
+            />
 
             <FormControl fullWidth>
               <InputLabel>Priority</InputLabel>
