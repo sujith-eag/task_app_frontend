@@ -82,7 +82,7 @@ const deleteSubTask = async (taskId, subTaskId, token) => {
           Authorization: `Bearer ${token}`,
         },
     }
-    const response = await axios.delete(`${API_URL}${taskId}/subtasks/${subTaskId}`)
+    const response = await axios.delete(`${API_URL}${taskId}/subtasks/${subTaskId}`, config)
     return response.data
 }
 

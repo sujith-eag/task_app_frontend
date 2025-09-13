@@ -5,7 +5,9 @@ import { toast } from 'react-toastify';
 import TaskItem from './TaskItem.jsx';
 
 // MUI Components
-import { Box, Typography, Grid, Paper, FormControl, InputLabel, Select, MenuItem, CircularProgress, Stack } from '@mui/material';
+import { Box, Typography, Grid, Paper, FormControl, InputLabel, Select, MenuItem, CircularProgress, Stack, Collapse } from '@mui/material';
+
+import { TransitionGroup } from 'react-transition-group';
 
 import FilterListIcon from '@mui/icons-material/FilterList';
 
@@ -26,11 +28,6 @@ const TaskList = () => {
 
     dispatch(getTasks(filterData));
     
-    // This is the cleanup function. It runs when the component unmounts.
-    return () => {
-      dispatch(reset());
-    };
-
   }, [dispatch, filters.status, filters.priority, sortBy]);
 
   useEffect(() => {
@@ -47,9 +44,12 @@ const TaskList = () => {
   };
 
   if (isLoading) {
-    // Center the MUI spinner
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+      <Box sx={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          mt: 4 
+        }}>
         <CircularProgress />
       </Box>
     );
@@ -59,14 +59,14 @@ const TaskList = () => {
     <Box sx={{ width: '100%' }}>
 
       {/* --- FILTER SECTION --- */}
-      <Paper elevation={2} sx={{ p: 2, mb: 4 }}>
+        <Paper elevation={2} sx={{ p: { xs: 2, sm: 3 }, mb: 4 }}>
         {/* A parent Box using flexbox for a clean header-style layout */}
         <Box sx={{
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          flexWrap: 'wrap', // Allows controls to wrap onto the next line on small screens
-          gap: 2, // Adds space between the title and controls when they wrap
+          flexWrap: 'wrap',
+          gap: 2,
         }}>
           
           {/* LEFT SIDE: Title */}
@@ -133,18 +133,33 @@ const TaskList = () => {
       {/* --- CONTENT SECTION --- */}
       <Box>
         {tasks.length > 0 ? (
-          <Grid container spacing={2}>
+          
+    // 1. Use a Box with flexbox wrap instead of Grid for better compatibility with transitions
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+          <TransitionGroup component={null}>
             {tasks.map((task) => (
-              <Grid item xs={12} md={6} key={task._id}>
-                <TaskItem task={task} />
-              </Grid>
-            ))}
-          </Grid>
-        ) : (
-          <Typography variant="h6" align="center" color="text.secondary">
-            No tasks match your current filters
+            // 2. The Collapse now wraps the item, and the item has a defined width
+            <Collapse key={task._id}> {/* FIX: Changed task.id to task._id */}
+            <Box sx={{ width: { xs: '100%', md: 'calc(50% - 8px)' } }}> {/* Manages the two-column layout */}
+              <TaskItem task={task} />
+            </Box>
+          </Collapse>
+
+              ))}
+            </TransitionGroup>
+          </Box>
+        
+      ) : (
+        
+          <Typography 
+            variant="h6" 
+            align="center" 
+            color="text.secondary" 
+            sx={{ mt: 4 }}>
+            No tasks found. Create one to get started!
           </Typography>
         )}
+        
       </Box>
     </Box>
   );

@@ -23,27 +23,25 @@ const Header = () => {
   return (
     <AppBar position="static" color="default" elevation={1} sx={{ marginBottom: '40px' }}>
       <Toolbar>
-        {/* 1. The entire Box is now a single link */}
-        <Box
-          component={Link}
-          to='/'
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            flexGrow: 1,
+
+        <Box sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            flexGrow: 1, 
             textDecoration: 'none',
-            color: 'inherit'
-          }}
-        >
-          {/* 2. Use the 'component' prop for the image and 'sx' for styling */}
-          <Box
-            component="img"
-            src={eagleLogo}
-            alt="Eagle Tasks Logo"
-            sx={{ height: 40, mr: 1.5 }}
-          />
+            color: 'inherit' 
+        }}>
+        <Link to='/'>
+            <img 
+              src={eagleLogo} 
+              alt="Eagle Tasks Logo" 
+              style={{ height: '40px', marginRight: '10px' }} />
+          </Link>
+
           <Typography variant="h6" component="div" noWrap>
-            Eagle Tasks
+            <Link to='/'>
+              Eagle Tasks
+            </Link>
           </Typography>
         </Box>
 

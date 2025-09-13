@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { deleteTask, updateTask, addSubTask, updateSubTask, deleteSubTask } from '../features/tasks/taskSlice.js';
+import { deleteTask, updateTask, addSubTask, updateSubTask, deleteSubTask, toggleSubTaskOptimistic, removeSubTaskOptimistic } from '../features/tasks/taskSlice.js';
 
 // MUI Components
 import { Card, CardContent, Box, Typography, IconButton, Chip, Select, MenuItem, FormControl, List, ListItem, ListItemText, Checkbox, TextField } from '@mui/material';
@@ -64,19 +64,27 @@ const TaskItem = ({ task }) => {
           <List dense>
             {task.subTasks?.map((subTask) => (
               <ListItem key={subTask._id} disablePadding secondaryAction={
-                <IconButton edge="end" onClick={() => dispatch(deleteSubTask({ taskId: task._id, subTaskId: subTask._id }))}>
+                    <IconButton edge="end" onClick={() => {
+                      const payload = { taskId: task._id, subTaskId: subTask._id };
+                      // Dispatch optimistic action first for instant UI feedback
+                      dispatch(removeSubTaskOptimistic(payload));
+                      // Then dispatch the thunk to sync with the server
+                      dispatch(deleteSubTask(payload));
+                    }}>
                   <DeleteOutlineIcon />
                 </IconButton>
-              }>
-                <Checkbox
-                  edge="start"
-                  checked={subTask.completed}
-                  onChange={(e) => dispatch(updateSubTask({
-                    taskId: task._id,
-                    subTaskId: subTask._id,
-                    subTaskData: { completed: e.target.checked }
-                  }))}
-                />
+              }>                
+                  <Checkbox
+                    edge="start"
+                    checked={subTask.completed}
+                    onChange={(e) => {
+                      const payload = { taskId: task._id, subTaskId: subTask._id };
+                      // 2. Dispatch the optimistic action FIRST for an instant UI update
+                      dispatch(toggleSubTaskOptimistic(payload));
+                      // 3. Then, dispatch the async thunk to sync with the server
+                      dispatch(updateSubTask({ ...payload, subTaskData: { completed: e.target.checked } }));
+                    }}
+                  />
                 <ListItemText primary={subTask.text} sx={{ textDecoration: subTask.completed ? 'line-through' : 'none' }} />
               </ListItem>
             ))}
