@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import TaskItem from './TaskItem.jsx';
 
 // MUI Components
-import { Box, Typography, Grid, Paper, FormControl, InputLabel, Select, MenuItem, CircularProgress, Stack, Collapse } from '@mui/material';
+import { Box, Typography, Paper, FormControl, InputLabel, Select, MenuItem, CircularProgress, Stack, Collapse } from '@mui/material';
 
 import { TransitionGroup } from 'react-transition-group';
 
@@ -133,23 +133,24 @@ const TaskList = () => {
       {/* --- CONTENT SECTION --- */}
       <Box>
         {tasks.length > 0 ? (
-          
-    // 1. Use a Box with flexbox wrap instead of Grid for better compatibility with transitions
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
-          <TransitionGroup component={null}>
-            {tasks.map((task) => (
-            // 2. The Collapse now wraps the item, and the item has a defined width
-            <Collapse key={task._id}> {/* FIX: Changed task.id to task._id */}
-            <Box sx={{ width: { xs: '100%', md: 'calc(50% - 8px)' } }}> {/* Manages the two-column layout */}
-              <TaskItem task={task} />
-            </Box>
-          </Collapse>
-
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+            <TransitionGroup component={null}>
+              {tasks.map((task) => (
+                <Collapse
+                  key={task._id}
+                  sx={{
+                    flexGrow: 1, // Allows the item to grow to fill space
+                    // Defines the base width for the two-column layout
+                    width: { xs: '90%', md: 'calc(50% - 8px)' } 
+                  }}
+                >
+                  <TaskItem task={task} />
+                </Collapse>
               ))}
             </TransitionGroup>
           </Box>
-        
-      ) : (
+
+) : (
         
           <Typography 
             variant="h6" 
@@ -158,9 +159,9 @@ const TaskList = () => {
             sx={{ mt: 4 }}>
             No tasks found. Create one to get started!
           </Typography>
-        )}
-        
+        )}        
       </Box>
+
     </Box>
   );
 };

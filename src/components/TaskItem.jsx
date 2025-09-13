@@ -4,6 +4,7 @@ import { deleteTask, updateTask, addSubTask,
           updateSubTask, deleteSubTask, addSubTaskOptimistic,
           toggleSubTaskOptimistic, removeSubTaskOptimistic 
         } from '../features/tasks/taskSlice.js';
+import EditTaskModal from './EditTaskModal.jsx';
 
 // MUI Components
 import { 
@@ -14,13 +15,14 @@ import {
 } from '@mui/material';
 
 import { Close as CloseIcon, DeleteOutline as DeleteOutlineIcon, Add as AddIcon } from '@mui/icons-material';
+import EditIcon from '@mui/icons-material/Edit';
 
 const TaskItem = ({ task }) => {
   const [subTaskText, setSubTaskText] = useState('');
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [subTaskIdToDelete, setSubTaskIdToDelete] = useState(null);
-
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   
   const dispatch = useDispatch();
 
@@ -87,16 +89,26 @@ const TaskItem = ({ task }) => {
             {task.dueDate && ` | Due: ${new Date(task.dueDate).toLocaleDateString('en-US')}`}
           </Typography>
 
-          {/* <IconButton size="small" onClick={() => dispatch(deleteTask(task._id))}> */}
-          <IconButton size="small" onClick={() => setOpenDeleteDialog(true)}>
-            <CloseIcon />
-          </IconButton>
+          {/* --- ACTION BUTTONS (Edit + Delete) --- */}
+          <Box>
+            {/* Edit Button */}
+            <IconButton size="small" onClick={() => setIsEditModalOpen(true)}>
+              <EditIcon />
+            </IconButton>
+            {/* Delete Button */}
+            <IconButton size="small" onClick={() => setOpenDeleteDialog(true)}>
+              <CloseIcon />
+            </IconButton>
+          </Box>
         
         </Box>
 
         {/* --- TITLE & DESCRIPTION --- */}
         <Typography variant="h5" component="h2" sx={{ mt: 1 }}>{task.title}</Typography>
-        {task.description && <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>{task.description}</Typography>}
+        {task.description && (
+            <Typography variant="body2" color="text.secondary" 
+            sx={{ mt: 1 }}>{task.description}</Typography>
+        )}
 
         {/* --- METADATA (PRIORITY & STATUS) --- */}
         <Box display="flex" alignItems="center" gap={2} sx={{ mt: 2 }}>
@@ -117,12 +129,12 @@ const TaskItem = ({ task }) => {
           </Typography>
 
           <List dense>
+            
             {task.subTasks?.map((subTask) => (
               <ListItem key={subTask._id} disablePadding secondaryAction={
                 <IconButton edge="end" 
                   aria-describedby={id} 
                   onClick={(e) => handleSubTaskDeleteClick(e, subTask._id)}>
-
                   <DeleteOutlineIcon />
                 </IconButton>
               }>                
@@ -167,6 +179,13 @@ const TaskItem = ({ task }) => {
         )}
       </CardContent>
     </Card>
+    
+      {/* EditTaskModal component */}
+      <EditTaskModal 
+        task={task} 
+        open={isEditModalOpen} 
+        onClose={() => setIsEditModalOpen(false)} 
+      />
     
     {/* The Popover component */}
     <Popover

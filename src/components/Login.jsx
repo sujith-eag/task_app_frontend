@@ -38,7 +38,9 @@ const Login = () => {
 
   const onSubmit = (e) => {
     e.preventDefault();
-    const userData = { email, password };
+    const userData = { 
+      email: email.trim().toLocaleLowerCase(), 
+      password };
     dispatch(login(userData));
   };
 
