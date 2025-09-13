@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import { login, reset } from '../features/auth/authSlice.js';
 
 // MUI Components
-import { Container, Box, Avatar, Typography, TextField, Button, Grid, Backdrop, CircularProgress } from '@mui/material';
+import { Container, Box, Avatar, Typography, TextField, Button, Backdrop, CircularProgress } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 
 const Login = () => {

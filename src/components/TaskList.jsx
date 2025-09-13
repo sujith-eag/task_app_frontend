@@ -60,7 +60,6 @@ const TaskList = () => {
 
       {/* --- FILTER SECTION --- */}
         <Paper elevation={2} sx={{ p: { xs: 2, sm: 3 }, mb: 4 }}>
-        {/* A parent Box using flexbox for a clean header-style layout */}
         <Box sx={{
           display: 'flex',
           justifyContent: 'space-between',
@@ -84,6 +83,7 @@ const TaskList = () => {
               <Select
                 labelId="status-select-label"
                 name="status"
+                id="status-select"
                 value={filters.status}
                 label="Status"
                 onChange={handleFilterChange}
@@ -101,6 +101,7 @@ const TaskList = () => {
                 labelId="priority-select-label"
                 name="priority"
                 value={filters.priority}
+                id="priority-select"
                 label="Priority"
                 onChange={handleFilterChange}
               >
@@ -117,6 +118,7 @@ const TaskList = () => {
                 labelId="sort-by-select-label"
                 name="sortBy"
                 value={sortBy}
+                id="sort-by-select"
                 label="Sort By"
                 onChange={(e) => setSortBy(e.target.value)}
               >

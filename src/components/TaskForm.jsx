@@ -47,12 +47,13 @@ const TaskForm = () => {
         Create a New Task
       </Typography>
       <Box component="form" onSubmit={onSubmit}>
-        {/* Use Stack for clean vertical spacing */}
+
         <Stack spacing={2}>
           <TextField
             fullWidth
             required
             name="title"
+            id="title"
             label="Task Title"
             value={title}
             onChange={onChange}
@@ -63,32 +64,48 @@ const TaskForm = () => {
             rows={3}
             name="description"
             label="Description"
+            id="description"
             value={description}
             onChange={onChange}
           />
-          {/* Use a Box with flex display to group items side-by-side */}
-          <Box sx={{ display: 'flex', gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
-            <TextField
-              fullWidth
-              type="date"
-              name="dueDate"
-              label="Due Date"
-              value={dueDate}
-              onChange={onChange}
-              InputLabelProps={{ shrink: true }}
-            />
+
+          <Box sx={{ display: 'flex', gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>            
+
+          <TextField
+            fullWidth
+            type="date"
+            name="dueDate"
+            id="dueDate"
+            label="Due Date"
+            value={dueDate}
+            onChange={onChange}
+            slotProps={{
+              inputLabel: { shrink: true }
+            }}
+          />
+
             <FormControl fullWidth>
               <InputLabel>Priority</InputLabel>
-              <Select name="priority" value={priority} label="Priority" onChange={onChange}>
+              <Select 
+                labelId="priority-form-label"
+                id="priority-form-select"
+                name="priority" 
+                value={priority} 
+                label="Priority" 
+                onChange={onChange}>
+                
                 <MenuItem value="Low">Low</MenuItem>
                 <MenuItem value="Medium">Medium</MenuItem>
                 <MenuItem value="High">High</MenuItem>
               </Select>
             </FormControl>
+
           </Box>
+
           <TextField
             fullWidth
             name="tags"
+            id="tags"
             label="Tags (comma-separated)"
             value={tags}
             onChange={onChange}
