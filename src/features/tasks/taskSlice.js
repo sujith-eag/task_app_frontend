@@ -118,6 +118,8 @@ export const taskSlice = createSlice({
   initialState,
   reducers: {
     reset: () => initialState,
+    
+    // OPTIMISTIC REDUCER FOR TASK TOGGLE
     toggleSubTaskOptimistic: (state, action) => {
       const { taskId, subTaskId } = action.payload;
       const task = state.tasks.find((t) => t._id === taskId);
@@ -126,15 +128,27 @@ export const taskSlice = createSlice({
         if (subTask) subTask.completed = !subTask.completed;
       }
     },
-    // 1. ADD THIS NEW OPTIMISTIC REDUCER FOR DELETION
+    // OPTIMISTIC REDUCER FOR DELETION
     removeSubTaskOptimistic: (state, action) => {
       const { taskId, subTaskId } = action.payload;
       const task = state.tasks.find((t) => t._id === taskId);
       if (task) {
         const subTaskIndex = task.subTasks.findIndex((sub) => sub._id === subTaskId);
-        if (subTaskIndex !== -1) {
-          task.subTasks.splice(subTaskIndex, 1);
+          if (subTaskIndex !== -1) {
+            task.subTasks.splice(subTaskIndex, 1);
+          }
         }
+      },
+    
+    // OPTIMISTIC REDUCER FOR ADDING
+    addSubTaskOptimistic: (state, action) => {
+      const { taskId, subTaskData } = action.payload;
+      const task = state.tasks.find((t) => t._id === taskId);
+      if (task) {
+        // Create a temporary sub-task object. The server will replace this with the real one.
+        // We use Date.now() to create a temporary, unique key for React.
+        const tempSubTask = { ...subTaskData, _id: `temp_${Date.now()}`, completed: false };
+        task.subTasks.push(tempSubTask);
       }
     },
   },
@@ -187,15 +201,31 @@ export const taskSlice = createSlice({
           state.tasks.splice(index, 1);
         }
       })
-      // Cases for sub-tasks
+
+      // CASES FOR SUB-TASKS
+
       .addCase(addSubTask.fulfilled, (state, action) => {
+        // When the API call succeeds, the server returns the updated parent task,
+        // which replaces the task with the temporary sub-task.
         const index = state.tasks.findIndex((task) => task._id === action.payload._id);
         if (index !== -1) {
           state.tasks[index] = action.payload;
         }
       })
+      // REJECTED CASE TO REVERT THE CHANGE ON FAILURE
+      .addCase(addSubTask.rejected, (state, action) => {
+        const { taskId, subTaskData } = action.meta.arg;
+        const task = state.tasks.find((t) => t._id === taskId);
+        // Remove the temporary sub-task that failed to save
+        if (task) {
+          task.subTasks = task.subTasks.filter(sub => !sub._id.startsWith('temp_'));
+        }
+        state.isError = true;
+        state.message = action.payload;
+      })
+
+      
       .addCase(updateSubTask.fulfilled, (state, action) => {
-        // This was the duplicate. It is now correctly defined once.
         const index = state.tasks.findIndex((task) => task._id === action.payload._id);
         if (index !== -1) {
           state.tasks[index] = action.payload;
@@ -214,13 +244,14 @@ export const taskSlice = createSlice({
         state.message = action.payload;
       })
 
+      
       .addCase(deleteSubTask.fulfilled, (state, action) => {
         const index = state.tasks.findIndex((task) => task._id === action.payload._id);
         if (index !== -1) {
           state.tasks[index] = action.payload;
         }
       })
-      // 2. ADD THIS REJECTED CASE TO REVERT THE CHANGE ON FAILURE
+      // REJECTED CASE TO REVERT THE CHANGE ON FAILURE
       .addCase(deleteSubTask.rejected, (state, action) => {
         state.isError = true;
         state.message = action.payload;
@@ -230,5 +261,5 @@ export const taskSlice = createSlice({
     },
 });
 
-export const { reset, toggleSubTaskOptimistic, removeSubTaskOptimistic } = taskSlice.actions;
+export const { reset, toggleSubTaskOptimistic, removeSubTaskOptimistic, addSubTaskOptimistic } = taskSlice.actions;
 export default taskSlice.reducer;

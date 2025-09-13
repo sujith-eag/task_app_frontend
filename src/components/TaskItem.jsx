@@ -1,13 +1,27 @@
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { deleteTask, updateTask, addSubTask, updateSubTask, deleteSubTask, toggleSubTaskOptimistic, removeSubTaskOptimistic } from '../features/tasks/taskSlice.js';
+import { deleteTask, updateTask, addSubTask, 
+          updateSubTask, deleteSubTask, addSubTaskOptimistic,
+          toggleSubTaskOptimistic, removeSubTaskOptimistic 
+        } from '../features/tasks/taskSlice.js';
 
 // MUI Components
-import { Card, CardContent, Box, Typography, IconButton, Chip, Select, MenuItem, FormControl, List, ListItem, ListItemText, Checkbox, TextField } from '@mui/material';
+import { 
+  Card, CardContent, Box, Typography, IconButton, Chip, Select, MenuItem, FormControl, 
+  List, ListItem, ListItemText, Checkbox, TextField,
+  Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button,
+  Popover, Stack
+} from '@mui/material';
+
 import { Close as CloseIcon, DeleteOutline as DeleteOutlineIcon, Add as AddIcon } from '@mui/icons-material';
 
 const TaskItem = ({ task }) => {
   const [subTaskText, setSubTaskText] = useState('');
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [subTaskIdToDelete, setSubTaskIdToDelete] = useState(null);
+
+  
   const dispatch = useDispatch();
 
   const handleStatusChange = (e) => {
@@ -17,8 +31,20 @@ const TaskItem = ({ task }) => {
   const handleSubTaskSubmit = (e) => {
     e.preventDefault();
     if (!subTaskText) return;
-    dispatch(addSubTask({ taskId: task._id, subTaskData: { text: subTaskText } }));
+    const payload = { 
+        taskId: task._id, 
+        subTaskData: { text: subTaskText } 
+      };
+    // Dispatch the optimistic action FIRST for an instant UI update  
+    dispatch(addSubTaskOptimistic(payload));
+    // Then, dispatch the thunk to sync with the server
+    dispatch(addSubTask(payload));
     setSubTaskText('');
+  };
+  
+  const handleDeleteConfirm = () => {
+    dispatch(deleteTask(task._id));
+    setOpenDeleteDialog(false);
   };
   
   // Helper to determine chip color based on priority
@@ -27,19 +53,45 @@ const TaskItem = ({ task }) => {
     Medium: 'warning',
     Low: 'info',
   };
+  
+  const handleSubTaskDeleteClick = (event, subTaskId) => {
+    setAnchorEl(event.currentTarget); // Anchor the popover to the button that was clicked
+    setSubTaskIdToDelete(subTaskId); // Remember which sub-task we are deleting
+  };
+
+  const handleSubTaskDeleteClose = () => {
+    setAnchorEl(null);
+    setSubTaskIdToDelete(null);
+  };
+
+  const handleSubTaskDeleteConfirm = () => {
+    const payload = { taskId: task._id, subTaskId: subTaskIdToDelete };
+    dispatch(removeSubTaskOptimistic(payload));
+    dispatch(deleteSubTask(payload));
+    handleSubTaskDeleteClose(); // Close the popover
+  };
+  
+  const open = Boolean(anchorEl);
+  const id = open ? 'delete-confirmation-popover' : undefined;
 
   return (
+    <>
     <Card sx={{ marginBottom: 2, textAlign: 'left' }}>
       <CardContent>
         {/* --- HEADER --- */}
         <Box display="flex" justifyContent="space-between" alignItems="center">
+          
+          {/* ... typography for dates ... */}
           <Typography variant="caption" color="text.secondary">
             Created: {new Date(task.createdAt).toLocaleDateString('en-US')}
             {task.dueDate && ` | Due: ${new Date(task.dueDate).toLocaleDateString('en-US')}`}
           </Typography>
-          <IconButton size="small" onClick={() => dispatch(deleteTask(task._id))}>
+
+          {/* <IconButton size="small" onClick={() => dispatch(deleteTask(task._id))}> */}
+          <IconButton size="small" onClick={() => setOpenDeleteDialog(true)}>
             <CloseIcon />
           </IconButton>
+        
         </Box>
 
         {/* --- TITLE & DESCRIPTION --- */}
@@ -60,35 +112,40 @@ const TaskItem = ({ task }) => {
 
         {/* --- SUB-TASKS --- */}
         <Box sx={{ mt: 2 }}>
-          <Typography variant="subtitle1">Checklist</Typography>
+          <Typography 
+              variant="subtitle1">Checklist
+          </Typography>
+
           <List dense>
             {task.subTasks?.map((subTask) => (
               <ListItem key={subTask._id} disablePadding secondaryAction={
-                    <IconButton edge="end" onClick={() => {
-                      const payload = { taskId: task._id, subTaskId: subTask._id };
-                      // Dispatch optimistic action first for instant UI feedback
-                      dispatch(removeSubTaskOptimistic(payload));
-                      // Then dispatch the thunk to sync with the server
-                      dispatch(deleteSubTask(payload));
-                    }}>
+                <IconButton edge="end" 
+                  aria-describedby={id} 
+                  onClick={(e) => handleSubTaskDeleteClick(e, subTask._id)}>
+
                   <DeleteOutlineIcon />
                 </IconButton>
               }>                
-                  <Checkbox
-                    edge="start"
-                    checked={subTask.completed}
-                    onChange={(e) => {
-                      const payload = { taskId: task._id, subTaskId: subTask._id };
-                      // 2. Dispatch the optimistic action FIRST for an instant UI update
-                      dispatch(toggleSubTaskOptimistic(payload));
-                      // 3. Then, dispatch the async thunk to sync with the server
-                      dispatch(updateSubTask({ ...payload, subTaskData: { completed: e.target.checked } }));
-                    }}
-                  />
-                <ListItemText primary={subTask.text} sx={{ textDecoration: subTask.completed ? 'line-through' : 'none' }} />
+              <Checkbox
+                edge="start"
+                checked={subTask.completed}
+                onChange={(e) => {
+                  const payload = { taskId: task._id, subTaskId: subTask._id };
+                  // 2. Dispatch the optimistic action FIRST for an instant UI update
+                  dispatch(toggleSubTaskOptimistic(payload));
+                  // 3. Then, dispatch the async thunk to sync with the server
+                  dispatch(updateSubTask({ ...payload, subTaskData: { completed: e.target.checked } }));
+                }}
+              />
+              <ListItemText 
+                  primary={subTask.text} 
+                  sx={{ textDecoration: subTask.completed ? 'line-through' : 'none' }} />
               </ListItem>
-            ))}
+              
+            ))
+            }
           </List>
+ 
           <Box component="form" onSubmit={handleSubTaskSubmit} sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
             <TextField
               fullWidth
@@ -110,6 +167,50 @@ const TaskItem = ({ task }) => {
         )}
       </CardContent>
     </Card>
+    
+    {/* The Popover component */}
+    <Popover
+      id={id}
+      open={open}
+      anchorEl={anchorEl}
+      onClose={handleSubTaskDeleteClose}
+      anchorOrigin={{
+        vertical: 'bottom',
+        horizontal: 'left',
+      }}
+      >
+      <Box sx={{ p: 2 }}>
+        <Typography sx={{ mb: 2 }}>Are you sure?</Typography>
+        <Stack direction="row" spacing={1}>
+          <Button size="small" variant="outlined" onClick={handleSubTaskDeleteClose}>Cancel</Button>
+          <Button size="small" variant="contained" color="error" onClick={handleSubTaskDeleteConfirm}>Confirm</Button>
+        </Stack>
+      </Box>
+    </Popover>
+    
+      {/* The Dialog component */}
+      <Dialog
+        open={openDeleteDialog}
+        onClose={() => setOpenDeleteDialog(false)}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Confirm Deletion"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Are you sure you want to delete the task: "{task.title}"? This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDeleteDialog(false)}>Cancel</Button>
+          <Button onClick={handleDeleteConfirm} color="error" autoFocus>
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 };
 
