@@ -60,12 +60,35 @@ const Dashboard = () => {
   }
 
   return (
-    <Box>
+  <Box> 
+  
       <Box sx={{ textAlign: 'center', mb: 4 }}>
-        <Typography variant="h3" component="h1" gutterBottom>
+        <Typography 
+          variant="h3" 
+          component="h1" 
+          gutterBottom
+          sx={{
+            fontWeight: 'moderate',
+            fontSize: {
+              xs: '2.2rem',
+              md: '2.4rem',
+              sm: '3rem'
+            }
+          }}
+          >
           Welcome {user?.name}
         </Typography>
-        <Typography variant="h5" color="text.secondary">
+        <Typography 
+          variant="h5" 
+          color="text.secondary"
+          sx={{
+            fontSize: {
+              xs: '1.1rem',
+              md: '1.2rem',
+              sm: '1.5rem',
+            }
+          }}
+          >
           Your Personal Task Dashboard
         </Typography>
       </Box>
