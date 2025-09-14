@@ -6,9 +6,9 @@ import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 
 import { Box, Typography, Paper, FormControl, InputLabel, 
-  Select, MenuItem, CircularProgress, Stack } from '@mui/material';
+  Select, MenuItem, CircularProgress, Stack, Collapse } from '@mui/material';
 import FilterListIcon from '@mui/icons-material/FilterList';
-
+import { TransitionGroup } from 'react-transition-group';
 
 const TaskList = () => {
   const dispatch = useDispatch();
@@ -23,28 +23,15 @@ const TaskList = () => {
   });
   const [sortBy, setSortBy] = useState('createdAt:desc');
 
-  // Testing Block
-useEffect(() => {
-  console.log('%cTaskList MOUNTED', 'color: green; font-weight: bold;');
-  return () => {
-    console.log('%cTaskList UNMOUNTED', 'color: red; font-weight: bold;');
-  };
-}, []); // The empty array [] ensures this runs only on mount and unmount
-  
-  
   useEffect(() => {
     const filterData = { sortBy };
     if (filters.status) filterData.status = filters.status;
     if (filters.priority) filterData.priority = filters.priority;
-
     dispatch(getTasks(filterData));
-    
   }, [dispatch, filters.status, filters.priority, sortBy]);
 
   useEffect(() => {
-    if (isError) {
-      toast.error(message);
-    }
+    if (isError) { toast.error(message); }
   }, [isError, message]);
 
   const handleFilterChange = (e) => {
@@ -147,19 +134,34 @@ useEffect(() => {
     {/* --- CONTENT SECTION --- */}
       <Box>
         {tasks.length > 0 ? (
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
-              {taskIds.map((id) => (
-                <Box
-                  key={id}
-                  sx={{
-                    flexGrow: 1, // Allows the item to grow to fill space
-                    width: { xs: '90%', md: 'calc(50% - 8px)' } // Defines the base width for the two-column layout
-                  }}
-                >
-                  <TaskItem taskId={id} /> 
-                </Box>
-              ))}
-          </Box>
+          <TransitionGroup
+            component={Box}
+            sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}
+          >
+            {taskIds.map((id) => (
+              <Collapse
+                key={id}
+                sx={{
+                  width: { xs: '100%', md: 'calc(50% - 8px)' },
+                }}
+              >
+                <TaskItem taskId={id} />
+              </Collapse>
+            ))}
+          </TransitionGroup>          
+                          
+      // <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+      //     {taskIds.map((id) => (
+      //       <Box
+      //         key={id}
+      //         sx={{
+      //           width: { xs: '100%', md: 'calc(50% - 8px)' }
+      //         }}
+      //       >
+      //         <TaskItem taskId={id} /> 
+      //       </Box>
+      //     ))}
+      // </Box>
 
 ) : (
         

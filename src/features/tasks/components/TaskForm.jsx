@@ -1,4 +1,4 @@
-import { createTask } from "../taskSlice";
+import { createTask, addTaskOptimistic } from "../taskSlice";
 
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -10,6 +10,11 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 const TaskForm = () => {
+  
+  const { user } = useSelector( (state)=> state.auth);
+  const { isLoading } = useSelector((state) => state.tasks);
+  const dispatch = useDispatch();
+  
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -19,8 +24,6 @@ const TaskForm = () => {
   });
 
   const { title, description, dueDate, priority, tags } = formData;
-  const dispatch = useDispatch();
-  const { isLoading } = useSelector((state) => state.tasks);
 
   const onChange = (e) => {
     setFormData((prevState) => ({
@@ -46,6 +49,7 @@ const TaskForm = () => {
       priority,
       tags: tags.split(',').map(tag => tag.trim()).filter(tag => tag),
     };
+    dispatch(addTaskOptimistic({ taskData, user }));
     dispatch(createTask(taskData));
     setFormData({
       title: '', description: '', dueDate: null, priority: 'Medium', tags: '',
