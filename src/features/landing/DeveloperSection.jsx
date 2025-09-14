@@ -57,11 +57,9 @@ const DeveloperSection = () => {
                     About Me
                   </Typography>
                   <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-                    Hi! I’m the developer behind <strong>Eagle Tasks</strong>. This
-                    project was built to demonstrate modern web development using the
-                    MERN stack and Material-UI. I originally built it for my own
-                    productivity needs after struggling to find a tool that fit just
-                    right.
+                    Hi! I’m the developer behind <strong>Eagle Tasks</strong> and <strong>Sujith's Library</strong>. 
+                    <br></br>I originally built it for my own productivity needs after struggling to find a tool that fit just
+                    right. This project also demonstrates modern web development using the MERN stack and Material-UI.
                   </Typography>
 
                   <Typography
@@ -71,8 +69,8 @@ const DeveloperSection = () => {
                     Future Plans
                   </Typography>
                   <Typography variant="body1" color="text.secondary">
-                    Upcoming updates will introduce user profiles, real-time
-                    collaboration, a dedicated mobile app, and advanced analytics —
+                    Major Feature planned in upcoming updates. Will introduce user profiles, real-time
+                    collaboration, a dedicated mobile app, and advanced analytics with each new version —
                     making Eagle Tasks even more powerful. Stay tuned!
                   </Typography>
                 </Box>

@@ -71,15 +71,6 @@ const HeroSection = () => {
               >
                 Get Started
               </Button>
-              <Button
-                variant="outlined"
-                color="inherit"
-                size="large"
-                href="https://sujith-eag.in"
-                target="_blank"
-              >
-                Visit Sujith’s Library
-              </Button>
             </Box>
           </motion.div>
         </Container>
