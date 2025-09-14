@@ -1,15 +1,9 @@
 import {
-  Box,
-  Container,
-  Typography,
-  Button,
-  Grid,
-  Paper,
-  Avatar,
-  Card,
-  CardContent,
-} from '@mui/material';
+  Box, Container, Typography, Button,
+  Paper, Avatar, Card, CardContent,} from '@mui/material';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import EventNoteIcon from '@mui/icons-material/EventNote';
 import PlaylistAddCheckIcon from '@mui/icons-material/PlaylistAddCheck';
@@ -17,7 +11,6 @@ import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 import eagleLogo from '../assets/eagle-logo.png';
 import developerPhoto from '../assets/sujith.jpg';
-import { motion } from 'framer-motion';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -157,20 +150,32 @@ const Landing = () => {
           Features Built for Productivity
         </Typography>
 
-        <Grid
-          container
-          spacing={4}
+        <Box
           component={motion.div}
           variants={containerVariants}
           initial="hidden"
           animate="visible"
+          sx={{
+            mt: 8,
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: 4, // This creates the spacing
+            justifyContent: 'center', // Center the cards within the container
+          }}
         >
-          {features.map((feature, index) => (
-            <Grid
+          {features.map((feature) => (
+            <Box
               key={feature.title}
-              size={{ xs: 12, sm: 6, md: 3 }}
               component={motion.div}
               variants={itemVariants}
+              sx={{
+                // Responsive width for each card. `calc` accounts for the gap.
+                width: {
+                  xs: '100%',
+                  sm: 'calc(50% - 16px)', // 2 columns
+                  md: 'calc(25% - 24px)', // 4 columns
+                },
+              }}
             >
               <Card
                 sx={{
@@ -211,19 +216,18 @@ const Landing = () => {
                   </Typography>
                 </CardContent>
               </Card>
-            </Grid>
+            </Box>
           ))}
-        </Grid>
+        </Box>
       </Container>
 
 
 {/* --- SUJITH'S LIBRARY SECTION --- */}
 <Box sx={{ 
-  
   bgcolor: (theme) => theme.palette.mode === 'light' ? 'primary.main' : 'primary.dark',
-      color: 'white',
-      py: 8,
-    }}
+  color: 'white',
+  py: 8,
+  }}
   >
 
   <motion.div
@@ -233,40 +237,19 @@ const Landing = () => {
     variants={itemVariants}
   >
     <Container maxWidth="lg">
-      <Grid
-        container
-        spacing={4}
-        alignItems="center"
-        justifyContent="center"
-      >
-        {/* Icon Column */}
-        <Grid
-          xs={12}
-          md={4}
-          sx={{
-            textAlign: 'center',
-            display: 'flex',
-            justifyContent: 'center',
-          }}
-        >
-          <LibraryBooksIcon
-            sx={{
-              fontSize: { xs: 100, md: 120 },
-              color: 'white',
-            }}
-          />
-        </Grid>
+      <Box sx={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 4,
+        flexDirection: { xs: 'column', md: 'row' },
+      }}>
+        <Box sx={{ textAlign: 'center' }}>
+          <LibraryBooksIcon sx={{ fontSize: { xs: 100, md: 120 }, color: 'white' }} />
+        </Box>
 
         {/* Text Column */}
-        <Grid
-          xs={12}
-          md={8}
-          sx={{
-            textAlign: { xs: 'center', md: 'left' },
-            maxWidth: 600,
-            mx: { xs: 'auto', md: 0 },
-          }}
-        >
+      <Box sx={{ textAlign: { xs: 'center', md: 'left' } }}>
           <Typography
             variant="h4"
             component="h2"
@@ -296,8 +279,8 @@ const Landing = () => {
           >
             Visit Sujith’s Library
           </Button>
-        </Grid>
-      </Grid>
+        </Box>
+      </Box>
     </Container>
   </motion.div>
 </Box>
@@ -329,11 +312,13 @@ const Landing = () => {
                 boxShadow: 3,
               }}
             >
-              <Grid container spacing={5} alignItems="center">
-                <Grid
-                  size={{ xs: 12, md: 3 }}
-                  sx={{ textAlign: 'center' }}
-                >
+              <Box sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 5,
+                flexDirection: { xs: 'column', md: 'row' },
+              }}>
+                <Box sx={{ textAlign: 'center', flexShrink: 0 }}>
                   <Avatar
                     sx={{
                       width: 160,
@@ -345,8 +330,9 @@ const Landing = () => {
                     alt="Developer Photo"
                     src={developerPhoto}
                   />
-                </Grid>
-                <Grid size={{ xs: 12, md: 9 }}>
+                </Box>
+
+                <Box>
                   <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
                     About Me
                   </Typography>
@@ -369,8 +355,8 @@ const Landing = () => {
                     collaboration, a dedicated mobile app, and advanced analytics —
                     making Eagle Tasks even more powerful. Stay tuned!
                   </Typography>
-                </Grid>
-              </Grid>
+                </Box>
+              </Box>
             </Paper>
           </Container>
         </motion.div>

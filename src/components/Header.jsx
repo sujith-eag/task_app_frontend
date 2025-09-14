@@ -1,7 +1,9 @@
-import { useContext } from 'react'; // Import useContext
+import { useState, useContext } from 'react'; // Import useContext
 import { useTheme } from '@mui/material/styles'; // Import useTheme
 
-import { AppBar, Toolbar, Typography, Button, Box, Stack, IconButton } from '@mui/material';
+import { AppBar, Toolbar, Typography, Button, 
+    Box, Stack, IconButton, Menu, MenuItem, useMediaQuery } from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
 import Brightness4Icon from '@mui/icons-material/Brightness4'; // Moon icon
 import Brightness7Icon from '@mui/icons-material/Brightness7'; // Sun icon
 import { ColorModeContext } from '../context/ThemeContext'; // Import the context
@@ -23,10 +25,24 @@ const Header = () => {
   const location = useLocation();
   const { user } = useSelector((state) => state.auth);
 
+  const [anchorEl, setAnchorEl] = useState(null);
+  
+  const isDesktop = useMediaQuery(theme.breakpoints.up('md'));  
+  
+  const isMenuOpen = Boolean(anchorEl);
+
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
   const onLogout = () => {
     dispatch(logout());
     dispatch(resetAuth());
     dispatch(resetTasks());
+    handleMenuClose();
     navigate('/');
   };
 
@@ -38,79 +54,87 @@ const Header = () => {
       sx={{ marginBottom: '40px' }}
     >
 
-    <Toolbar>
-      <Box sx={{ 
-        display: 'flex', 
-        alignItems: 'center', 
-        flexGrow: 1, 
-        textDecoration: 'none',
-        color: 'inherit' 
-      }}>
+    <Toolbar 
+      sx={{ minHeight: { xs: 56, md: 64 }}}>
+      <Link to='/' style={{ textDecoration: 'none', color: 'inherit', display: 'flex', alignItems: 'center' }}>
 
-      <Link to='/'>
-          <img 
-            src={eagleLogo} 
-            alt="Eagle Tasks Logo" 
-            style={{ height: '40px', marginRight: '10px' }} />
+          <Box
+            component="img"
+            src={eagleLogo}
+            alt="Eagle Tasks Logo"
+            // 3. Responsive logo height
+            sx={{ height: { xs: 35, md: 45 }, mr: 1.5, transition: 'height 0.3s' }}
+          />
+          <Typography
+            variant="h6"
+            component="div"
+            noWrap
+            // 4. Responsive font size for the title
+            sx={{ fontSize: { xs: '1.1rem', md: '1.5rem' }, transition: 'font-size 0.3s' }}
+          >
+            Eagle Tasks
+          </Typography>
         </Link>
 
-          <Typography variant="h6" component="div" noWrap>
-            <Link to='/'>
-              Eagle Tasks
-            </Link>
-          </Typography>
-        </Box>
+        {/* This empty Box is now the flexible spacer */}
+        <Box sx={{ flexGrow: 1 }} />
 
-        {/* 3. Group the navigation buttons in a Stack for consistent spacing */}
-        <Stack 
-          direction="row" 
-          spacing={1}
-          alignItems="center"
-          >
-            
-            
-          <IconButton 
-            sx={{ ml: 1 }} 
-            onClick={colorMode.toggleColorMode} 
-            color="inherit">
+
+        {/* Grouping the navigation buttons in a Stack for consistent spacing */}
+        <Stack direction="row" spacing={1} alignItems="center">
+          <IconButton sx={{ ml: 1 }} onClick={colorMode.toggleColorMode} color="inherit">
             {theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
           </IconButton>
 
 
           {user ? (
-            <Stack direction="row" spacing={1}>
-              {location.pathname !== '/dashboard' && (
-              <Button component={Link} to='/dashboard' color="inherit">
-                Dashboard
-              </Button>
-              )}
-              {user.role === 'admin' && (
-                <Button component={Link} to='/admin' color="inherit">
-                  Admin
-                </Button>
-              )}
-
-              <Button 
-                color="inherit" 
-                startIcon={<FaSignOutAlt />} 
-                onClick={onLogout}>
-              Logout
-              </Button>
-            </Stack>
-          ) : (
             <>
-              <Button component={Link} to='/login' color="inherit" startIcon={<FaSignInAlt />}>
-                Login
-              </Button>
-              <Button component={Link} to='/register' color="inherit" startIcon={<FaUser />}>
-                Register
-              </Button>
+              {/* Desktop Buttons */}
+              <Box sx={{ display: { xs: 'none', md: 'block' } }}>
+                <Stack direction="row" spacing={1}>
+                  {location.pathname !== '/dashboard' && (
+                    <Button component={Link} to='/dashboard' color="inherit" size={isDesktop ? 'large' : 'small'}>Dashboard</Button>
+                  )}
+                  {user.role === 'admin' && (
+                    <Button component={Link} to='/admin' color="inherit" size={isDesktop ? 'large' : 'small'}>Admin</Button>
+                  )}
+                  <Button color="inherit" startIcon={<FaSignOutAlt />} onClick={onLogout} size={isDesktop ? 'large' : 'small'}>Logout</Button>
+                </Stack>
+              </Box>
+              {/* Mobile Menu Icon */}
+              <Box sx={{ display: { xs: 'block', md: 'none' } }}>
+                <IconButton color="inherit" onClick={handleMenuOpen}>
+                  <MenuIcon />
+                </IconButton>
+              </Box>
             </>
+            
+          ) : (
+
+            <Stack direction="row" spacing={1}>
+              <Button component={Link} to='/login' color="inherit" startIcon={<FaSignInAlt />} size={isDesktop ? 'medium' : 'small'}>Login</Button>
+              <Button component={Link} to='/register' color="inherit" startIcon={<FaUser />} size={isDesktop ? 'medium' : 'small'}>Register</Button>
+            </Stack>
           )}
         </Stack>
       </Toolbar>
+
+      {/* Menu that opens */}
+      <Menu
+        anchorEl={anchorEl}
+        open={isMenuOpen}
+        onClose={handleMenuClose}
+      >
+        {location.pathname !== '/dashboard' && (
+          <MenuItem component={Link} to='/dashboard' onClick={handleMenuClose}>Dashboard</MenuItem>
+        )}
+        {user?.role === 'admin' && (
+          <MenuItem component={Link} to='/admin' onClick={handleMenuClose}>Admin</MenuItem>
+        )}
+        <MenuItem onClick={onLogout}>Logout</MenuItem>
+      </Menu>
     </AppBar>
   );
-}; 
+};
 
 export default Header;

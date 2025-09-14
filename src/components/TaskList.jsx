@@ -1,26 +1,36 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { getTasks, reset } from '../features/tasks/taskSlice.js';
+import { getTasks } from '../features/tasks/taskSlice.js';
 import { toast } from 'react-toastify';
 import TaskItem from './TaskItem.jsx';
 
 // MUI Components
-import { Box, Typography, Paper, FormControl, InputLabel, Select, MenuItem, CircularProgress, Stack, Collapse } from '@mui/material';
-
-import { TransitionGroup } from 'react-transition-group';
-
+import { Box, Typography, Paper, FormControl, InputLabel, Select, MenuItem, CircularProgress, Stack } from '@mui/material';
 import FilterListIcon from '@mui/icons-material/FilterList';
+
 
 const TaskList = () => {
   const dispatch = useDispatch();
   const { tasks, isLoading, isError, message } = useSelector((state) => state.tasks);
-
+  
+  const taskIds = useMemo(()=> tasks.map((t=> t._id)), [tasks] );   // Creating array of ids to pass to TaskItem
+  // This ensures the taskIds array is stable unless the tasks themselves change.
+  
   const [filters, setFilters] = useState({
     status: '',
     priority: '',
   });
   const [sortBy, setSortBy] = useState('createdAt:desc');
 
+  // Testing Block
+useEffect(() => {
+  console.log('%cTaskList MOUNTED', 'color: green; font-weight: bold;');
+  return () => {
+    console.log('%cTaskList UNMOUNTED', 'color: red; font-weight: bold;');
+  };
+}, []); // The empty array [] ensures this runs only on mount and unmount
+  
+  
   useEffect(() => {
     const filterData = { sortBy };
     if (filters.status) filterData.status = filters.status;
@@ -132,24 +142,22 @@ const TaskList = () => {
         </Box>
       </Paper>
 
-      {/* --- CONTENT SECTION --- */}
+
+    {/* --- CONTENT SECTION --- */}
       <Box>
         {tasks.length > 0 ? (
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
-            <TransitionGroup component={null}>
-              {tasks.map((task) => (
-                <Collapse
-                  key={task._id}
+              {taskIds.map((id) => (
+                <Box
+                  key={id}
                   sx={{
                     flexGrow: 1, // Allows the item to grow to fill space
-                    // Defines the base width for the two-column layout
-                    width: { xs: '90%', md: 'calc(50% - 8px)' } 
+                    width: { xs: '90%', md: 'calc(50% - 8px)' } // Defines the base width for the two-column layout
                   }}
                 >
-                  <TaskItem task={task} />
-                </Collapse>
+                  <TaskItem taskId={id} /> 
+                </Box>
               ))}
-            </TransitionGroup>
           </Box>
 
 ) : (

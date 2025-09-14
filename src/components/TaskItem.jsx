@@ -1,23 +1,25 @@
-import { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useState, useContext, useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+
 import { deleteTask, updateTask, addSubTask, 
           updateSubTask, deleteSubTask, addSubTaskOptimistic,
           toggleSubTaskOptimistic, removeSubTaskOptimistic 
         } from '../features/tasks/taskSlice.js';
+        
 import EditTaskModal from './EditTaskModal.jsx';
 
 // MUI Components
 import { 
   Card, CardContent, Box, Typography, IconButton, Chip, Select, MenuItem, FormControl, 
   List, ListItem, ListItemText, Checkbox, TextField,
-  Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button,
-  Popover, Stack
+  Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,
+   Button, Popover, Stack
 } from '@mui/material';
 
 import { Close as CloseIcon, DeleteOutline as DeleteOutlineIcon, Add as AddIcon } from '@mui/icons-material';
 import EditIcon from '@mui/icons-material/Edit';
 
-const TaskItem = ({ task }) => {
+const TaskItem = ({ taskId }) => {
   const [subTaskText, setSubTaskText] = useState('');
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -26,23 +28,32 @@ const TaskItem = ({ task }) => {
   
   const dispatch = useDispatch();
 
-  const handleStatusChange = (e) => {
-    dispatch(updateTask({ taskId: task._id, taskData: { status: e.target.value } }));
-  };
+  const task = useSelector(     // select the single task by id
+    (state) => state.tasks.tasks.find((t) => t._id === taskId),
+  );
+  
+  const handleStatusChange = useCallback((e) => {
+    dispatch(updateTask({ taskId, taskData: { status: e.target.value } }));
+  }, [dispatch, taskId]);
 
-  const handleSubTaskSubmit = (e) => {
+  const handleToggleSubTask = useCallback((subTaskId, checked) => {
+    const payload = { taskId, subTaskId };
+    dispatch(toggleSubTaskOptimistic(payload));  // optimistic action FIRST for an instant UI update
+    dispatch(updateSubTask({ ...payload, subTaskData: { completed: checked } }));  // dispatch the async thunk to sync with the server
+  }, [dispatch, taskId]);
+
+  
+  const handleSubTaskSubmit = useCallback((e) => {
     e.preventDefault();
     if (!subTaskText) return;
     const payload = { 
         taskId: task._id, 
         subTaskData: { text: subTaskText } 
       };
-    // Dispatch the optimistic action FIRST for an instant UI update  
-    dispatch(addSubTaskOptimistic(payload));
-    // Then, dispatch the thunk to sync with the server
-    dispatch(addSubTask(payload));
+    dispatch(addSubTaskOptimistic(payload)); // Dispatch the optimistic action FIRST for an instant UI update  
+    dispatch(addSubTask(payload));      // Then, dispatch the thunk to sync with the server
     setSubTaskText('');
-  };
+  }, [dispatch, subTaskText, taskId]);
   
   const handleDeleteConfirm = () => {
     dispatch(deleteTask(task._id));
@@ -62,6 +73,10 @@ const TaskItem = ({ task }) => {
   };
 
   const handleSubTaskDeleteClose = () => {
+    // Return focus to the icon that opened the popover
+    if (anchorEl) {
+      anchorEl.focus();
+    }
     setAnchorEl(null);
     setSubTaskIdToDelete(null);
   };
@@ -75,6 +90,8 @@ const TaskItem = ({ task }) => {
   
   const open = Boolean(anchorEl);
   const id = open ? 'delete-confirmation-popover' : undefined;
+
+  if (!task) return null;
 
   return (
     <>
@@ -90,11 +107,9 @@ const TaskItem = ({ task }) => {
 
           {/* --- ACTION BUTTONS (Edit + Delete) --- */}
           <Box>
-            {/* Edit Button */}
             <IconButton size="small" onClick={() => setIsEditModalOpen(true)}>
               <EditIcon />
             </IconButton>
-            {/* Delete Button */}
             <IconButton size="small" onClick={() => setOpenDeleteDialog(true)}>
               <CloseIcon />
             </IconButton>
@@ -128,7 +143,6 @@ const TaskItem = ({ task }) => {
           </Typography>
 
           <List dense>
-            
             {task.subTasks?.map((subTask) => (
               <ListItem key={subTask._id} disablePadding secondaryAction={
                 <IconButton edge="end" 
@@ -141,12 +155,8 @@ const TaskItem = ({ task }) => {
                 edge="start"
                 checked={subTask.completed}
                 onChange={(e) => {
-                  const payload = { taskId: task._id, subTaskId: subTask._id };
-                  // 2. Dispatch the optimistic action FIRST for an instant UI update
-                  dispatch(toggleSubTaskOptimistic(payload));
-                  // 3. Then, dispatch the async thunk to sync with the server
-                  dispatch(updateSubTask({ ...payload, subTaskData: { completed: e.target.checked } }));
-                }}
+                  handleToggleSubTask(subTask._id, e.target.checked)}
+                }
               />
               <ListItemText 
                   primary={subTask.text} 
@@ -178,6 +188,11 @@ const TaskItem = ({ task }) => {
         )}
       </CardContent>
     </Card>
+    
+    
+    
+    
+    
     
       {/* EditTaskModal component */}
       <EditTaskModal 
@@ -232,4 +247,4 @@ const TaskItem = ({ task }) => {
   );
 };
 
-export default TaskItem;
+export default React.memo(TaskItem);

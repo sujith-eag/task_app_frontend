@@ -169,6 +169,8 @@ export const taskSlice = createSlice({
         state.isError = true;
         state.message = action.payload;
       })
+
+
       .addCase(getTasks.pending, (state) => {
         state.isLoading = true;
       })
@@ -182,14 +184,20 @@ export const taskSlice = createSlice({
         state.isError = true;
         state.message = action.payload;
       })
+
+
       .addCase(updateTask.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
         const index = state.tasks.findIndex((task) => task._id === action.payload._id);
         if (index !== -1) {
-          state.tasks[index] = action.payload;
+          const existing = state.tasks[index];
+          Object.assign(existing, action.payload);
+          // state.tasks[index] = action.payload;
         }
       })
+
+
       .addCase(deleteTask.pending, (state) => { // Reordered for clarity
         state.isLoading = true;
       })
@@ -203,16 +211,16 @@ export const taskSlice = createSlice({
       })
 
       // CASES FOR SUB-TASKS
-
+// When the API call succeeds, the server returns the updated parent task,
+// which replaces the task with the temporary sub-task.
       .addCase(addSubTask.fulfilled, (state, action) => {
-        // When the API call succeeds, the server returns the updated parent task,
-        // which replaces the task with the temporary sub-task.
         const index = state.tasks.findIndex((task) => task._id === action.payload._id);
         if (index !== -1) {
-          state.tasks[index] = action.payload;
+          // state.tasks[index] = action.payload;
+          const existing = state.tasks[index];
+          Object.assign(existing, action.payload);
         }
       })
-      // REJECTED CASE TO REVERT THE CHANGE ON FAILURE
       .addCase(addSubTask.rejected, (state, action) => {
         const { taskId, subTaskData } = action.meta.arg;
         const task = state.tasks.find((t) => t._id === taskId);
@@ -228,7 +236,9 @@ export const taskSlice = createSlice({
       .addCase(updateSubTask.fulfilled, (state, action) => {
         const index = state.tasks.findIndex((task) => task._id === action.payload._id);
         if (index !== -1) {
-          state.tasks[index] = action.payload;
+          // state.tasks[index] = action.payload;
+          const existing = state.tasks[index];
+          Object.assign(existing, action.payload);
         }
       })
       .addCase(updateSubTask.rejected, (state, action) => {
@@ -248,10 +258,11 @@ export const taskSlice = createSlice({
       .addCase(deleteSubTask.fulfilled, (state, action) => {
         const index = state.tasks.findIndex((task) => task._id === action.payload._id);
         if (index !== -1) {
-          state.tasks[index] = action.payload;
+          // state.tasks[index] = action.payload;
+          const existing = state.tasks[index];
+          Object.assign(existing, action.payload);
         }
       })
-      // REJECTED CASE TO REVERT THE CHANGE ON FAILURE
       .addCase(deleteSubTask.rejected, (state, action) => {
         state.isError = true;
         state.message = action.payload;
