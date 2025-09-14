@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo } from 'react';  // To create Stats summary
 import { useSelector } from 'react-redux';
 import TaskForm from './TaskForm.jsx';
 import TaskList from './TaskList.jsx';
@@ -130,8 +130,7 @@ const Dashboard = () => {
       
       
       
-      {/* --- Main Two-Column Flexbox Layout --- */}
-      {/* --- MASTER FLEXBOX LAYOUT --- */}
+      {/* --- MASTER FLEXBOX Two-Column Layout --- */}
       <Box sx={{
         display: 'flex',
         gap: 4,

@@ -12,12 +12,32 @@ const initialState = {
   message: '',
 }
 
+// ASYNC THUNKS to Handle Calls to Backend
+// Currently having Register, Login, Logout, ForgotPassword and ResetPassword
+
 // Register user
 export const register = createAsyncThunk(
-  'auth/register',
+  'auth/register',                      // On dispatch(register(userData)), Redux Toolkit runs this thunk
   async (user, thunkAPI) => {
     try {
-      return await authService.register(user)
+      return await authService.register(user)   // Calls authService.register(userData) (async API call).
+    } catch (error) {
+      // convert API error into a message string for reducer
+      const message =
+        (error.response?.data?.message || error.message || error.toString())
+      return thunkAPI.rejectWithValue(message)
+    }
+    // If success, returns the payload which triggers '.fulfilled'.
+    // If fail, rejects with a message which triggers '.rejected'.
+  }
+)
+
+// Login user
+export const login = createAsyncThunk(
+  'auth/login', 
+  async (user, thunkAPI) => {
+    try {
+      return await authService.login(user)
     } catch (error) {
       const message =
         (error.response?.data?.message || error.message || error.toString())
@@ -26,23 +46,13 @@ export const register = createAsyncThunk(
   }
 )
 
-// Login user
-export const login = createAsyncThunk('auth/login', async (user, thunkAPI) => {
-  try {
-    return await authService.login(user)
-  } catch (error) {
-    const message =
-      (error.response?.data?.message || error.message || error.toString())
-    return thunkAPI.rejectWithValue(message)
-  }
-})
-
 // Logout user
-export const logout = createAsyncThunk('auth/logout', async () => {
-  await authService.logout()
-})
-
-// --- NEW PASSWORD RESET THUNKS ---
+export const logout = createAsyncThunk(
+  'auth/logout', 
+  async () => {
+    await authService.logout()
+  }
+)
 
 // Forgot password
 export const forgotPassword = createAsyncThunk(
@@ -77,6 +87,8 @@ export const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
+    // Synchronous Reducer (the above are Asyncronous)
+    // triggered on calling dispatch(reset())
     reset: (state) => {
       state.isLoading = false
       state.isSuccess = false
@@ -84,8 +96,10 @@ export const authSlice = createSlice({
       state.message = ''
     },
   },
+  // To handle all the async thunk lifecycle actions: Fulfilled, Rejected, Pending 
   extraReducers: (builder) => {
     builder
+      // Registration State Observers
       .addCase(register.pending, (state) => {
         state.isLoading = true
       })
@@ -100,6 +114,8 @@ export const authSlice = createSlice({
         state.message = action.payload
         state.user = null
       })
+
+      // Login State Observers 
       .addCase(login.pending, (state) => {
         state.isLoading = true
       })
@@ -114,9 +130,12 @@ export const authSlice = createSlice({
         state.message = action.payload
         state.user = null
       })
+      
+      // Logout State
       .addCase(logout.fulfilled, (state) => {
         state.user = null
       })
+
       // --- PASSWORD RESET REDUCERS ---
       .addCase(forgotPassword.pending, (state) => {
         state.isLoading = true
@@ -131,6 +150,8 @@ export const authSlice = createSlice({
         state.isError = true
         state.message = action.payload
       })
+      
+      
       .addCase(resetPassword.pending, (state) => {
         state.isLoading = true
       })
