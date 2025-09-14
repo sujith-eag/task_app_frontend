@@ -1,12 +1,14 @@
+import { resetPassword, reset } from '../features/auth/authSlice.js';
+
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { resetPassword, reset } from '../features/auth/authSlice';
 
-// MUI Components
-import { Container, Box, Avatar, Typography, TextField, Button, Backdrop, CircularProgress } from '@mui/material';
+import { Container, Box, Avatar, Typography, TextField, 
+  Button, Backdrop, CircularProgress } from '@mui/material';
 import VpnKeyIcon from '@mui/icons-material/VpnKey';
+
 
 const ResetPassword = () => {
   const [formData, setFormData] = useState({

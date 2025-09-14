@@ -1,8 +1,8 @@
+import { updateTask } from '../taskSlice.js';
+
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateTask } from '../features/tasks/taskSlice.js';
 
-// MUI Components
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Stack, FormControl, InputLabel, Select, MenuItem, Box } from '@mui/material';
 
 const EditTaskModal = ({ task, open, onClose }) => {

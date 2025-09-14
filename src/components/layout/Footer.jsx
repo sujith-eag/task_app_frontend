@@ -1,8 +1,9 @@
+import pkg from '../../../package.json'
+
 import { Box, Typography, Link, IconButton, Container } from '@mui/material';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 
-import pkg from '../../package.json';
 
 const Footer = () => {
   return (

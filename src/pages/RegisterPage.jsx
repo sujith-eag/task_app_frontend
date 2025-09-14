@@ -1,12 +1,12 @@
+import { register, reset } from '../features/auth/authSlice.js';
+
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { register, reset } from '../features/auth/authSlice.js';
 
-// MUI Components
-import { Container, Box, Avatar, Typography, TextField, Button, Backdrop, CircularProgress, Stack } from '@mui/material';
-
+import { Container, Box, Avatar, Typography, TextField, 
+  Button, Backdrop, CircularProgress, Stack } from '@mui/material';
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 
 

@@ -1,3 +1,8 @@
+import { logout, reset as resetAuth } from '../../features/auth/authSlice.js';
+import { reset as resetTasks } from '../../features/tasks/taskSlice.js';
+import { ColorModeContext } from '../../context/ThemeContext.jsx';
+import eagleLogo from '../../assets/eagle-logo.png'
+
 import { useState, useContext } from 'react'; // Import useContext
 import { useTheme } from '@mui/material/styles'; // Import useTheme
 
@@ -6,15 +11,10 @@ import { AppBar, Toolbar, Typography, Button,
 import MenuIcon from '@mui/icons-material/Menu';
 import Brightness4Icon from '@mui/icons-material/Brightness4'; // Moon icon
 import Brightness7Icon from '@mui/icons-material/Brightness7'; // Sun icon
-import { ColorModeContext } from '../context/ThemeContext'; // Import the context
-
 import { FaSignInAlt, FaSignOutAlt, FaUser } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { logout, reset as resetAuth } from '../features/auth/authSlice.js';
-import { reset as resetTasks } from '../features/tasks/taskSlice.js';
 
-import eagleLogo from '../assets/eagle-logo.png';
 
 const Header = () => {
   const theme = useTheme(); // Get current theme

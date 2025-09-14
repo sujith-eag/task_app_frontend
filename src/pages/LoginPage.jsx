@@ -1,11 +1,12 @@
+import { login, reset } from '../features/auth/authSlice.js'; 
+
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { login, reset } from '../features/auth/authSlice.js';
 
-// MUI Components
-import { Container, Box, Avatar, Typography, TextField, Button, Backdrop, CircularProgress } from '@mui/material';
+import { Container, Box, Avatar, Typography, TextField, 
+  Button, Backdrop, CircularProgress } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 
 const Login = () => {

@@ -1,20 +1,20 @@
 // App.jsx
+import Header from './components/layout/Header.jsx';
+import Footer from "./components/layout/Footer.jsx";
+import PrivateRoute from './components/layout/PrivateRoute.jsx';
+
+import Dashboard from './pages/Dashboard.jsx';
+import LandingPage from "./pages/LandingPage.jsx";
+import LoginPage from './pages/LoginPage.jsx';
+import RegisterPage from './pages/RegisterPage.jsx';
+import ForgotPasswordPage from './pages/ForgotPasswordPage.jsx';
+import ResetPasswordPage from './pages/ResetPasswordPage.jsx'; 
+
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import { Box } from '@mui/material';
 
-// Import the Container component from MUI
-import { Container, Box } from '@mui/material';
-
-import Landing from "./components/Landing.jsx";
-import Header from './components/Header.jsx';
-import Footer from "./components/Footer.jsx";
-import Dashboard from './components/Dashboard.jsx';
-import Login from './components/Login.jsx';
-import Register from './components/Register.jsx';
-import ForgotPassword from './components/ForgotPassword.jsx';
-import ResetPassword from './components/ResetPassword.jsx'; 
-import PrivateRoute from './components/PrivateRoute.jsx';  
 
 function App() {
   return (
@@ -27,13 +27,13 @@ function App() {
         <Box component="main" sx={{ flexGrow: 1 }}>
 
           <Routes>
-            <Route path="/" element={<Landing />} />
+            <Route path="/" element={<LandingPage />} />
             
             {/* Public Auth Routes */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/forgotpassword" element={<ForgotPassword />} />
-            <Route path="/resetpassword/:token" element={<ResetPassword />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/forgotpassword" element={<ForgotPasswordPage />} />
+            <Route path="/resetpassword/:token" element={<ResetPasswordPage />} />
 
             <Route path="/dashboard" element={<PrivateRoute />}>
               <Route path="/dashboard" element={<Dashboard />} />

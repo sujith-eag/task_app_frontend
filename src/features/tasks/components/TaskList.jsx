@@ -1,11 +1,12 @@
+import TaskItem from './TaskItem.jsx';
+import { getTasks } from '../taskSlice.js';
+
 import { useEffect, useState, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { getTasks } from '../features/tasks/taskSlice.js';
 import { toast } from 'react-toastify';
-import TaskItem from './TaskItem.jsx';
 
-// MUI Components
-import { Box, Typography, Paper, FormControl, InputLabel, Select, MenuItem, CircularProgress, Stack } from '@mui/material';
+import { Box, Typography, Paper, FormControl, InputLabel, 
+  Select, MenuItem, CircularProgress, Stack } from '@mui/material';
 import FilterListIcon from '@mui/icons-material/FilterList';
 
 
