@@ -3,6 +3,7 @@ import taskService from './taskService.js'
 
 const initialState = {
   tasks: [],
+  pendingDeletions: [],
   lastDeletedTask: null,
   lastDeletedSubTask: null,
   isError: false,
@@ -142,10 +143,23 @@ export const taskSlice = createSlice({
       const taskId = action.payload;
       const taskIndex = state.tasks.findIndex((t) => t._id === taskId);
       if (taskIndex !== -1) {
-        state.lastDeletedTask = state.tasks[taskIndex];
-        state.tasks.splice(taskIndex, 1);
+        const [deletedTask] = state.tasks.splice(taskIndex, 1);        
+        // state.lastDeletedTask = state.tasks[taskIndex];
+        state.pendingDeletions.push(deletedTask);
+        // state.tasks.splice(taskIndex, 1);
       }
     },
+        // New reducer to handle the "Undo" action
+      undoDeleteTask: (state, action) => {
+        const taskId = action.payload;
+        const taskIndex = state.pendingDeletions.findIndex((t) => t._id === taskId);
+        if (taskIndex !== -1) {
+          const [restoredTask] = state.pendingDeletions.splice(taskIndex, 1);
+          state.tasks.unshift(restoredTask);
+      }
+    },
+    
+    
     // OPTIMISTIC REDUCER FOR SUB TASK TOGGLE
     toggleSubTaskOptimistic: (state, action) => {
       const { taskId, subTaskId } = action.payload;
@@ -230,49 +244,53 @@ export const taskSlice = createSlice({
         state.isSuccess = true;
         const index = state.tasks.findIndex((task) => task._id === action.payload._id);
         if (index !== -1) {
-          const existing = state.tasks[index];
-          Object.assign(existing, action.payload);
-          // state.tasks[index] = action.payload;
+          Object.assign(state.tasks[index], action.payload);
         }
       })
 
       .addCase(deleteTask.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.lastDeletedTask = null;
+        const taskId = action.meta.arg;
+        state.pendingDeletions = state.pendingDeletions.filter(t => t._id !== taskId);
       })
-      // .addCase(deleteTask.pending, (state) => {
-      //   state.isLoading = true;
-      // })
       .addCase(deleteTask.rejected, (state, action) => {
+        const taskId = action.meta.arg;
+        const taskIndex = state.pendingDeletions.findIndex((t) => t._id === taskId);
+        if (taskIndex !== -1) {
+          const [restoredTask] = state.pendingDeletions.splice(taskIndex, 1);
+          state.tasks.unshift(restoredTask);
+        }
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
-        // If the delete failed on the server, add the task back to the list
-        if (state.lastDeletedTask) {
-          state.tasks.unshift(state.lastDeletedTask);
-          state.lastDeletedTask = null;
-        }
       })
 
       // CASES FOR SUB-TASKS
       .addCase(addSubTask.fulfilled, (state, action) => {
         const index = state.tasks.findIndex((task) => task._id === action.payload._id);
         if (index !== -1) {
-          // state.tasks[index] = action.payload;
-          const existing = state.tasks[index];
-          Object.assign(existing, action.payload);
+          Object.assign(state.tasks[index], action.payload);
         }
+        state.lastDeletedSubTask=null;
       })
       .addCase(addSubTask.rejected, (state, action) => {
+        state.isError = true;
+        state.message = action.payload;
+
+        if (state.lastDeletedSubTask) {
+          const { taskIndex, subTask } = state.lastDeletedSubTask;
+          if (state.tasks[taskIndex]) {
+            state.tasks[taskIndex].subTasks.push(subTask);
+          }
+          state.lastDeletedSubTask = null;
+        }
+
         const { taskId, subTaskData } = action.meta.arg;
         const task = state.tasks.find((t) => t._id === taskId);
-        // Remove the temporary sub-task that failed to save
         if (task) {
           task.subTasks = task.subTasks.filter(sub => !sub._id.startsWith('temp_'));
         }
-        state.isError = true;
-        state.message = action.payload;
       })
 
       
@@ -323,8 +341,10 @@ export const {
   reset,
   addTaskOptimistic,
   removeTaskOptimistic,
+  undoDeleteTask,
   toggleSubTaskOptimistic,
   addSubTaskOptimistic,
   removeSubTaskOptimistic,
 } = taskSlice.actions;
+
 export default taskSlice.reducer;

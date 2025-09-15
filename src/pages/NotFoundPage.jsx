@@ -26,7 +26,7 @@ const NotFoundPage = () => {
             Hi there!, you seem lost.
           </Typography>
           <Typography color="text.secondary" sx={{ mb: 4 }}>
-            I see that "Get completely lost in a site" wasn't on your to-do list for today.</Typography>
+            Well, this is awkward. 'Get completely lost on a website' probably wasn't on your to-do list for today. We recommend saving that for a forest trail🌲, not our server. Let's find your way back!</Typography>
           <Button
             component={Link}
             to="/"

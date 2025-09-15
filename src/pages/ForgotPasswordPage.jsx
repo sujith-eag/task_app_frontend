@@ -11,6 +11,8 @@ import MailOutlineIcon from '@mui/icons-material/MailOutline';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const isEmailValid = emailRegex.test(email);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -20,18 +22,25 @@ const ForgotPassword = () => {
   );
 
   useEffect(() => {
-    if (isError) {
-      toast.error(message);
-    }
-    if (isSuccess) {
-      toast.success(message || 'Password reset link sent to your email!');
-      navigate('/login');
-    }
-    dispatch(reset());
+      if (isError) {
+          toast.error(message);
+      }
+      if (isSuccess) {
+          toast.success(message || 'Password reset link sent to your email!');
+          navigate('/login');
+      }
+      
+      return () => {
+          dispatch(reset());
+      };
   }, [isError, isSuccess, message, navigate, dispatch]);
 
   const onSubmit = (e) => {
     e.preventDefault();
+    if (!isEmailValid) {
+        toast.error('Please enter a valid email address.');
+        return;
+    }
     dispatch(forgotPassword({ email }));
   };
 
@@ -73,16 +82,29 @@ const ForgotPassword = () => {
             autoFocus
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            error={email.length > 0 && !isEmailValid}
+            helperText={email.length > 0 && !isEmailValid ? "Please enter a valid email" : ""}            
           />
           <Button
             type="submit"
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
-          >
+            disabled={!isEmailValid || isLoading}
+            >
             Send Reset Link
           </Button>
-          <Box sx={{ textAlign: 'center' }}>
+
+          <Typography 
+              variant="caption" 
+              display="block" 
+              color="text.secondary" 
+              align="center" 
+              sx={{ mt: 2 }}
+          > Our email bot is on a coffee break ☕️. For you clever hackers 🕵️‍♀️ out there though, you can still find the reset link. Good luck!. 😏👨‍💻
+          </Typography>
+
+          <Box sx={{ textAlign: 'center', mt: 2 }}>
             <Link to="/login" style={{ textDecoration: 'none' }}>
               <Typography variant="body2" color="primary">
                 Back to Login

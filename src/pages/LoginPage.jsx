@@ -6,16 +6,25 @@ import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 import { Container, Box, Avatar, Typography, TextField, 
-  Button, Backdrop, CircularProgress } from '@mui/material';
+  Button, Backdrop, CircularProgress, InputAdornment, IconButton } from '@mui/material';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff  from '@mui/icons-material/VisibilityOff';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 
 const Login = () => {
-  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [formData, setFormData] = useState({ 
+      email: '', 
+      password: '' 
+    });
   const { email, password } = formData;
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
+  const [showPassword, setShowPassword] = useState(false);
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const isEmailValid = emailRegex.test(email);
+  const isPasswordEntered = password.trim().length > 5;
+  const canSubmit = isEmailValid && isPasswordEntered;
   const { user, isLoading, isError, isSuccess, message } = useSelector(
     (state) => state.auth
   );
@@ -27,11 +36,12 @@ const Login = () => {
     if (isSuccess && user) {
       toast.success(`Welcome back, ${user.name}!`);
       navigate('/dashboard');
-    } else if (user){
+    } else if (user || isSuccess){
       navigate('/dashboard');
     }
-    
-    dispatch(reset());
+    return () => {
+      dispatch(reset());
+    }
   }, [user, isError, isSuccess, message, navigate, dispatch]);
 
   const onChange = (e) => {
@@ -43,9 +53,18 @@ const Login = () => {
 
   const onSubmit = (e) => {
     e.preventDefault();
+    if(!isEmailValid){
+      toast.error('Please Enter a valid Email');
+      return;
+    }
+    if(!isPasswordEntered){
+      toast.error('Please enter your password');
+      return;
+    }
     const userData = { 
       email: email.trim().toLocaleLowerCase(), 
-      password };
+      password 
+    };
     dispatch(login(userData));
   };
 
@@ -69,18 +88,23 @@ const Login = () => {
         <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
           <LockOutlinedIcon />
         </Avatar>
+
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
+
         <Box component="form" onSubmit={onSubmit} noValidate sx={{ mt: 1 }}>
           <TextField
             margin="normal"
             required
             fullWidth
-            id="email"
-            label="Email Address"
             name="email"
+            id="email"
+            inputMode="email"
+            label="Email Address"
             autoComplete="email"
+            error={email && !isEmailValid}
+            helperText = {email && !isEmailValid ? 'Enter a valid email address' : ''}
             autoFocus
             value={email}
             onChange={onChange}
@@ -91,17 +115,33 @@ const Login = () => {
             fullWidth
             name="password"
             label="Password"
-            type="password"
+            type= {showPassword ? 'text' : 'password'}
             id="password"
             autoComplete="current-password"
             value={password}
             onChange={onChange}
-          />
+              slotProps={{
+                  input: {
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={() => setShowPassword(!showPassword)}
+                          onMouseDown={(e) => e.preventDefault()}
+                          edge="end"
+                        >
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                }/>
           <Button
             type="submit"
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
+            disabled={!canSubmit || isLoading}
           >
             Sign In
           </Button>

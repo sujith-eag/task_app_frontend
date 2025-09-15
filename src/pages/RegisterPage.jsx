@@ -5,41 +5,41 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
-import { Container, Box, Avatar, Typography, TextField, 
-  Button, Backdrop, CircularProgress, Stack } from '@mui/material';
+import { Container, Box, Avatar, Typography, TextField, Button, 
+  Backdrop, CircularProgress, Stack, InputAdornment, IconButton } from '@mui/material';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff  from '@mui/icons-material/VisibilityOff';
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 
 
 const Register = () => {
-    const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState({
       name: '',
       email: '',
       password: '',
       password2: '',
     });
-    const { name, email, password, password2 } = formData;
+  const { name, email, password, password2 } = formData;
 
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword2, setShowPassword2] = useState(false);
 
-    const { user, isLoading, isError, isSuccess, message } = useSelector(
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+  const isNameValid = name.trim().length > 5;
+  const isEmailValid = emailRegex.test(email);
+  const isPasswordValid = passwordRegex.test(password);
+  const isPasswordsMatch = password === password2;
+  const canSubmit = isNameValid && isEmailValid && isPasswordValid && isPasswordsMatch;
+
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const { user, isLoading, isError, isSuccess, message } = useSelector(
       (state) => state.auth
     );
-
-  useEffect(() => {
-    if (isError) {
-      toast.error(message);
-    }
-    if (isSuccess && user) {
-      toast.success(`Successfully registered! Welcome ${user.name}!`);
-      navigate('/dashboard');
-    } else if (user){
-      navigate('/dashboard');
-    }
-    
-    dispatch(reset());
-  }, [user, isError, isSuccess, message, navigate, dispatch]);
-
+  
   const onChange = (e) => {
     setFormData((prevState) => ({
       ...prevState,
@@ -49,22 +49,36 @@ const Register = () => {
 
   const onSubmit = (e) => {
     e.preventDefault();
-  // Password Regex: min 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special character
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-    
-    if (password !== password2) {
-      toast.error('Passwords do not match');
-    } else if(!passwordRegex.test(password)) {
-      toast.error('Password is not strong enough.');
-    } else {
-      const userData = { 
-          name, 
-          email: email.trim().toLowerCase(),
-          password };
-      dispatch(register(userData));
+    if(!canSubmit){
+        toast.error('Please fix form errors before submitting');
+        return;
     }
-  };
+    const userData = { 
+        name, 
+        email: email.trim().toLowerCase(),
+        password 
+    };
+    dispatch(register(userData));
+}; 
 
+  useEffect(() => {
+    if (isError) {
+      toast.error(message);
+    }
+    if (isSuccess && user) {
+      toast.success(`Successfully registered! Welcome ${user.name}!`);
+      navigate('/dashboard');
+    } else if (user || isSuccess){
+      navigate('/dashboard');
+    }
+    
+  return () => {
+      dispatch(reset());
+  };
+  
+  }, [user, isError, isSuccess, message, navigate, dispatch]);
+
+  
 return (
   <Container component="main" maxWidth="xs">
     <Backdrop
@@ -89,7 +103,6 @@ return (
         Sign up
       </Typography>
       
-      {/* --- LAYOUT USING STACK --- */}
         <Box component="form" noValidate onSubmit={onSubmit} sx={{ mt: 3, width: '100%' }}>
           <Stack spacing={2}>
             <TextField
@@ -105,10 +118,13 @@ return (
             <TextField
               required
               fullWidth
-              id="email"
-              label="Email Address"
               name="email"
+              id="email"
+              inputMode="email"
+              label="Email Address"
               autoComplete="email"
+              error={email && !isEmailValid}
+              helperText = {email && !isEmailValid ? 'Enter a valid email address' : ''}
               value={email}
               onChange={onChange}
             />
@@ -117,31 +133,73 @@ return (
               fullWidth
               name="password"
               label="Password"
-              type="password"
+              type= {showPassword ? 'text' : 'password'}
               id="password"
               value={password}
               onChange={onChange}
-
-              helperText="Must be 8+ characters and include an uppercase letter, a number, and a special character."
-            />
+              error={password && !isPasswordValid}
+              helperText={
+                  password && !isPasswordValid 
+                  ? 'At least 8 chars, uppercase, number, special char' 
+                  : ''
+                }
+              slotProps={{
+                  input: {
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={() => setShowPassword(!showPassword)}
+                          onMouseDown={(e) => e.preventDefault()}
+                          edge="end"
+                        >
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                }/>
             <TextField
               required
               fullWidth
               name="password2"
               label="Confirm Password"
-              type="password"
+              type={showPassword2 ? 'text' : 'password'}
               id="password2"
               value={password2}
               onChange={onChange}
-            />
+              error={password2 && !isPasswordsMatch}
+              helperText={
+                password2 && !isPasswordsMatch 
+                ? 'Passwords do not match' 
+                : ''
+              }
+              slotProps={{
+                  input: {
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={() => setShowPassword2(!showPassword2)}
+                          onMouseDown={(e) => e.preventDefault()}
+                          edge="end"
+                        >
+                        {showPassword2 ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    )
+                  }}
+                }/>
+
             <Button
               type="submit"
               fullWidth
               variant="contained"
               sx={{ pt: 1.5, pb: 1.5 }}
-            >
-              Sign Up
+              disabled={!canSubmit || isLoading}
+              >Sign Up
             </Button>
+
             <Box sx={{ textAlign: 'right' }}>
               <Link to="/login" style={{ textDecoration: 'none' }}>
                 <Typography variant="body2" color="primary">
@@ -149,13 +207,12 @@ return (
                 </Typography>
               </Link>
             </Box>
+
           </Stack>
         </Box>
-
     </Box>
   </Container>
 );
-
 };
 
 export default Register;

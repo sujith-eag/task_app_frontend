@@ -1,21 +1,16 @@
 import React, { useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteTask, updateTask, removeTaskOptimistic } from '../taskSlice.js';
+import { updateTask } from '../taskSlice.js';
 import EditTaskModal from './EditTaskModal.jsx';
 import SubTaskChecklist from './SubTaskChecklist.jsx';
-import { motion } from 'framer-motion'; 
-import { toast } from 'react-toastify';
+import TaskActions from './TaskActions.jsx'; // 1. Import the new component
+import { motion } from 'framer-motion';
 
 // MUI Components & Icons
-import { Card, CardContent, Box, Typography, IconButton, 
-  Chip, Select, MenuItem, FormControl, 
-  Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, 
-  Button, InputLabel } from '@mui/material';
-import { Close as CloseIcon, Edit as EditIcon } from '@mui/icons-material';
+import { Card, CardContent, Box, Typography, Chip, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 
 const TaskItem = ({ taskId }) => {
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false); // Only manages its own modal
   const dispatch = useDispatch();
 
   const task = useSelector((state) => state.tasks.tasks.find((t) => t._id === taskId));
@@ -23,53 +18,35 @@ const TaskItem = ({ taskId }) => {
   const handleStatusChange = useCallback((e) => {
     dispatch(updateTask({ taskId, taskData: { status: e.target.value } }));
   }, [dispatch, taskId]);
-
-  const handleDeleteConfirm = useCallback(() => {
-    dispatch(removeTaskOptimistic(taskId));
-
-    const promise = dispatch(deleteTask(taskId));
-    toast.promise( promise, {
-      pending: 'Deleting task...',
-      success: 'Task deleted successfully 👌',
-      error: 'Failed to delete task 🤯'
-    })
-    setOpenDeleteDialog(false);
-  }, [dispatch, taskId]);
-
+  
   const priorityColor = { High: 'error', Medium: 'warning', Low: 'info' };
 
   if (!task) return null;
 
   return (
     <>
-      <motion.div
-        layout
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.3 }}
-      >
-    <Card sx={{ textAlign: 'left', height: '100%' }}>
-      <CardContent sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <motion.div layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}
+>
+        <Card sx={{ textAlign: 'left', height: '100%' }}>
+          <CardContent sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+            
+            <Box display="flex" justifyContent="space-between" alignItems="center">
+              <Typography variant="caption" color="text.secondary">
+                Created: {new Date(task.createdAt).toLocaleDateString('en-GB')}
+                {task.dueDate && ` | Due: ${new Date(task.dueDate).toLocaleDateString('en-GB')}`}
+              </Typography>
+              {/* 2. Render the new, self-contained actions component */}
+              <TaskActions 
+                taskId={task._id}
+                taskTitle={task.title}
+                onOpenEdit={() => setIsEditModalOpen(true)}
+              />
+            </Box>
 
-        <Box display="flex" justifyContent="space-between" alignItems="center">
-      
-          <Typography variant="caption" color="text.secondary">
-            Created: {new Date(task.createdAt).toLocaleDateString('en-GB')}
-            {task.dueDate && ` | Due: ${new Date(task.dueDate).toLocaleDateString('en-GB')}`}
-          </Typography>
-      
-          <Box>
-            <IconButton size="small" onClick={() => setIsEditModalOpen(true)}><EditIcon /></IconButton>
-            <IconButton size="small" onClick={() => setOpenDeleteDialog(true)}><CloseIcon /></IconButton>
-          </Box>
+            <Typography variant="h5" sx={{ mt: 1 }}>{task.title}</Typography>
+            {task.description && <Typography variant="body2" color="text.secondary" sx={{ mt: 1, flexGrow: 1 }}>{task.description}</Typography>}
 
-        </Box>
-
-        <Typography variant="h5" component="h2" sx={{ mt: 1 }}>{task.title}</Typography>
-        {task.description && <Typography variant="body2" color="text.secondary" sx={{ mt: 1, flexGrow: 1 }}>{task.description}</Typography>}
-
-        <Box display="flex" alignItems="center" gap={2} sx={{ mt: 2 }}>
+<Box display="flex" alignItems="center" gap={2} sx={{ mt: 2 }}>
           <Chip label={task.priority} color={priorityColor[task.priority]} size="small" />
           <FormControl size="small" sx={{ minWidth: 120 }}>
             <InputLabel id={`status-label-${taskId}`}>Status</InputLabel>
@@ -86,46 +63,18 @@ const TaskItem = ({ taskId }) => {
             </Select>
           </FormControl>
         </Box>
-
-        <SubTaskChecklist taskId={task._id} subTasks={task.subTasks} />
         
+            <SubTaskChecklist taskId={task._id} subTasks={task.subTasks} />
         {task.tags?.length > 0 && (
           <Box sx={{ mt: 'auto', pt: 2, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
             {task.tags.map((tag) => <Chip key={tag} label={tag} size="small" />)}
           </Box>
         )}
-      </CardContent>
-    </Card>
-  </motion.div>
-
-
-  <EditTaskModal 
-    task={task} 
-    open={isEditModalOpen} 
-    onClose={() => setIsEditModalOpen(false)} 
-    />
-
-    <Dialog
-      open={openDeleteDialog}
-      onClose={() => setOpenDeleteDialog(false)}
-      aria-labelledby="alert-dialog-title"
-      aria-describedby="alert-dialog-description"
-    >
-      <DialogTitle id="alert-dialog-title"> {"Confirm Deletion"} </DialogTitle>
-
-      <DialogContent>
-        <DialogContentText id="alert-dialog-description">
-          Are you sure you want to delete the task: "{task.title}"? This action cannot be undone.
-        </DialogContentText>
-      </DialogContent>
-
-      <DialogActions>
-        <Button onClick={() => setOpenDeleteDialog(false)}>Cancel</Button>
-        <Button onClick={handleDeleteConfirm} color="error" autoFocus>
-          Delete
-        </Button>
-      </DialogActions>
-    </Dialog>
+          </CardContent>
+        </Card>
+      </motion.div>
+      
+      <EditTaskModal task={task} open={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} />
     </>
   );
 };
