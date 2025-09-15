@@ -30,9 +30,13 @@ const Register = () => {
     if (isError) {
       toast.error(message);
     }
-    if (isSuccess || user) {
+    if (isSuccess && user) {
+      toast.success(`Successfully registered! Welcome ${user.name}!`);
+      navigate('/dashboard');
+    } else if (user){
       navigate('/dashboard');
     }
+    
     dispatch(reset());
   }, [user, isError, isSuccess, message, navigate, dispatch]);
 

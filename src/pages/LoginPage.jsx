@@ -24,9 +24,13 @@ const Login = () => {
     if (isError) {
       toast.error(message);
     }
-    if (isSuccess || user) {
+    if (isSuccess && user) {
+      toast.success(`Welcome back, ${user.name}!`);
+      navigate('/dashboard');
+    } else if (user){
       navigate('/dashboard');
     }
+    
     dispatch(reset());
   }, [user, isError, isSuccess, message, navigate, dispatch]);
 

@@ -4,6 +4,7 @@ import { deleteTask, updateTask, removeTaskOptimistic } from '../taskSlice.js';
 import EditTaskModal from './EditTaskModal.jsx';
 import SubTaskChecklist from './SubTaskChecklist.jsx';
 import { motion } from 'framer-motion'; 
+import { toast } from 'react-toastify';
 
 // MUI Components & Icons
 import { Card, CardContent, Box, Typography, IconButton, 
@@ -25,7 +26,13 @@ const TaskItem = ({ taskId }) => {
 
   const handleDeleteConfirm = useCallback(() => {
     dispatch(removeTaskOptimistic(taskId));
-    dispatch(deleteTask(taskId));
+
+    const promise = dispatch(deleteTask(taskId));
+    toast.promise( promise, {
+      pending: 'Deleting task...',
+      success: 'Task deleted successfully 👌',
+      error: 'Failed to delete task 🤯'
+    })
     setOpenDeleteDialog(false);
   }, [dispatch, taskId]);
 

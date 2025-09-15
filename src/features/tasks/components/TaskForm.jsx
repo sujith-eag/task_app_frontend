@@ -8,6 +8,7 @@ import { Box, Paper, Typography,
     Select, MenuItem, Button, Stack } from '@mui/material';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { toast } from "react-toastify";
 
 const TaskForm = () => {
   
@@ -51,6 +52,7 @@ const TaskForm = () => {
     };
     dispatch(addTaskOptimistic({ taskData, user }));
     dispatch(createTask(taskData));
+    toast.success('Task created successfully!');
     setFormData({
       title: '', description: '', dueDate: null, priority: 'Medium', tags: '',
     });

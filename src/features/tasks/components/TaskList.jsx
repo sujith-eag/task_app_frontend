@@ -1,22 +1,22 @@
-import TaskItem from './TaskItem.jsx';
-import { getTasks } from '../taskSlice.js';
-
 import { useEffect, useState, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { toast } from 'react-toastify';
 
-import { Box, Typography, Paper, FormControl, InputLabel, 
-  Select, MenuItem, CircularProgress, Stack, Collapse } from '@mui/material';
-import FilterListIcon from '@mui/icons-material/FilterList';
+import { getTasks } from '../taskSlice.js';
+import { toast } from 'react-toastify';
+import TaskItem from './TaskItem.jsx';
+import TaskFilters from './TaskFilters.jsx';
+
+import { Box, Typography, CircularProgress, Collapse } from "@mui/material";
+
 import { TransitionGroup } from 'react-transition-group';
 
 const TaskList = () => {
   const dispatch = useDispatch();
   const { tasks, isLoading, isError, message } = useSelector((state) => state.tasks);
-  
-  const taskIds = useMemo(()=> tasks.map((t=> t._id)), [tasks] );   // Creating array of ids to pass to TaskItem
+  const taskIds = useMemo(() => tasks.map((t) => t._id), [tasks]);
   // This ensures the taskIds array is stable unless the tasks themselves change.
-  
+
+  // State and handlers live in the parent component
   const [filters, setFilters] = useState({
     status: '',
     priority: '',
@@ -24,11 +24,14 @@ const TaskList = () => {
   const [sortBy, setSortBy] = useState('createdAt:desc');
 
   useEffect(() => {
-    const filterData = { sortBy };
-    if (filters.status) filterData.status = filters.status;
-    if (filters.priority) filterData.priority = filters.priority;
-    dispatch(getTasks(filterData));
-  }, [dispatch, filters.status, filters.priority, sortBy]);
+    if (tasks.length === 0) {
+      const filterData = { sortBy };
+      if (filters.status) filterData.status = filters.status;
+      if (filters.priority) filterData.priority = filters.priority;
+    
+      dispatch(getTasks(filterData));
+  }
+  }, [dispatch, tasks.length, filters.status, filters.priority, sortBy]);
 
   useEffect(() => {
     if (isError) { toast.error(message); }
@@ -41,13 +44,13 @@ const TaskList = () => {
     }));
   };
 
+  const handleSortChange = (e) => {
+    setSortBy(e.target.value);
+  };
+
   if (isLoading) {
     return (
-      <Box sx={{ 
-          display: 'flex', 
-          justifyContent: 'center', 
-          mt: 4 
-        }}>
+      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
         <CircularProgress />
       </Box>
     );
@@ -55,116 +58,35 @@ const TaskList = () => {
 
   return (
     <Box sx={{ width: '100%' }}>
+      {/* Render the TaskFilters component and pass props */}
+      <TaskFilters
+        filters={filters}
+        sortBy={sortBy}
+        onFilterChange={handleFilterChange}
+        onSortChange={handleSortChange}
+      />
 
-      {/* --- FILTER SECTION --- */}
-        <Paper elevation={2} sx={{ p: { xs: 2, sm: 3 }, mb: 4 }}>
-        <Box sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: 2,
-        }}>
-          
-          {/* LEFT SIDE: Title */}
-          <Stack direction="row" spacing={1} alignItems="center">
-            <FilterListIcon color="action" />
-            <Typography variant="h6">
-              Filter & Sort
-            </Typography>
-          </Stack>
-
-          {/* RIGHT SIDE: Controls grouped together */}
-          <Stack direction="row" spacing={2} sx={{ flexWrap: 'wrap', gap: 2 }}>
-            <FormControl size="small" sx={{ minWidth: 120 }}>
-              <InputLabel id="status-select-label">Status</InputLabel>
-              <Select
-                labelId="status-select-label"
-                name="status"
-                id="status-select"
-                value={filters.status}
-                label="Status"
-                onChange={handleFilterChange}
-              >
-                <MenuItem value=""><em>All</em></MenuItem>
-                <MenuItem value="To Do">To Do</MenuItem>
-                <MenuItem value="In Progress">In Progress</MenuItem>
-                <MenuItem value="Done">Done</MenuItem>
-              </Select>
-            </FormControl>
-
-            <FormControl size="small" sx={{ minWidth: 120 }}>
-              <InputLabel id="priority-select-label">Priority</InputLabel>
-              <Select
-                labelId="priority-select-label"
-                name="priority"
-                value={filters.priority}
-                id="priority-select"
-                label="Priority"
-                onChange={handleFilterChange}
-              >
-                <MenuItem value=""><em>All</em></MenuItem>
-                <MenuItem value="Low">Low</MenuItem>
-                <MenuItem value="Medium">Medium</MenuItem>
-                <MenuItem value="High">High</MenuItem>
-              </Select>
-            </FormControl>
-
-            <FormControl size="small" sx={{ minWidth: 150 }}>
-              <InputLabel id="sort-by-select-label">Sort By</InputLabel>
-              <Select
-                labelId="sort-by-select-label"
-                name="sortBy"
-                value={sortBy}
-                id="sort-by-select"
-                label="Sort By"
-                onChange={(e) => setSortBy(e.target.value)}
-              >
-                <MenuItem value="createdAt:desc">Newest First</MenuItem>
-                <MenuItem value="createdAt:asc">Oldest First</MenuItem>
-                <MenuItem value="dueDate:asc">Due Date</MenuItem>
-                <MenuItem value="priority">Priority</MenuItem>
-              </Select>
-            </FormControl>
-          </Stack>
-        </Box>
-      </Paper>
-
-
-    {/* --- CONTENT SECTION --- */}
+      {/* --- CONTENT SECTION --- */}
       <Box>
         {tasks.length > 0 ? (
-          <TransitionGroup
-            component={Box}
+          <TransitionGroup 
+            component={Box} 
             sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}
-          >
+            >
             {taskIds.map((id) => (
-              <Collapse
-                key={id}
+              <Collapse 
+                key={id} 
                 sx={{
                   width: { xs: '100%', md: 'calc(50% - 8px)' },
                 }}
-              >
+                >
                 <TaskItem taskId={id} />
               </Collapse>
             ))}
-          </TransitionGroup>          
-                          
-      // <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
-      //     {taskIds.map((id) => (
-      //       <Box
-      //         key={id}
-      //         sx={{
-      //           width: { xs: '100%', md: 'calc(50% - 8px)' }
-      //         }}
-      //       >
-      //         <TaskItem taskId={id} /> 
-      //       </Box>
-      //     ))}
-      // </Box>
-
-) : (
-        
+          </TransitionGroup>
+          
+        ) : (
+          
           <Typography 
             variant="h6" 
             align="center" 
@@ -174,7 +96,6 @@ const TaskList = () => {
           </Typography>
         )}        
       </Box>
-
     </Box>
   );
 };

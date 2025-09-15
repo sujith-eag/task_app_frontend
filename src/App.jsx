@@ -9,6 +9,7 @@ import LoginPage from './pages/LoginPage.jsx';
 import RegisterPage from './pages/RegisterPage.jsx';
 import ForgotPasswordPage from './pages/ForgotPasswordPage.jsx';
 import ResetPasswordPage from './pages/ResetPasswordPage.jsx'; 
+import NotFoundPage from './pages/NotFoundPage.jsx';
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -38,13 +39,26 @@ function App() {
             <Route path="/dashboard" element={<PrivateRoute />}>
               <Route path="/dashboard" element={<Dashboard />} />
             </Route>
+            
+            <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </Box>    
         
         <Footer />
         </Box>
       </Router>
-      <ToastContainer />
+      <ToastContainer 
+        position="bottom-center"
+        autoClose={2000} // 2 seconds
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover={false}
+        theme="colored"
+      />
     </>
   );
 }

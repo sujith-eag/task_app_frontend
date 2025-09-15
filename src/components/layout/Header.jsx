@@ -15,6 +15,7 @@ import { FaSignInAlt, FaSignOutAlt, FaUser } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 
+import { toast } from 'react-toastify';
 
 const Header = () => {
   const theme = useTheme(); // Get current theme
@@ -39,11 +40,15 @@ const Header = () => {
   };
 
   const onLogout = () => {
+    const userName = user?.name;
+    
     dispatch(logout());
     dispatch(resetAuth());
     dispatch(resetTasks());
     handleMenuClose();
+    toast.success(`Goodbye, ${userName || 'User'}!`);
     navigate('/');
+
   };
 
   return (
@@ -56,33 +61,52 @@ const Header = () => {
 
     <Toolbar 
       sx={{ minHeight: { xs: 56, md: 64 }}}>
-      <Link to='/' style={{ textDecoration: 'none', color: 'inherit', display: 'flex', alignItems: 'center' }}>
+      <Link 
+        to='/' 
+        style={{ 
+            textDecoration: 'none', 
+            color: 'inherit', 
+            display: 'flex', 
+            alignItems: 'center' 
+            }}>
 
           <Box
             component="img"
             src={eagleLogo}
             alt="Eagle Tasks Logo"
-            // 3. Responsive logo height
-            sx={{ height: { xs: 35, md: 45 }, mr: 1.5, transition: 'height 0.3s' }}
-          />
+            // Responsive logo height
+            sx={{ 
+                height: { xs: 35, md: 45 }, 
+                mr: 1.5, 
+                transition: 'height 0.3s' 
+              }}/>
           <Typography
             variant="h6"
             component="div"
             noWrap
-            // 4. Responsive font size for the title
-            sx={{ fontSize: { xs: '1.1rem', md: '1.5rem' }, transition: 'font-size 0.3s' }}
-          >
+            // Responsive font size for the title
+            sx={{ 
+                fontSize: { xs: '1.1rem', md: '1.5rem' }, 
+                transition: 'font-size 0.3s' 
+              }}>
             Eagle Tasks
           </Typography>
         </Link>
 
-        {/* This empty Box is now the flexible spacer */}
+        {/* Empty Box as flexible spacer */}
         <Box sx={{ flexGrow: 1 }} />
 
 
         {/* Grouping the navigation buttons in a Stack for consistent spacing */}
-        <Stack direction="row" spacing={1} alignItems="center">
-          <IconButton sx={{ ml: 1 }} onClick={colorMode.toggleColorMode} color="inherit">
+        <Stack 
+            direction="row" 
+            spacing={1} 
+            alignItems="center">
+          <IconButton 
+              sx={{ ml: 1 }} 
+              onClick={colorMode.toggleColorMode} 
+              color="inherit"
+              >
             {theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
           </IconButton>
 
@@ -102,7 +126,7 @@ const Header = () => {
                 </Stack>
               </Box>
               {/* Mobile Menu Icon */}
-              <Box sx={{ display: { xs: 'block', md: 'none' } }}>
+              <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
                 <IconButton color="inherit" onClick={handleMenuOpen}>
                   <MenuIcon />
                 </IconButton>
@@ -111,27 +135,43 @@ const Header = () => {
             
           ) : (
 
-            <Stack direction="row" spacing={1}>
-              <Button component={Link} to='/login' color="inherit" startIcon={<FaSignInAlt />} size={isDesktop ? 'medium' : 'small'}>Login</Button>
-              <Button component={Link} to='/register' color="inherit" startIcon={<FaUser />} size={isDesktop ? 'medium' : 'small'}>Register</Button>
-            </Stack>
+            <>
+              {/* Desktop Buttons for logged-out */}
+              <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+                <Stack direction="row" spacing={0.5}>
+                  <Button component={Link} to='/login' color="inherit" startIcon={<FaSignInAlt />} size={isDesktop ? 'medium' : 'small'}>Login</Button>
+                  <Button component={Link} to='/register' color="inherit" startIcon={<FaUser />} size={isDesktop ? 'medium' : 'small'}>Register</Button>
+                </Stack>
+              </Box>
+              {/* Mobile Menu Icon for logged-out */}
+              <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
+                <IconButton color="inherit" onClick={handleMenuOpen}><MenuIcon /></IconButton>
+              </Box>
+            </>
           )}
         </Stack>
       </Toolbar>
 
-      {/* Menu that opens */}
-      <Menu
-        anchorEl={anchorEl}
-        open={isMenuOpen}
-        onClose={handleMenuClose}
-      >
-        {location.pathname !== '/dashboard' && (
-          <MenuItem component={Link} to='/dashboard' onClick={handleMenuClose}>Dashboard</MenuItem>
+      {/* A SINGLE, DYNAMIC MENU */}
+      <Menu anchorEl={anchorEl} open={isMenuOpen} onClose={handleMenuClose}>
+        {user ? (
+          // Logged-in menu items
+          <div>
+            {location.pathname !== '/dashboard' && (
+              <MenuItem component={Link} to='/dashboard' onClick={handleMenuClose}>Dashboard</MenuItem>
+            )}
+            {user.role === 'admin' && (
+              <MenuItem component={Link} to='/admin' onClick={handleMenuClose}>Admin</MenuItem>
+            )}
+            <MenuItem onClick={onLogout}>Logout</MenuItem>
+          </div>
+        ) : (
+          // Logged-out menu items
+          <div>
+            <MenuItem component={Link} to='/login' onClick={handleMenuClose}>Login</MenuItem>
+            <MenuItem component={Link} to='/register' onClick={handleMenuClose}>Register</MenuItem>
+          </div>
         )}
-        {user?.role === 'admin' && (
-          <MenuItem component={Link} to='/admin' onClick={handleMenuClose}>Admin</MenuItem>
-        )}
-        <MenuItem onClick={onLogout}>Logout</MenuItem>
       </Menu>
     </AppBar>
   );
