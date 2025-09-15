@@ -1,13 +1,26 @@
 import { useCallback, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { addSubTask, updateSubTask, deleteSubTask, addSubTaskOptimistic, toggleSubTaskOptimistic, removeSubTaskOptimistic } from '../taskSlice.js';
+import {
+  addSubTask,
+  updateSubTask,
+  deleteSubTask,
+  addSubTaskOptimistic,
+  toggleSubTaskOptimistic,
+  removeSubTaskOptimistic
+} from '../taskSlice.js';
 
 // MUI Components & Icons
-import { Box, Typography, List, ListItem, ListItemText, Checkbox, TextField, IconButton, Popover, Stack, Button } from '@mui/material';
+import {
+  Box, Typography, List, ListItem, ListItemText,
+  Checkbox, TextField, IconButton, Popover, Stack, Button
+} from '@mui/material';
 import { DeleteOutline as DeleteOutlineIcon, Add as AddIcon } from '@mui/icons-material';
+
+const MAX_SUBTASK_LENGTH = 120;
 
 const SubTaskChecklist = ({ taskId, subTasks }) => {
   const [subTaskText, setSubTaskText] = useState('');
+  const [error, setError] = useState('');
   const [anchorEl, setAnchorEl] = useState(null);
   const [subTaskIdToDelete, setSubTaskIdToDelete] = useState(null);
 
@@ -15,20 +28,31 @@ const SubTaskChecklist = ({ taskId, subTasks }) => {
 
   const handleSubTaskSubmit = useCallback((e) => {
     e.preventDefault();
-    if (!subTaskText) return;
-    const payload = { taskId, subTaskData: { text: subTaskText } };
+
+    const trimmed = subTaskText.trim();
+
+    if (!trimmed) {
+      setError("Sub-task cannot be empty.");
+      return;
+    }
+    if (trimmed.length > MAX_SUBTASK_LENGTH) {
+      setError(`Sub-task cannot exceed ${MAX_SUBTASK_LENGTH} characters.`);
+      return;
+    }
+
+    const payload = { taskId, subTaskData: { text: trimmed } };
     dispatch(addSubTaskOptimistic(payload));
     dispatch(addSubTask(payload));
-    setSubTaskText('');
-  }, [dispatch, subTaskText, taskId]);
 
+    setSubTaskText('');
+    setError('');
+  }, [dispatch, subTaskText, taskId]);
 
   const handleToggleSubTask = useCallback((subTaskId, checked) => {
     const payload = { taskId, subTaskId };
     dispatch(toggleSubTaskOptimistic(payload));
     dispatch(updateSubTask({ ...payload, subTaskData: { completed: checked } }));
   }, [dispatch, taskId]);
-
 
   const handleSubTaskDeleteClick = (event, subTaskId) => {
     setAnchorEl(event.currentTarget);
@@ -54,46 +78,72 @@ const SubTaskChecklist = ({ taskId, subTasks }) => {
   return (
     <Box sx={{ mt: 2 }}>
       <Typography variant="subtitle1">Checklist</Typography>
+
       <List dense>
         {subTasks?.map((subTask) => (
-          <ListItem key={subTask._id} disablePadding secondaryAction={
-            <IconButton edge="end" aria-describedby={id} onClick={(e) => handleSubTaskDeleteClick(e, subTask._id)}>
-              <DeleteOutlineIcon />
-            </IconButton>
-          }>
+          <ListItem
+            key={subTask._id}
+            disablePadding
+            secondaryAction={
+              <IconButton edge="end" aria-describedby={id} onClick={(e) => handleSubTaskDeleteClick(e, subTask._id)}>
+                <DeleteOutlineIcon />
+              </IconButton>
+            }>
             <Checkbox
               edge="start"
               checked={subTask.completed}
               onChange={(e) => handleToggleSubTask(subTask._id, e.target.checked)}
             />
-            <ListItemText primary={subTask.text} sx={{ textDecoration: subTask.completed ? 'line-through' : 'none' }} />
+            <ListItemText
+              primary={subTask.text}
+              sx={{ textDecoration: subTask.completed ? 'line-through' : 'none' }}
+            />
           </ListItem>
         ))}
       </List>
+
+      {/* Add SubTask Field */}
       <Box component="form" onSubmit={handleSubTaskSubmit} sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
-        <TextField fullWidth variant="standard" size="small" placeholder="Add a new sub-task..." value={subTaskText} onChange={(e) => setSubTaskText(e.target.value)} />
-        <IconButton type="submit" color="primary"><AddIcon /></IconButton>
+        <TextField
+          fullWidth
+          variant="standard"
+          size="small"
+          placeholder="Add a new sub-task..."
+          value={subTaskText}
+          onChange={(e) => {
+            setSubTaskText(e.target.value);
+            if (e.target.value.length > MAX_SUBTASK_LENGTH) {
+              setError(`Max ${MAX_SUBTASK_LENGTH} characters allowed.`);
+            } else {
+              setError('');
+            }
+          }}
+          error={!!error}
+          helperText={error ? error : subTaskText.length > 1 ? `${subTaskText.length}/${MAX_SUBTASK_LENGTH}` : ""
+        }/>
+        <IconButton type="submit" color="primary" disabled={!subTaskText.trim() || !!error}>
+          <AddIcon />
+        </IconButton>
       </Box>
 
-    {/* The Popover component */}
-    <Popover
-      id={id}
-      open={open}
-      anchorEl={anchorEl}
-      onClose={handleSubTaskDeleteClose}
-      anchorOrigin={{
-        vertical: 'bottom',
-        horizontal: 'left',
-      }}
+      {/* Delete confirmation */}
+      <Popover
+        id={id}
+        open={open}
+        anchorEl={anchorEl}
+        onClose={handleSubTaskDeleteClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
       >
-      <Box sx={{ p: 2 }}>
-        <Typography sx={{ mb: 2 }}>Are you sure?</Typography>
-        <Stack direction="row" spacing={1}>
-          <Button size="small" variant="outlined" onClick={handleSubTaskDeleteClose}>Cancel</Button>
-          <Button size="small" variant="contained" color="error" onClick={handleSubTaskDeleteConfirm}>Confirm</Button>
-        </Stack>
-      </Box>
-    </Popover>
+        <Box sx={{ p: 2 }}>
+          <Typography sx={{ mb: 2 }}>Are you sure?</Typography>
+          <Stack direction="row" spacing={1}>
+            <Button size="small" variant="outlined" 
+                    onClick={handleSubTaskDeleteClose}>Cancel</Button>
+            <Button size="small" variant="contained" color="error" 
+                    onClick={handleSubTaskDeleteConfirm}>Confirm</Button>
+          </Stack>
+        </Box>
+      </Popover>
     </Box>
   );
 };

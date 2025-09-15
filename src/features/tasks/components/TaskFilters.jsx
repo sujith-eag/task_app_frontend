@@ -15,14 +15,32 @@ const TaskFilters = ({ filters, sortBy, onFilterChange, onSortChange }) => {
         gap: 2,
       }}>
         {/* LEFT SIDE: Title */}
-        <Stack direction="row" spacing={1} alignItems="center">
+        <Stack direction="row" spacing={1} alignItems="center">          
           <FilterListIcon color="action" />
           <Typography variant="h6">
             Filter & Sort
           </Typography>
         </Stack>
+
           {/* RIGHT SIDE: Controls grouped together */}
         <Stack direction="row" spacing={2} sx={{ flexWrap: 'wrap', gap: 2 }}>
+          <FormControl size="small" sx={{ minWidth: 150 }}>
+            <InputLabel id="sort-by-select-label">Sort By</InputLabel>
+            <Select
+              labelId="sort-by-select-label"
+              id="sort-by-select"
+              name="sortBy"
+              value={sortBy}
+              label="Sort By"
+              onChange={onSortChange}
+            >
+              <MenuItem value="createdAt:desc">Newest First</MenuItem>
+              <MenuItem value="createdAt:asc">Oldest First</MenuItem>
+              <MenuItem value="dueDate:asc">Due Date</MenuItem>
+              <MenuItem value="priority">Priority</MenuItem>
+            </Select>
+          </FormControl>
+
           <FormControl size="small" sx={{ minWidth: 120 }}>
             <InputLabel id="status-select-label">Status</InputLabel>
             <Select
@@ -54,23 +72,6 @@ const TaskFilters = ({ filters, sortBy, onFilterChange, onSortChange }) => {
               <MenuItem value="Low">Low</MenuItem>
               <MenuItem value="Medium">Medium</MenuItem>
               <MenuItem value="High">High</MenuItem>
-            </Select>
-          </FormControl>
-
-          <FormControl size="small" sx={{ minWidth: 150 }}>
-            <InputLabel id="sort-by-select-label">Sort By</InputLabel>
-            <Select
-              labelId="sort-by-select-label"
-              id="sort-by-select"
-              name="sortBy"
-              value={sortBy}
-              label="Sort By"
-              onChange={onSortChange}
-            >
-              <MenuItem value="createdAt:desc">Newest First</MenuItem>
-              <MenuItem value="createdAt:asc">Oldest First</MenuItem>
-              <MenuItem value="dueDate:asc">Due Date</MenuItem>
-              <MenuItem value="priority">Priority</MenuItem>
             </Select>
           </FormControl>
         </Stack>
