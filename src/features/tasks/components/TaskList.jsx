@@ -20,16 +20,28 @@ const TaskList = () => {
   });
   const [sortBy, setSortBy] = useState('createdAt:desc');
 
-  // Initial fetch (only if no tasks yet)
-  useEffect(() => {
-    if (tasks.length === 0) {
-      const filterData = { sortBy };
-      if (filters.status) filterData.status = filters.status;
-      if (filters.priority) filterData.priority = filters.priority;
+const [initialLoadDone, setInitialLoadDone] = useState(false);
 
-      dispatch(getTasks(filterData));
-    }
-  }, [dispatch, tasks.length, filters.status, filters.priority, sortBy]);
+useEffect(() => {
+  if (!initialLoadDone) {
+    const filterData = { sortBy };
+    if (filters.status) filterData.status = filters.status;
+    if (filters.priority) filterData.priority = filters.priority;
+
+    dispatch(getTasks(filterData)).finally(() => setInitialLoadDone(true));
+  }
+}, [dispatch, initialLoadDone, filters, sortBy]);
+
+  // Initial fetch (only if no tasks yet)
+  // useEffect(() => {
+  //   if (tasks.length === 0) {
+  //     const filterData = { sortBy };
+  //     if (filters.status) filterData.status = filters.status;
+  //     if (filters.priority) filterData.priority = filters.priority;
+
+  //     dispatch(getTasks(filterData));
+  //   }
+  // }, [dispatch, tasks.length, filters.status, filters.priority, sortBy]);
 
   // Error handling
   useEffect(() => {

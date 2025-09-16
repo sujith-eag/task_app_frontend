@@ -64,7 +64,7 @@ const TaskActions = ({ taskId, taskTitle, onOpenEdit }) => {
     
     deleteTimeoutRef.current = setTimeout(() =>{
       dispatch(deleteTask(taskId));
-    }, 3500);  
+    }, 4500);  
   }, [dispatch, taskId, taskTitle]);
 
   return (

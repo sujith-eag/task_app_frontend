@@ -18,7 +18,7 @@ const EditTaskModal = ({ task, open, onClose }) => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    dueDate: '',
+    dueDate: null,
     priority: 'Medium',
     tags: '',
   });
@@ -31,7 +31,7 @@ const EditTaskModal = ({ task, open, onClose }) => {
       setFormData({
         title: task.title || '',
         description: task.description || '',
-        dueDate: task.dueDate ? new Date(task.dueDate).toISOString().split('T')[0] : '',
+        dueDate: task.dueDate ? new Date(task.dueDate) : null,
         priority: task.priority || 'Medium',
         tags: task.tags?.join(', ') || '',
       });
@@ -86,7 +86,10 @@ const EditTaskModal = ({ task, open, onClose }) => {
       .filter(tag => tag.length > 0 && tag.length <= MAX_TAG_LENGTH)
       .slice(0, MAX_TAGS);
 
-    const taskData = { ...formData, tags: sanitizedTags };
+    const taskData = { 
+        ...formData,
+        dueDate: formData.dueDate ? formData.dueDate.toISOString() : null,
+        tags: sanitizedTags };
     dispatch(updateTask({ taskId: task._id, taskData }));
     onClose();
   };
@@ -124,7 +127,7 @@ const EditTaskModal = ({ task, open, onClose }) => {
             <Box sx={{ flex: 1 }}>
                 <DatePicker
                 label="Due Date"
-                value={formData.dueDate ? new Date(formData.dueDate) : null}
+                value={formData.dueDate}
                 onChange={(newDate) => {
                     if (newDate && newDate < new Date()) {
                     setErrors((prev) => ({ ...prev, dueDate: "Due date cannot be in the past." }));
@@ -133,9 +136,10 @@ const EditTaskModal = ({ task, open, onClose }) => {
                     setErrors((prev) => ({ ...prev, dueDate: "" }));
                     setFormData((prev) => ({
                     ...prev,
-                    dueDate: newDate ? newDate.toISOString().split('T')[0] : '',
+                    dueDate: newDate,
                     }));
                 }}
+                format='dd/MM/yyyy'
                 slotProps={{
                     textField: {
                     fullWidth: true,
@@ -148,14 +152,14 @@ const EditTaskModal = ({ task, open, onClose }) => {
 
             <Box sx={{ flex: 1 }}>
                 <Select
-                fullWidth
-                name="priority"
-                value={formData.priority}
-                onChange={onChange}
-                >
-                <MenuItem value="Low">Low</MenuItem>
-                <MenuItem value="Medium">Medium</MenuItem>
-                <MenuItem value="High">High</MenuItem>
+                  fullWidth
+                  name="priority"
+                  value={formData.priority}
+                  onChange={onChange}
+                  >
+                  <MenuItem value="Low">Low</MenuItem>
+                  <MenuItem value="Medium">Medium</MenuItem>
+                  <MenuItem value="High">High</MenuItem>
                 </Select>
             </Box>
             </Box>

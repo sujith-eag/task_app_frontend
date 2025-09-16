@@ -21,9 +21,10 @@ const TaskForm = () => {
     description: '',
     dueDate: null,
     priority: 'Medium',
+    status: 'To Do',
     tags: '',
   });
-  const { title, description, dueDate, priority, tags } = formData;
+  const { title, description, dueDate, priority, status, tags } = formData;
 
   const [errors, setErrors] = useState({}); // for live feedback
 
@@ -65,7 +66,7 @@ const TaskForm = () => {
     }
     setFormData((prevState) => ({ 
         ...prevState, 
-        dueDate: newDate 
+        dueDate: newDate ? new Date(newDate) : null
     }));
   };
 
@@ -93,8 +94,9 @@ const TaskForm = () => {
     const taskData = { 
         title, 
         description, 
-        dueDate, 
-        priority, 
+        dueDate: dueDate ? dueDate.toISOString() : null,
+        priority,
+        status,
         tags: sanitizedTags 
     };
 
@@ -106,9 +108,11 @@ const TaskForm = () => {
         title: '', 
         description: '', 
         dueDate: null, 
-        priority: 'Medium', 
-        tags: '' });
-        setErrors({});
+        priority: 'Medium',
+        status: 'To Do',
+        tags: '' 
+      });
+      setErrors({});
   };
 
   return (

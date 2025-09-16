@@ -27,7 +27,7 @@ const Register = () => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
-  const isNameValid = name.trim().length > 5;
+  const isNameValid = name.trim().length >= 5;
   const isEmailValid = emailRegex.test(email);
   const isPasswordValid = passwordRegex.test(password);
   const isPasswordsMatch = password === password2;
