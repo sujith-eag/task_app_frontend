@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import authService from './authServices.js'
+import { updateProfile, updateAvatar } from '../profile/profileSlice.js'; // actions from profileSlice
 
 // Get user from localStorage
 const user = JSON.parse(localStorage.getItem('user'))
@@ -165,6 +166,21 @@ export const authSlice = createSlice({
         state.isError = true
         state.message = action.payload
       })
+      
+      
+      // Cases to listen for successful profile updates
+        .addCase(updateProfile.fulfilled, (state, action) => {
+            // The backend returns the updated user object
+            if (state.user) {
+                state.user = { ...state.user, ...action.payload };
+            }
+        })
+        .addCase(updateAvatar.fulfilled, (state, action) => {
+            // The backend returns { avatar: 'newUrl' },
+             if (state.user) {
+                state.user.avatar = action.payload.avatar;
+            }
+        });
   },
 })
 

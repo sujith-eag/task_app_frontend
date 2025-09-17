@@ -10,6 +10,8 @@ import RegisterPage from './pages/RegisterPage.jsx';
 import ForgotPasswordPage from './pages/ForgotPasswordPage.jsx';
 import ResetPasswordPage from './pages/ResetPasswordPage.jsx'; 
 import NotFoundPage from './pages/NotFoundPage.jsx';
+import ProfilePage from './pages/ProfilePage.jsx';
+import FilesPage from './pages/FilePage.jsx';
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -37,10 +39,17 @@ function App() {
             <Route path="/resetpassword/:token" element={<ResetPasswordPage />} />
 
             <Route path="/dashboard" element={<PrivateRoute />}>
-              <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/dashboard" element={<Dashboard />} />
             </Route>
-            
+            <Route path='/profile' element={<PrivateRoute />}>
+                <Route path='/profile' element={<ProfilePage />} />
+            </Route>
+
+            <Route path='/files' element={<PrivateRoute />}>
+                <Route path='/files' element={<FilesPage />} />
+            </Route>
             <Route path="*" element={<NotFoundPage />} />
+
           </Routes>
         </Box>    
         
