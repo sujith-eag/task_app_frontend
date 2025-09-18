@@ -4,9 +4,9 @@ import { Link as RouterLink } from 'react-router-dom';
 import { Container, Typography, Box, Button, Divider } from '@mui/material';
 
 // We will create these components in the next steps
-import UpdateProfileForm from '../features/profile/components/UpdateProfileForm';
-import PreferencesSection from '../features/profile/components/PreferencesSection';
-import PasswordForm from '../features/profile/components/PasswordForm';
+import UpdateProfileForm from '../features/profile/components/UpdateProfileForm.jsx';
+import PreferencesSection from '../features/profile/components/PreferencesSection.jsx';
+import PasswordForm from '../features/profile/components/PasswordForm.jsx';
 
 const ProfilePage = () => {
     // Get the latest user data from the authSlice in the Redux store

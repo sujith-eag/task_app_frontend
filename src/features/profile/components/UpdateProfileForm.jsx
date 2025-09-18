@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Box, TextField, Button, Avatar, Badge, IconButton, CircularProgress } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
-import { updateProfile, updateAvatar, resetProfileStatus } from '../profileSlice';
+import { updateProfile, updateAvatar, resetProfileStatus } from '../profileSlice.js';
 import { toast } from 'react-toastify';
 
 const UpdateProfileForm = ({ user }) => {

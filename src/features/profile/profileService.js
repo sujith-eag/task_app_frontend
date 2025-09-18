@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-const API_URL = 'https://task-app-backend-8j57.onrender.com/api/users/';
-// const API_URL = '/api/users/'
+const API_URL = '/api/users/'
+// const API_URL = 'https://task-app-backend-8j57.onrender.com/api/users/';
 
 // Update user profile (name, bio, preferences)
 const updateProfile = async (profileData, token) => {

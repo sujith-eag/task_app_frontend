@@ -167,20 +167,24 @@ export const authSlice = createSlice({
         state.message = action.payload
       })
       
-      
       // Cases to listen for successful profile updates
-        .addCase(updateProfile.fulfilled, (state, action) => {
-            // The backend returns the updated user object
+      .addCase(updateProfile.fulfilled, (state, action) => {
+          // The backend returns the updated user object
+          if (state.user) {
+              
+            const updatedUser = { ...state.user, ...action.payload };
+            state.user = updatedUser;
+            localStorage.setItem('user', JSON.stringify(updatedUser));
+        }
+      })
+      .addCase(updateAvatar.fulfilled, (state, action) => {
+          // The backend returns { avatar: 'newUrl' },
             if (state.user) {
-                state.user = { ...state.user, ...action.payload };
-            }
-        })
-        .addCase(updateAvatar.fulfilled, (state, action) => {
-            // The backend returns { avatar: 'newUrl' },
-             if (state.user) {
-                state.user.avatar = action.payload.avatar;
-            }
-        });
+              const updatedUser = { ...state.user, avatar: action.payload.avatar };
+              state.user = updatedUser;
+              localStorage.setItem('user', JSON.stringify(updatedUser));
+          }
+      });
   },
 })
 
