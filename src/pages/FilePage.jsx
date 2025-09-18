@@ -1,47 +1,65 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Container, Typography, Box, CircularProgress, Alert } from '@mui/material';
+import {
+    Container, Typography, Box, CircularProgress, Alert, Button, Collapse, Paper
+} from '@mui/material';
+import UploadFileIcon from '@mui/icons-material/UploadFile';
 import { getFiles } from '../features/files/fileSlice';
 
-// We will create these components in the next steps
-import FileUpload from '../features/files/components/FileUpload.jsx';
-import FileList from '../features/files/components/FileList.jsx';
+import FileUpload from '../features/files/components/FileUpload';
+import FileList from '../features/files/components/FileList';
 
 const FilesPage = () => {
     const dispatch = useDispatch();
-
-    // Select the necessary state from the fileSlice
     const { files, status, message } = useSelector((state) => state.files);
+    
+    // State to manage the visibility of the uploader
+    const [isUploaderOpen, setIsUploaderOpen] = useState(false);
 
-    // Fetch the user's files when the component mounts
     useEffect(() => {
-        dispatch(getFiles());
-    }, [dispatch]);
+        if (status === 'idle') {
+            dispatch(getFiles());
+        }
+    }, [status, dispatch]);
+
+    let content;
+    if (status === 'loading' && files.length === 0) {
+        content = (
+            <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
+                <CircularProgress />
+            </Box>
+        );
+    } else if (status === 'failed') {
+        content = <Alert severity="error">{message}</Alert>;
+    } else {
+        content = <FileList files={files} />;
+    }
 
     return (
         <Container maxWidth="lg">
             <Box sx={{ my: 4 }}>
-                <Typography variant="h4" component="h1" gutterBottom>
-                    File Manager
-                </Typography>
-
-                {/* The component for uploading new files */}
-                <Box sx={{ mb: 4 }}>
-                    <FileUpload />
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                    <Typography variant="h4" component="h1">
+                        File Manager
+                    </Typography>
+                    {/* --- NEW: The Upload Button --- */}
+                    <Button
+                        variant="contained"
+                        startIcon={<UploadFileIcon />}
+                        onClick={() => setIsUploaderOpen(!isUploaderOpen)}
+                    >
+                        Upload Files
+                    </Button>
                 </Box>
 
-                {/* Conditionally render the file list based on the API call status */}
-                {status === 'loading' && (
-                    <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
-                        <CircularProgress />
-                    </Box>
-                )}
-                {status === 'failed' && (
-                    <Alert severity="error">{message}</Alert>
-                )}
-                {status === 'succeeded' && (
-                    <FileList files={files} />
-                )}
+                {/* --- NEW: The Collapsible Uploader --- */}
+                <Collapse in={isUploaderOpen}>
+                    <Paper variant="outlined" sx={{ p: 2, mb: 4 }}>
+                        <FileUpload />
+                    </Paper>
+                </Collapse>
+                
+                {content}
             </Box>
         </Container>
     );

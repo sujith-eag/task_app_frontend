@@ -4,7 +4,7 @@ import { Box, Typography, TextField, Button, CircularProgress } from '@mui/mater
 import { changePassword, resetProfileStatus } from '../profileSlice';
 import { toast } from 'react-toastify';
 
-const PasswordForm = () => {
+const PasswordForm = (onSuccess) => {
     const dispatch = useDispatch();
     const { passwordStatus, message } = useSelector((state) => state.profile);
 
@@ -25,12 +25,13 @@ const PasswordForm = () => {
             toast.success(message);
             // Clear the form fields on success
             setFormData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+            onSuccess();
         }
         // Reset the status in the slice after handling the message
         if (passwordStatus !== 'idle') {
             dispatch(resetProfileStatus());
         }
-    }, [passwordStatus, message, dispatch]);
+    }, [passwordStatus, message, dispatch, onSuccess]);
 
     const handleChange = (e) => {
         setFormData((prevState) => ({
