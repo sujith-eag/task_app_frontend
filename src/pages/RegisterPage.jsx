@@ -65,18 +65,19 @@ const Register = () => {
     if (isError) {
       toast.error(message);
     }
-    if (isSuccess && user) {
-      toast.success(`Successfully registered! Welcome ${user.name}!`);
-      navigate('/dashboard');
-    } else if (user || isSuccess){
-      navigate('/dashboard');
+    if (isSuccess ) {
+      toast.success(message, {
+          autoClose: false, // persistent
+          closeOnClick: true,
+          draggable: false,
+      });
     }
     
   return () => {
       dispatch(reset());
   };
   
-  }, [user, isError, isSuccess, message, navigate, dispatch]);
+  }, [isError, isSuccess, message, dispatch]);
 
   
 return (

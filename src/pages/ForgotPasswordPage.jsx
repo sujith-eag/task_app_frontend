@@ -25,14 +25,17 @@ const ForgotPassword = () => {
       if (isError) {
           toast.error(message);
       }
-      if (isSuccess) {
-          toast.success(message || 'Password reset link sent to your email!');
-          navigate('/login');
-      }
-      
-      return () => {
+      if (isSuccess ) {
+        toast.success(message || 'Password reset link sent to your email!', {
+          autoClose: false, // persistent
+          closeOnClick: true,
+          draggable: false,
+        });
+        navigate('/login');
+        return () => {
           dispatch(reset());
-      };
+        };
+      }
   }, [isError, isSuccess, message, navigate, dispatch]);
 
   const onSubmit = (e) => {
