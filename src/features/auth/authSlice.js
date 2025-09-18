@@ -82,6 +82,16 @@ export const resetPassword = createAsyncThunk(
     }
   }
 )
+export const verifyEmail = createAsyncThunk(
+  'auth/verifyEmail', 
+  async (token, thunkAPI) => {
+	try {
+		return await authService.verifyEmail(token);
+	} catch (error) {
+		const message = (error.response?.data?.message) || error.message || error.toString();
+		return thunkAPI.rejectWithValue(message);
+	}
+});
 
 
 export const authSlice = createSlice({
@@ -185,6 +195,20 @@ export const authSlice = createSlice({
               state.user = updatedUser;
               localStorage.setItem('user', JSON.stringify(updatedUser));
           }
+      })
+
+      .addCase(verifyEmail.pending, (state) => {
+          state.isLoading = true;
+      })
+      .addCase(verifyEmail.fulfilled, (state, action) => {
+          state.isLoading = false;
+          state.isSuccess = true;
+          state.message = action.payload.message;
+      })
+      .addCase(verifyEmail.rejected, (state, action) => {
+          state.isLoading = false;
+          state.isError = true;
+          state.message = action.payload;
       });
   },
 })

@@ -23,11 +23,16 @@ const login = async (userData) => {
   return response.data
 }
 
-
 // Logout user
 const logout = () => {
   localStorage.removeItem('user')
 }
+
+// Verify user email
+const verifyEmail = async (token) => {
+  const response = await axios.get(API_URL + 'verifyemail/' + token);
+  return response.data;
+};
 
 
 // --- NEW PASSWORD RESET FUNCTIONS ---
@@ -41,12 +46,15 @@ const forgotPassword = async (userData) => {
 
 // Reset password using the token
 const resetPassword = async (resetData) => {
-  const response = await axios.put(API_URL + 'resetpassword/' + resetData.token, {
-    password: resetData.password,
-  })
-  // The backend will return a success message
-  return response.data
-}
+  const response = await axios.put(
+    API_URL + 'resetpassword/' + resetData.token,
+    {
+      password: resetData.password,
+      confirmPassword: resetData.confirmPassword,
+    }
+  );
+  return response.data;
+};
 
 const authService = {
   register,
@@ -54,6 +62,7 @@ const authService = {
   login,
   forgotPassword,
   resetPassword,
+  verifyEmail,
 }
 
 export default authService

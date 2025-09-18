@@ -12,6 +12,7 @@ import ResetPasswordPage from './pages/ResetPasswordPage.jsx';
 import NotFoundPage from './pages/NotFoundPage.jsx';
 import ProfilePage from './pages/ProfilePage.jsx';
 import FilesPage from './pages/FilePage.jsx';
+import VerifyEmailPage from './pages/VerifyEmailPage.jsx';
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -37,6 +38,7 @@ function App() {
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/forgotpassword" element={<ForgotPasswordPage />} />
             <Route path="/resetpassword/:token" element={<ResetPasswordPage />} />
+            <Route path='/verifyemail/:token' element={<VerifyEmailPage />} />
 
             <Route path="/dashboard" element={<PrivateRoute />}>
                 <Route path="/dashboard" element={<Dashboard />} />
