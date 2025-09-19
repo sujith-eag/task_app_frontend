@@ -6,11 +6,11 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
+      // Requests to any path starting with /api will be forwarded
       '/api': {
-        // "/api": "https://task-app-backend-8j57.onrender.com"
         target: 'http://localhost:8000',
         changeOrigin: true,
-        secure: false,      
+        secure: false,
       },
     }
   }

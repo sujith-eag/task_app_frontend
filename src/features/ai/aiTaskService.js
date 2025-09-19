@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-const API_URL = 'https://task-app-backend-8j57.onrender.com/api/ai/'
-// const API_URL = '/api/ai/'; // Base URL for AI routes
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_URL = `${API_BASE_URL}/ai/`;
 
 // Generate tasks from a prompt using the AI service
 const fetchAIPlanPreview = async (requestData, token) => {
