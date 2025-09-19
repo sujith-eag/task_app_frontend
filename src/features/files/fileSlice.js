@@ -78,11 +78,13 @@ export const fileSlice = createSlice({
             })
             .addCase(getFiles.fulfilled, (state, action) => {
                 state.status = 'succeeded';
-                state.files = action.payload;
+                state.files = Array.isArray(action.payload) ? action.payload : [];
+            // If the API returns a falsy value (null, undefined, etc.), default to an empty array.
             })
             .addCase(getFiles.rejected, (state, action) => {
                 state.status = 'failed';
                 state.message = action.payload;
+                state.files = []; 
             })
             // Upload Files
             .addCase(uploadFiles.fulfilled, (state, action) => {
