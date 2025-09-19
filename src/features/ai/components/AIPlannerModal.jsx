@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
     Modal, Box, Typography, Button, CircularProgress, Alert,
     Stack, TextField, Paper, Divider, Chip, Dialog, DialogActions,
-    DialogContent, DialogContentText, DialogTitle, Tooltip, IconButton
+    DialogContent, DialogContentText, DialogTitle,
 } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
@@ -55,12 +55,24 @@ const AIPlannerModal = ({ isOpen, onClose }) => {
     }, [status, dispatch, onClose]);
 
     
-    const handleEditableChange = (index, field, value) => {
-        const newTasks = [...editableTasks];
-        newTasks[index][field] = value;
-        setEditableTasks(newTasks);
-    };
+    // const handleEditableChange = (index, field, value) => {
+    //     const newTasks = [...editableTasks];
+    //     newTasks[index][field] = value;
+    //     setEditableTasks(newTasks);
+    // };
 
+const handleEditableChange = (index, field, value) => {
+    const newTasks = editableTasks.map((task, i) => {
+        // If this is the task we want to update...
+        if (i === index) {
+            // ...return a NEW object with the updated field.
+            return { ...task, [field]: value };
+        }
+        // Otherwise, return the original, unchanged task.
+        return task;
+    });
+    setEditableTasks(newTasks);
+};
     const handleRefine = (e) => {
         e.preventDefault();
         if(!refinementPrompt.trim()) return;
@@ -122,7 +134,7 @@ const renderContent = () => {
         return (
             <Stack spacing={2} sx={{ mt: 1 }}>
                 {editableTasks.map((task, index) => (
-                    <Paper key={uuidv4()} variant="outlined" sx={{ p: 2 }}>
+                    <Paper key={index} variant="outlined" sx={{ p: 2 }}>
                         <TextField
                             fullWidth
                             label="Task Title"
