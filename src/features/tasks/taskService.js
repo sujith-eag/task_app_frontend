@@ -15,6 +15,13 @@ const createTask = async (taskData, token) => {
   return response.data
 }
 
+const createBulkTasks = async (tasksData, token) => {
+  const config = { headers: { Authorization: `Bearer ${token}` } };
+  // Calls the bulk endpoint
+  const response = await axios.post('/api/tasks/bulk', tasksData, config);
+  return response.data;
+};
+
 
 // Get user tasks (now with filtering and sorting)
 const getTasks = async (filterData = {}, token) => {
@@ -88,7 +95,7 @@ const deleteSubTask = async (taskId, subTaskId, token) => {
 
 
 const taskService = {
-  createTask,
+  createTask, createBulkTasks,
   getTasks,
   updateTask,
   deleteTask,

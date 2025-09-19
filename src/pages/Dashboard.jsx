@@ -1,6 +1,7 @@
 import TaskForm from '../features/tasks/components/TaskForm.jsx';
 import TaskList from '../features/tasks/components/TaskList.jsx';
 import SummaryCards from '../features/tasks/components/SummaryCards.jsx';
+import AITaskGenerator from '../features/ai/components/AITaskGenerator.jsx';
 
 import { useSelector } from 'react-redux';
 
@@ -75,7 +76,11 @@ const Dashboard = () => {
         flexShrink: 0 // Prevents this column from shrinking
       }}>
 
+          <AITaskGenerator />
+
           <TaskForm />
+          
+                
 
         </Box>
         

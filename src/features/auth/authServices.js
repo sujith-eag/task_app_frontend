@@ -7,9 +7,9 @@ const API_URL = 'https://task-app-backend-8j57.onrender.com/api/users/'
 // Register user
 const register = async (userData) => {
   const response = await axios.post(API_URL + 'register', userData)
+  // No LONGER NEEDED as NO User Created When Registered
   // if (response.data) {
-  //   localStorage.setItem('user', JSON.stringify(response.data))
-  // }  No LONGER NEEDED as NO User Created When Registered
+  //   localStorage.setItem('user', JSON.stringify(response.data)) }  
   return response.data
 }
 

@@ -9,6 +9,8 @@ import FolderSharedIcon from '@mui/icons-material/FolderShared';
 import ContrastIcon from '@mui/icons-material/Contrast';
 import GroupsIcon from '@mui/icons-material/Groups';
 import VpnKeyIcon from '@mui/icons-material/VpnKey';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import SecurityIcon from '@mui/icons-material/Security';
 
 
 const FeaturesSection = () => {
@@ -16,32 +18,37 @@ const FeaturesSection = () => {
     const features = [
         {
             title: 'Comprehensive Task Management',
-            description: 'Organize your workflow with priorities, due dates, sub-tasks, and smart filters.',
+            description: 'Organize your workflow with priorities, due dates, sub-tasks, and powerful filtering options.',
             icon: <PlaylistAddCheckIcon fontSize="large" />,
         },
         {
-            title: 'Customizable User Profiles',
-            description: 'Personalize your account with a profile picture, bio, and individual theme preferences.',
-            icon: <AccountCircleIcon fontSize="large" />,
+            title: 'AI-Powered Planning',
+            description: 'Describe a goal, and let our AI assistant generate a detailed, actionable plan for you to review, refine, and adopt.',
+            icon: <AutoAwesomeIcon fontSize="large" />,
         },
         {
             title: 'Secure File Storage & Sharing',
-            description: 'Upload files to the cloud and share them securely with specific users, with full control over access.',
+            description: 'Upload documents to the cloud and securely share them with other users, with full control over who has access.',
             icon: <FolderSharedIcon fontSize="large" />,
         },
         {
-            title: 'Light & Dark Mode',
-            description: 'Switch between a light or dark theme for a comfortable viewing experience, day or night.',
-            icon: <ContrastIcon fontSize="large" />,
+            title: 'Robust Security',
+            description: 'Your account is protected with mandatory email verification, brute-force login detection, and secure password management.',
+            icon: <SecurityIcon fontSize="large" />,
         },
         {
-            title: 'Team Collaboration (Coming Soon)',
-            description: 'Communicate with team members via real-time messaging and share files with entire groups.',
+            title: 'Customizable Profiles',
+            description: 'Personalize your account with a profile picture, a detailed bio, and individual collaboration preferences.',
+            icon: <AccountCircleIcon fontSize="large" />,
+        },
+        {
+            title: 'Real-Time Collaboration (Coming Soon)',
+            description: 'Communicate directly with team members via private messaging and collaborate on projects in real-time.',
             icon: <GroupsIcon fontSize="large" />,
         },
         {
             title: 'Advanced Security (Coming Soon)',
-            description: 'Log in with Google (OAuth 2.0) and verify your account via email for an extra layer of security.',
+            description: 'Log in with Google (OAuth 2.0) and httpOnly cookie for an extra layer of security.',
             icon: <VpnKeyIcon fontSize="large" />,
         },
     ];

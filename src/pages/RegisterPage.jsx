@@ -62,10 +62,13 @@ const Register = () => {
 }; 
 
   useEffect(() => {
+    if (user) {
+      navigate('/dashboard');
+    }
     if (isError) {
       toast.error(message);
     }
-    if (isSuccess ) {
+    if (isSuccess) {
       toast.success(message, {
           autoClose: false, // persistent
           closeOnClick: true,

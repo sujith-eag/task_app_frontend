@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// const API_URL = '/api/files/'
-const API_URL = 'https://task-app-backend-8j57.onrender.com/api/files/';
+const API_URL = '/api/files/'
+// const API_URL = 'https://task-app-backend-8j57.onrender.com/api/files/';
 
 // Upload one or more files
 const uploadFiles = async (filesFormData, token) => {

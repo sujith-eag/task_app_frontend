@@ -1,6 +1,9 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import taskService from './taskService.js'
 
+import { generateTasksWithAI, saveAIPlan } from '../ai/aiTaskSlice.js'; 
+
+
 const initialState = {
   tasks: [],
   pendingDeletions: [],
@@ -333,7 +336,22 @@ export const taskSlice = createSlice({
           }
           state.lastDeletedSubTask = null;
         }
-      });
+      })
+
+
+      
+      // When the AI generation succeeds, add the new tasks to this slice's state
+      .addCase(generateTasksWithAI.fulfilled, (state, action) => {
+          state.tasks.unshift(...action.payload);
+        })
+      .addCase(saveAIPlan.fulfilled, (state, action) => {
+        // Add the new array of tasks from the payload to the main task list
+          state.tasks.unshift(...action.payload);
+          state.status = 'succeeded';
+        })
+        
+        
+      ;
     },
 });
 
