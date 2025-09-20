@@ -13,6 +13,7 @@ import NotFoundPage from './pages/NotFoundPage.jsx';
 import ProfilePage from './pages/ProfilePage.jsx';
 import FilesPage from './pages/FilePage.jsx';
 import VerifyEmailPage from './pages/VerifyEmailPage.jsx';
+import ChatPage from './pages/ChatPage.jsx';
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -50,6 +51,11 @@ function App() {
             <Route path='/files' element={<PrivateRoute />}>
                 <Route path='/files' element={<FilesPage />} />
             </Route>
+
+           <Route path='/chat' element={<PrivateRoute />}>
+              <Route path='/chat' element={<ChatPage />} />
+            </Route>
+
             <Route path="*" element={<NotFoundPage />} />
 
           </Routes>

@@ -5,6 +5,7 @@ import taskReducer from '../features/tasks/taskSlice.js'
 import profileReducer from '../features/profile/profileSlice.js';
 import filesReducer from '../features/files/fileSlice.js';
 import aiReducer from '../features/ai/aiTaskSlice.js';
+import chatReducer from '../features/chat/chatSlice.js';
 
 export const store = configureStore({
   reducer: {
@@ -13,6 +14,7 @@ export const store = configureStore({
     profile: profileReducer,
     files: filesReducer,
     ai: aiReducer,
+    chat: chatReducer,
   },
 });
 

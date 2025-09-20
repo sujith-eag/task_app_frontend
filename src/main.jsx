@@ -1,8 +1,8 @@
-// main.jsx
 import { store } from './app/store.js';
 import App from './App.jsx';
 import './index.css';
 import { ColorModeProvider } from './context/ThemeContext.jsx';
+import { SocketContextProvider } from './context/SocketContext.jsx';
 
 import React from 'react';
 import { StrictMode } from 'react';
@@ -19,8 +19,10 @@ createRoot(document.getElementById('root')).render(
     <Provider store={store}>
     <ColorModeProvider>
       <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <SocketContextProvider>
         <CssBaseline />
-        <App />
+          <App />
+        </SocketContextProvider>
       </LocalizationProvider>
     </ColorModeProvider>
     </Provider>

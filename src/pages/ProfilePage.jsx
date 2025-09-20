@@ -66,7 +66,9 @@ const ProfilePage = () => {
                             <Button component={RouterLink} to="/files" variant="outlined">
                                 Manage My Files
                             </Button>
-                            {/* Button for Messages can be added here */}
+                            <Button component={RouterLink} to="/chat" variant="outlined">
+                                Message
+                            </Button>
                         </Stack>
                     </Paper>
 
