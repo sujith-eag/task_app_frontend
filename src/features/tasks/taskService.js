@@ -18,7 +18,7 @@ const createTask = async (taskData, token) => {
 const createBulkTasks = async (tasksData, token) => {
   const config = { headers: { Authorization: `Bearer ${token}` } };
   // Calls the bulk endpoint
-  const response = await axios.post('/api/tasks/bulk', tasksData, config);
+  const response = await axios.post(`${API_URL}bulk`, tasksData, config);
   return response.data;
 };
 

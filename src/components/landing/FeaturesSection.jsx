@@ -6,15 +6,13 @@ import { motion } from 'framer-motion';
 import PlaylistAddCheckIcon from '@mui/icons-material/PlaylistAddCheck';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import FolderSharedIcon from '@mui/icons-material/FolderShared';
-import ContrastIcon from '@mui/icons-material/Contrast';
 import GroupsIcon from '@mui/icons-material/Groups';
 import VpnKeyIcon from '@mui/icons-material/VpnKey';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import SecurityIcon from '@mui/icons-material/Security';
-
+import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 
 const FeaturesSection = () => {
-    // --- UPDATED features array ---
     const features = [
         {
             title: 'Comprehensive Task Management',
@@ -32,6 +30,11 @@ const FeaturesSection = () => {
             icon: <FolderSharedIcon fontSize="large" />,
         },
         {
+            title: 'Real-Time Messaging & Collaboration',
+            description: 'Communicate instantly with other users via secure, private messaging, complete with online presence indicators and read receipts.',
+            icon: <GroupsIcon fontSize="large" />,
+        },
+        {
             title: 'Robust Security',
             description: 'Your account is protected with mandatory email verification, brute-force login detection, and secure password management.',
             icon: <SecurityIcon fontSize="large" />,
@@ -42,15 +45,16 @@ const FeaturesSection = () => {
             icon: <AccountCircleIcon fontSize="large" />,
         },
         {
-            title: 'Real-Time Collaboration (Coming Soon)',
-            description: 'Communicate directly with team members via private messaging and collaborate on projects in real-time.',
-            icon: <GroupsIcon fontSize="large" />,
+            title: 'Notifications & Email Alerts (Coming Soon)',
+            description: 'Stay updated with real-time notifications for task deadlines, new messages, and other important events.',
+            icon: <NotificationsActiveIcon fontSize="large" />,
         },
         {
             title: 'Advanced Security (Coming Soon)',
-            description: 'Log in with Google (OAuth 2.0) and httpOnly cookie for an extra layer of security.',
+            description: 'Log in with Google (OAuth 2.0) and utilize httpOnly cookies for an extra layer of security and convenience.',
             icon: <VpnKeyIcon fontSize="large" />,
         },
+  
     ];
 
     return (
