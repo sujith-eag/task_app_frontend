@@ -85,12 +85,6 @@ export const chatSlice = createSlice({
                 state.conversations.ids.unshift(conversationId);
             }
         },
-
-        
-        setOnlineUsers: (state, action) => {
-            state.onlineUsers = action.payload;
-        },
-
         
         updateMessagesToRead: (state, action) => {
             const { conversationId, readerId } = action.payload;
@@ -113,7 +107,14 @@ export const chatSlice = createSlice({
             Object.assign(state, initialState);
         },
 
-      
+        setOnlineUsers: (state, action) => {
+            state.onlineUsers = action.payload;
+        },
+
+        clearActiveConversation: (state) => {
+            state.activeConversationId = null;
+        },
+
         // --- OPTIMISTIC UI REDUCERS ---
         // --- Reconcile the optimistic message with the server response ---
         reconcileMessage: (state, action) => {
@@ -202,6 +203,7 @@ export const {
         clearChatState,
         addOptimisticMessage, 
         reconcileMessage, 
+        clearActiveConversation,
      } = chatSlice.actions;
      
      

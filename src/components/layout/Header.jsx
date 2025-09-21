@@ -170,7 +170,7 @@ const Header = () => {
                         </MenuItem>)
                         }
                         {/* --- Message Link --- */}
-                        {user.preferences.canRecieveMessages && location.pathname !== '/chat' && (
+                        {location.pathname !== '/chat' && (
                         <MenuItem component={Link} to='/chat' onClick={handleMenuClose}>
                             <ListItemIcon><ChatIcon fontSize="small" /></ListItemIcon>
                             Messages
@@ -178,7 +178,7 @@ const Header = () => {
                         )}
                         
                         {/* --- Admin Link --- */}
-                        {user.role === 'admin' && (
+                        {user?.role === 'admin' && (
                             <MenuItem component={Link} to='/admin' onClick={handleMenuClose}>
                                 <ListItemIcon><AdminPanelSettingsIcon fontSize="small" /></ListItemIcon>
                                 Admin

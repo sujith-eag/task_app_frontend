@@ -8,10 +8,13 @@ import { v4 as uuidv4 } from 'uuid';
 import DOMPurify from 'dompurify';
 import { toast } from 'react-toastify';
 import SendIcon from '@mui/icons-material/Send';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+
 import { useSocket } from '../../../context/SocketContext.jsx';
 import { addOptimisticMessage, 
         reconcileMessage,
-        selectActiveConversation } from '../chatSlice.js';
+        selectActiveConversation,
+        clearActiveConversation } from '../chatSlice.js';
 
 const ChatWindow = () => {
     const dispatch = useDispatch();
@@ -49,7 +52,11 @@ const ChatWindow = () => {
             }
         }
     }, [socket, activeConversation, messageList, user._id]);
+
     
+    const handleBackClick = () => {
+        dispatch(clearActiveConversation());
+    };    
     
     const handleSendMessage = (e) => {
         e.preventDefault();
@@ -99,6 +106,17 @@ const ChatWindow = () => {
             {/* --- Chat Header --- */}
             <Paper elevation={2} sx={{ flexShrink: 0 }}>
                 <Stack direction="row" alignItems="center" spacing={2} sx={{ p: 2 }}>
+
+                    {/* BACK BUTTON */}
+                    <IconButton
+                        onClick={handleBackClick}
+                        sx={{ 
+                            display: { xs: 'inline-flex', md: 'none' }, // Only show on mobile
+                            mr: 1 
+                        }}>
+                        <ArrowBackIcon />
+                    </IconButton>                    
+                    
                     <Avatar src={otherParticipant.avatar} />
                     <Typography variant="h6">{otherParticipant.name}</Typography>
                 </Stack>
