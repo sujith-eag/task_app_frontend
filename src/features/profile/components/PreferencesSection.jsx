@@ -53,13 +53,13 @@ const PreferencesSection = ({ preferences }) => {
 	                        <Switch 
 		                    checked={preferences.canRecieveMessages}
 	                        onChange={handlePreferenceChange} 
-	                        name="isDiscoverable" 
-	                        disabled // Lets get the feature first
+	                        name="canRecieveMessages" 
+	                        // disabled // Lets get the feature first
 	                        />}
                         label={<Typography variant="subtitle1">Messaging</Typography>}
                     />
                     <Typography variant="body2" color="text.secondary" sx={{ ml: 4 }}>
-                        Allowing others to message you. (Feature  in development)
+                        Allowing others to message you. (Beta Testing)
                     </Typography>
                 </Paper>
             </Stack>

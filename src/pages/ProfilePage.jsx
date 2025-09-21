@@ -75,7 +75,9 @@ const ProfilePage = () => {
                     {/* --- 3. ACCOUNT SETTINGS SECTION (Preferences & Password) --- */}
                     <Paper elevation={3} sx={{ p: 3 }}>
                         <PreferencesSection preferences={user.preferences} />
+
                         <Divider sx={{ my: 3 }} />
+
                         <Button
                             variant="outlined"
                             startIcon={<LockResetIcon />}
@@ -83,6 +85,7 @@ const ProfilePage = () => {
                         >
                             Change Password
                         </Button>
+
                         <Collapse in={isChangingPassword} sx={{ mt: 2 }}>
                             <PasswordForm onSuccess={() => setIsChangingPassword(false)} />
                         </Collapse>

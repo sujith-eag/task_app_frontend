@@ -18,6 +18,7 @@
     "@reduxjs/toolkit": "^2.8.2",
     "axios": "^1.10.0",
     "date-fns": "^4.1.0",
+    "dompurify": "^3.2.7",
     "framer-motion": "^12.23.12",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",

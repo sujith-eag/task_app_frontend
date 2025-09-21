@@ -6,11 +6,16 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      // Requests to any path starting with /api will be forwarded
+      // For all regular HTTP API requests, path starting with /api will be forwarded
       '/api': {
         target: 'http://localhost:8000',
         changeOrigin: true,
         secure: false,
+      },
+      // Specifically for Socket.IO WebSocket connections
+      '/socket.io': {
+        target: 'http://localhost:8000',
+        ws: true,
       },
     }
   }

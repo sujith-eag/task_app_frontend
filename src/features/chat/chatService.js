@@ -7,5 +7,23 @@ const getConversations = async (token) => {
     return response.data;
 };
 
-const chatService = { getConversations };
+const createOrGetConversation = async (recipientId, token) => {
+    const config = { headers: { Authorization: `Bearer ${token}` } };
+    const response = await axios.post(API_URL, { recipientId }, config);
+    return response.data;
+};
+
+const getMessagesForConversation = async (conversationId, token) => {
+    const config = { headers: { Authorization: `Bearer ${token}` } };
+    // URL includes the conversation ID
+    const response = await axios.get(API_URL + conversationId + '/messages', config);
+    return response.data;
+};
+
+const chatService = { 
+    getConversations, 
+    createOrGetConversation, 
+    getMessagesForConversation
+};
+
 export default chatService;

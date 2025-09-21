@@ -1,58 +1,71 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { io } from 'socket.io-client';
-import { addMessage } from '../features/chat/chatSlice.js';
+import { addMessage, setOnlineUsers, updateMessagesToRead } from '../features/chat/chatSlice.js';
 
-// Create the context
+
 const SocketContext = createContext();
-
-// Create a custom hook for easy access to the context
-export const useSocket = () => {
-    return useContext(SocketContext);
-};
+export const useSocket = () => useContext(SocketContext);
 
 export const SocketContextProvider = ({ children }) => {
-    const [socket, setSocket] = useState(null);
+    // We use useState to trigger re-renders when the socket connects/disconnects
+    const [socket, setSocket] = useState(null); 
+    const socketRef = useRef(null);
     const { user } = useSelector((state) => state.auth);
     const dispatch = useDispatch();
 
     useEffect(() => {
-        // This effect runs whenever the user's login status changes
         if (user) {
-            // If a user is logged in, create the socket connection
-            const newSocket = io(import.meta.env.API_BASE_URL, {
-                // Pass the user's token for authentication by our backend middleware
-                auth: {
-                    token: user.token,
-                },
+            // --- Only create the socket once ---
+ 
+            const socketURL = import.meta.env.VITE_SOCKET_URL;
+            socketRef.current = io( socketURL, {
+                auth: { token: user.token },
+                transports: ['websocket'],
             });
-            setSocket(newSocket);
+// No URL is needed here. It will default to the current host,
+// and the '/socket.io' proxy rule in vite.config.js will handle it.            
+            setSocket(socketRef.current);
 
+            socketRef.current.on('onlineUsersUpdate', (users) => {
+                dispatch(setOnlineUsers(users));
+            });
+
+            socketRef.current.on('messagesUpdatedToRead', (data) => {
+                dispatch(updateMessagesToRead(data));
+            });
             // --- Set up event listeners ---
-            newSocket.on('connect', () => {
-                console.log('Socket.IO connected successfully:', newSocket.id);
+            socketRef.current.on('connect', () => {
+                console.log('✅ Socket.IO connected successfully:', socketRef.current.id);
             });
 
-            // This listener will fire when the server sends a new message
-            newSocket.on('receiveMessage', (message) => {
-                console.log('New message received:', message);
-                // Dispatch an action to add the new message to the Redux store
+            socketRef.current.on('receiveMessage', (message) => {
+                console.log('📩 New message received:', message);
                 dispatch(addMessage(message));
             });
 
-            // The cleanup function is crucial: it runs when the component unmounts or the `user` changes
+            socketRef.current.on('connect_error', (err) => {
+                console.error('❌ Socket.IO connection error:', err.message);
+            });
+                
+            // DEBUGGING
+            socketRef.current.onAny((eventName, ...args) => {
+                console.log(`[Socket Debug] Event received: '${eventName}' with data:`, args);
+            });
+            // --- The cleanup function ONLY runs when the user logs out ---
+            // Because the dependency array is empty, this effect runs only once on mount.
+            // The cleanup runs only once on unmount (i.e., when the user logs out and `user` becomes null).
             return () => {
-                newSocket.disconnect();
-                console.log('Socket.IO disconnected.');
+                if(socketRef.current) {
+                    socketRef.current.disconnect();
+                    setSocket(null);
+                    socketRef.current = null;
+                    console.log('🔌 Socket.IO disconnected.');
+                }
             };
-        } else {
-            // If there is no user, disconnect any existing socket
-            if (socket) {
-                socket.disconnect();
-                setSocket(null);
-            }
         }
-    }, [user, dispatch]); // Dependency array ensures this runs only when user or dispatch changes
+    // We change the dependency array to only react to the user object itself.
+    }, [user, dispatch]);
 
     return (
         <SocketContext.Provider value={socket}>

@@ -17,6 +17,7 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import LogoutIcon from '@mui/icons-material/Logout';
 import PersonIcon from '@mui/icons-material/Person';
+import ChatIcon from '@mui/icons-material/Chat';
 import { FaSignInAlt, FaUser } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
@@ -168,6 +169,14 @@ const Header = () => {
                             My Profile
                         </MenuItem>)
                         }
+                        {/* --- Message Link --- */}
+                        {user.preferences.canRecieveMessages && location.pathname !== '/chat' && (
+                        <MenuItem component={Link} to='/chat' onClick={handleMenuClose}>
+                            <ListItemIcon><ChatIcon fontSize="small" /></ListItemIcon>
+                            Messages
+                        </MenuItem>
+                        )}
+                        
                         {/* --- Admin Link --- */}
                         {user.role === 'admin' && (
                             <MenuItem component={Link} to='/admin' onClick={handleMenuClose}>
