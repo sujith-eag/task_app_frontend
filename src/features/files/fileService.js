@@ -74,6 +74,14 @@ const manageShareAccess = async (fileId, userIdToRemove, token) => {
 };
 
 
+// Share a file with a class
+const shareWithClass = async (data, token) => {
+    const { fileId, classData } = data;
+    const config = { headers: { Authorization: `Bearer ${token}` } };
+    const response = await axios.post(`${API_URL}${fileId}/share-class`, classData, config);
+    return response.data;
+};
+
 const fileService = {
     uploadFiles,
     getFiles,
@@ -81,6 +89,7 @@ const fileService = {
     deleteFile,
     shareFile,
     manageShareAccess,
+    shareWithClass,
 };
 
 export default fileService;

@@ -55,6 +55,18 @@ export const manageShareAccess = createAsyncThunk('files/manageShare', async (sh
     }
 });
 
+
+export const shareWithClass = createAsyncThunk('files/shareClass', async (data, thunkAPI) => {
+    try {
+        const token = thunkAPI.getState().auth.user.token;
+        return await fileService.shareWithClass(data, token);
+    } catch (error) {
+        const message = (error.response?.data?.message) || error.message || error.toString();
+        return thunkAPI.rejectWithValue(message);
+    }
+});
+
+
 const initialState = {
     files: [],
     status: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
@@ -103,6 +115,15 @@ export const fileSlice = createSlice({
                     state.files[index] = action.payload;
                 }
             })
+            
+            .addCase(shareWithClass.fulfilled, (state, action) => {
+                // Find and update the specific file in the array
+                const index = state.files.findIndex((file) => file._id === action.payload._id);
+                if (index !== -1) {
+                    state.files[index] = action.payload;
+                }
+            })
+            
             .addCase(manageShareAccess.fulfilled, (state, action) => {
                 // Same logic as sharing: find and update the file
                 const index = state.files.findIndex((file) => file._id === action.payload._id);
