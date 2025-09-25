@@ -44,6 +44,29 @@ export const getTeacherSessionsHistory = createAsyncThunk('teacher/getHistory', 
     }
 });
 
+// --- Get the roster for an active session ---
+export const getSessionRoster = createAsyncThunk('teacher/getRoster', async (sessionId, thunkAPI) => {
+    try {
+        const token = thunkAPI.getState().auth.user.token;
+        return await teacherService.getSessionRoster(sessionId, token);
+    } catch (error) {
+        const message = (error.response?.data?.message) || error.message || error.toString();
+        return thunkAPI.rejectWithValue(message);
+    }
+});
+
+// --- Finalize attendance for a session ---
+export const finalizeAttendance = createAsyncThunk('teacher/finalize', async (data, thunkAPI) => {
+    try {
+        const token = thunkAPI.getState().auth.user.token;
+        return await teacherService.finalizeAttendance(data, token);
+    } catch (error) {
+        const message = (error.response?.data?.message) || error.message || error.toString();
+        return thunkAPI.rejectWithValue(message);
+    }
+});
+
+
 // --- Slice Definition ---
 export const teacherSlice = createSlice({
     name: 'teacher',
@@ -76,6 +99,8 @@ export const teacherSlice = createSlice({
                 state.isError = true;
                 state.message = action.payload;
             })
+
+
             // Create Class Session
             .addCase(createClassSession.pending, (state) => {
                 state.isLoading = true;
@@ -90,6 +115,8 @@ export const teacherSlice = createSlice({
                 state.isError = true;
                 state.message = action.payload;
             })
+
+
             // Get Session History
             .addCase(getTeacherSessionsHistory.pending, (state) => {
                 state.isLoading = true;
@@ -103,8 +130,34 @@ export const teacherSlice = createSlice({
                 state.isLoading = false;
                 state.isError = true;
                 state.message = action.payload;
-            });
-    },
+            })
+
+            // --- Get Session Roster ---
+            .addCase(getSessionRoster.fulfilled, (state, action) => {
+                if (state.activeSession) {
+                    // Update the roster within the active session object
+                    state.activeSession.attendanceRecords = action.payload;
+                }
+            })
+
+
+            // --- Finalize Attendance ---
+            .addCase(finalizeAttendance.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(finalizeAttendance.fulfilled, (state) => {
+                state.isLoading = false;
+                state.isSuccess = true;
+                state.activeSession = null; // End the session upon successful finalization
+            })
+            .addCase(finalizeAttendance.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload;
+            })
+            
+            
+    ;},
 });
 
 export const { reset, endActiveSession } = teacherSlice.actions;

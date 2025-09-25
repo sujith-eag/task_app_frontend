@@ -17,19 +17,35 @@ const initialState = {
 // Get the student's personal dashboard stats (attendance per subject)
 export const getStudentDashboardStats = createAsyncThunk('student/getDashboardStats', async (_, thunkAPI) => {
     try {
-        return await studentService.getStudentDashboardStats();
+        const token = thunkAPI.getState().auth.user.token;
+        return await studentService.getStudentDashboardStats(token);
     } catch (error) {
         const message = (error.response?.data?.message) || error.message || error.toString();
         return thunkAPI.rejectWithValue(message);
     }
 });
 
+
 // Submit feedback for a class session
 // Note: This thunk primarily triggers an API call. A success doesn't need to alter this slice's
 // state directly, but it's useful to have it here to manage loading/error states for the feedback form.
+// Submit feedback for a class session
 export const submitFeedback = createAsyncThunk('student/submitFeedback', async (feedbackData, thunkAPI) => {
     try {
-        return await studentService.submitFeedback(feedbackData);
+        const token = thunkAPI.getState().auth.user.token;
+        return await studentService.submitFeedback(feedbackData, token);
+    } catch (error) {
+        const message = (error.response?.data?.message) || error.message || error.toString();
+        return thunkAPI.rejectWithValue(message);
+    }
+});
+
+
+// --- Mark attendance ---
+export const markAttendance = createAsyncThunk('student/markAttendance', async (attendanceData, thunkAPI) => {
+    try {
+        const token = thunkAPI.getState().auth.user.token;
+        return await studentService.markAttendance(attendanceData, token);
     } catch (error) {
         const message = (error.response?.data?.message) || error.message || error.toString();
         return thunkAPI.rejectWithValue(message);
@@ -77,6 +93,21 @@ export const studentSlice = createSlice({
                 state.message = action.payload.message;
             })
             .addCase(submitFeedback.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload;
+            })
+            
+            // --- Mark Attendance ---
+            .addCase(markAttendance.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(markAttendance.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isSuccess = true;
+                state.message = action.payload.message;
+            })
+            .addCase(markAttendance.rejected, (state, action) => {
                 state.isLoading = false;
                 state.isError = true;
                 state.message = action.payload;

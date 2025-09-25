@@ -24,10 +24,27 @@ const getTeacherSessionsHistory = async (token) => {
     return response.data;
 };
 
+// --- Get the roster for a specific, active session ---
+const getSessionRoster = async (sessionId, token) => {
+    const config = { headers: { Authorization: `Bearer ${token}` } };
+    const response = await axios.get(`${API_URL}class-sessions/${sessionId}/roster`, config);
+    return response.data;
+};
+
+// --- Finalize attendance with manual overrides ---
+const finalizeAttendance = async (data, token) => {
+    const { sessionId, updatedRoster } = data;
+    const config = { headers: { Authorization: `Bearer ${token}` } };
+    const response = await axios.patch(`${API_URL}class-sessions/${sessionId}/roster`, { updatedRoster }, config);
+    return response.data;
+};
+
 const teacherService = {
     getClassCreationData,
     createClassSession,
     getTeacherSessionsHistory,
+    getSessionRoster,
+    finalizeAttendance,
 };
 
 export default teacherService;

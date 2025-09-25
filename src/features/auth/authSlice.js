@@ -93,6 +93,21 @@ export const verifyEmail = createAsyncThunk(
 	}
 });
 
+// Apply to become a student
+export const applyAsStudent = createAsyncThunk(
+  'auth/applyAsStudent',
+  async (applicationData, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.user.token;
+      return await authService.applyAsStudent(applicationData, token);
+    } catch (error) {
+      const message =
+        (error.response?.data?.message || error.message || error.toString())
+      return thunkAPI.rejectWithValue(message)
+    }
+  }
+);
+
 
 export const authSlice = createSlice({
   name: 'auth',
@@ -209,8 +224,35 @@ export const authSlice = createSlice({
           state.isLoading = false;
           state.isError = true;
           state.message = action.payload;
-      });
-  },
+      })
+
+
+      // --- Apply as Student State Observers ---
+      .addCase(applyAsStudent.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(applyAsStudent.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.message = action.payload.message;
+        
+        // Update the user object in the state with the new pending status
+        if (state.user) {
+          const updatedUserDetails = {
+            ...state.user.studentDetails,
+            applicationStatus: action.payload.applicationStatus,
+          };
+          const updatedUser = { ...state.user, studentDetails: updatedUserDetails };
+          state.user = updatedUser;
+          localStorage.setItem('user', JSON.stringify(updatedUser));
+        }
+      })
+      .addCase(applyAsStudent.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+  ;},
 })
 
 export const { reset } = authSlice.actions

@@ -34,7 +34,21 @@ const verifyEmail = async (token) => {
 };
 
 
-// --- NEW PASSWORD RESET FUNCTIONS ---
+// --- Student Application Function ---
+
+// Apply to become a student
+const applyAsStudent = async (applicationData, token) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    };
+    const response = await axios.post(API_URL + 'apply-student', applicationData, config);
+    return response.data;
+};
+
+
+// --- PASSWORD RESET FUNCTIONS ---
 
 // Request a password reset token
 const forgotPassword = async (userData) => {
@@ -59,6 +73,7 @@ const authService = {
   register,
   logout,
   login,
+  applyAsStudent,
   forgotPassword,
   resetPassword,
   verifyEmail,
