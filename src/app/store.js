@@ -7,6 +7,10 @@ import filesReducer from '../features/files/fileSlice.js';
 import aiReducer from '../features/ai/aiTaskSlice.js';
 import chatReducer from '../features/chat/chatSlice.js';
 
+import adminReducer from '../features/admin/adminSlice.js';
+import teacherReducer from '../features/teacher/teacherSlice.js';
+import studentReducer from '../features/student/studentSlice.js';
+
 export const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -15,6 +19,9 @@ export const store = configureStore({
     files: filesReducer,
     ai: aiReducer,
     chat: chatReducer,
+    admin: adminReducer,
+    teacher: teacherReducer,
+    student: studentReducer,
   },
 });
 

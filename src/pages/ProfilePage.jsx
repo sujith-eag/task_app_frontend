@@ -3,14 +3,17 @@ import { useSelector } from 'react-redux';
 import { Link as RouterLink } from 'react-router-dom';
 import {
     Container, Typography, Box, Button, Divider, Avatar,
-    Stack, Paper, Collapse
+    Stack, Paper, Collapse, Chip
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import LockResetIcon from '@mui/icons-material/LockReset';
+import DashboardIcon from '@mui/icons-material/Dashboard'; // testing
 
 import UpdateProfileForm from '../features/profile/components/UpdateProfileForm';
 import PreferencesSection from '../features/profile/components/PreferencesSection';
 import PasswordForm from '../features/profile/components/PasswordForm';
+
+
 
 const ProfilePage = () => {
     const { user } = useSelector((state) => state.auth);
@@ -58,6 +61,68 @@ const ProfilePage = () => {
                             </Box>
                         )}
                     </Paper>
+
+
+{/* STUDENT TESTING */}
+                    {/* --- Student Status Section --- */}
+                    {user.role === 'user' && (
+                        <Paper elevation={3} sx={{ p: 3 }}>
+                            <Typography variant="h6" gutterBottom>Student Status</Typography>
+                            {(user.studentDetails?.applicationStatus === 'not_applied' || user.studentDetails?.applicationStatus === 'rejected') && (
+                                <Box>
+                                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                                        Gain access to attendance and feedback features by applying for student status.
+                                    </Typography>
+                                    <Button component={RouterLink} to="/student/dashboard" variant="contained">
+                                        Apply for Student Access
+                                    </Button>
+                                </Box>
+                            )}
+                            {user.studentDetails?.applicationStatus === 'pending' && (
+                                <Chip label="Application Pending Review" color="warning" />
+                            )}
+                        </Paper>
+                    )}
+                    {user.role === 'student' && (
+                         <Paper elevation={3} sx={{ p: 3 }}>
+                            <Typography variant="h6" gutterBottom>Student Status</Typography>
+                            <Chip label="Application Approved" color="success" />
+                         </Paper>
+                    )}
+
+
+
+            {/* --- TESTING: DASHBOARD ACCESS SECTION --- */}
+                    <Paper elevation={3} sx={{ p: 3 }}>
+                        <Typography variant="h6" gutterBottom>Quick Access</Typography>
+                        <Stack direction="row" spacing={2} flexWrap="wrap">
+                            <Button component={RouterLink} to="/dashboard" variant="outlined" startIcon={<DashboardIcon />}>
+                                Task Manager
+                            </Button>
+                            {user.role === 'student' && (
+                                <Button component={RouterLink} to="/student/dashboard" variant="outlined">
+                                    Student Dashboard
+                                </Button>
+                            )}
+                            {user.role === 'teacher' && (
+                                <Button component={RouterLink} to="/teacher/dashboard" variant="outlined">
+                                    Teacher Dashboard
+                                </Button>
+                            )}
+                            {(user.role === 'admin' || user.role === 'hod') && (
+                                <>
+                                <Button component={RouterLink} to="/admin/dashboard" variant="outlined">
+                                    Admin Dashboard
+                                </Button>
+                                <Button component={RouterLink} to="/admin/reporting" variant="outlined">
+                                    Reporting
+                                </Button>
+                                </>
+                            )}
+                        </Stack>
+                    </Paper>
+
+
 
                     {/* --- 2. MY CONTENT SECTION (More Prominent) --- */}
                     <Paper elevation={3} sx={{ p: 3 }}>

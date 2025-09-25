@@ -21,7 +21,8 @@ const initialState = {
 // Get all subjects
 export const getSubjects = createAsyncThunk('admin/getSubjects', async (_, thunkAPI) => {
     try {
-        return await adminService.getSubjects();
+        const token = thunkAPI.getState().auth.user.token;
+        return await adminService.getSubjects(token);
     } catch (error) {
         const message = (error.response?.data?.message) || error.message || error.toString();
         return thunkAPI.rejectWithValue(message);
@@ -31,7 +32,8 @@ export const getSubjects = createAsyncThunk('admin/getSubjects', async (_, thunk
 // Create a new subject
 export const createSubject = createAsyncThunk('admin/createSubject', async (subjectData, thunkAPI) => {
     try {
-        return await adminService.createSubject(subjectData);
+        const token = thunkAPI.getState().auth.user.token;
+        return await adminService.createSubject(subjectData, token);
     } catch (error) {
         const message = (error.response?.data?.message) || error.message || error.toString();
         return thunkAPI.rejectWithValue(message);
@@ -41,7 +43,8 @@ export const createSubject = createAsyncThunk('admin/createSubject', async (subj
 // Get pending student applications
 export const getPendingApplications = createAsyncThunk('admin/getPending', async (_, thunkAPI) => {
     try {
-        return await adminService.getPendingApplications();
+        const token = thunkAPI.getState().auth.user.token;
+        return await adminService.getPendingApplications(token);
     } catch (error) {
         const message = (error.response?.data?.message) || error.message || error.toString();
         return thunkAPI.rejectWithValue(message);
@@ -52,7 +55,8 @@ export const getPendingApplications = createAsyncThunk('admin/getPending', async
 export const reviewApplication = createAsyncThunk('admin/reviewApp', async (reviewData, thunkAPI) => {
     try {
         // reviewData = { userId, action: 'approve'/'reject' }
-        return await adminService.reviewApplication(reviewData.userId, reviewData.action);
+        const token = thunkAPI.getState().auth.user.token;
+        return await adminService.reviewApplication(reviewData.userId, reviewData.action, token);
     } catch (error) {
         const message = (error.response?.data?.message) || error.message || error.toString();
         return thunkAPI.rejectWithValue(message);
@@ -62,7 +66,8 @@ export const reviewApplication = createAsyncThunk('admin/reviewApp', async (revi
 // Get attendance statistics report
 export const getAttendanceStats = createAsyncThunk('admin/getAttendanceStats', async (filters, thunkAPI) => {
     try {
-        return await adminService.getAttendanceStats(filters);
+        const token = thunkAPI.getState().auth.user.token;
+        return await adminService.getAttendanceStats(filters, token);
     } catch (error) {
         const message = (error.response?.data?.message) || error.message || error.toString();
         return thunkAPI.rejectWithValue(message);
@@ -72,7 +77,20 @@ export const getAttendanceStats = createAsyncThunk('admin/getAttendanceStats', a
 // Get feedback summary report
 export const getFeedbackSummary = createAsyncThunk('admin/getFeedbackSummary', async (filters, thunkAPI) => {
     try {
-        return await adminService.getFeedbackSummary(filters);
+        const token = thunkAPI.getState().auth.user.token;
+        return await adminService.getFeedbackSummary(filters, token);
+    } catch (error) {
+        const message = (error.response?.data?.message) || error.message || error.toString();
+        return thunkAPI.rejectWithValue(message);
+    }
+});
+
+
+// --- Thunk for updating teacher assignments ---
+export const updateTeacherAssignments = createAsyncThunk('admin/updateAssignments', async (data, thunkAPI) => {
+    try {
+        const token = thunkAPI.getState().auth.user.token;
+        return await adminService.updateTeacherAssignments(data, token);
     } catch (error) {
         const message = (error.response?.data?.message) || error.message || error.toString();
         return thunkAPI.rejectWithValue(message);
@@ -180,8 +198,26 @@ export const adminSlice = createSlice({
                 state.isLoading = false;
                 state.isError = true;
                 state.message = action.payload;
-            });
-    },
+            })
+
+
+            // --- cases for updating teacher assignments ---
+            .addCase(updateTeacherAssignments.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(updateTeacherAssignments.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isSuccess = true;
+                // Optionally, you can update the state of a specific teacher
+                // if you are storing a list of all teachers in the adminSlice.
+                state.message = action.payload.message;
+            })
+            .addCase(updateTeacherAssignments.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload;
+            })            
+    ;},
 });
 
 export const { reset } = adminSlice.actions;

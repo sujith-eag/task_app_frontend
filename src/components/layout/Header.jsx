@@ -118,7 +118,7 @@ const Header = () => {
 
                     {user ? (
                         <>
-                            {/* --- NEW: User menu trigger for both desktop and mobile --- */}
+                            {/* --- User menu trigger for both desktop and mobile --- */}
                             <IconButton color="inherit" onClick={handleMenuOpen}>
                                 {/* Show user's avatar if available, otherwise a generic icon */}
                                 {user.avatar ? <Avatar sx={{ width: 32, height: 32 }} src={user.avatar} /> : <AccountCircle />}
@@ -179,7 +179,7 @@ const Header = () => {
                         
                         {/* --- Admin Link --- */}
                         {user?.role === 'admin' && (
-                            <MenuItem component={Link} to='/admin' onClick={handleMenuClose}>
+                            <MenuItem component={Link} to='/admin/dashboard' onClick={handleMenuClose}>
                                 <ListItemIcon><AdminPanelSettingsIcon fontSize="small" /></ListItemIcon>
                                 Admin
                             </MenuItem>

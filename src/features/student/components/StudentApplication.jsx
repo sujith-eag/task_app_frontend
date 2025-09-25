@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Link as RouterLink } from 'react-router-dom';
 import { Box, TextField, Button, Typography, Alert, CircularProgress } from '@mui/material';
 import { applyAsStudent } from '../../auth/authSlice.js';
+import { toast } from 'react-toastify';
 
 const StudentApplication = () => {
     const [formData, setFormData] = useState({ usn: '', batch: '', section: '' });
     // This would likely come from your authSlice since it modifies the user object
+    const [isSubmitted, setIsSubmitted] = useState(false); // To track submission success
+
     const { isLoading, isError, message } = useSelector((state) => state.auth); 
     const dispatch = useDispatch();
 
@@ -15,9 +19,29 @@ const StudentApplication = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        dispatch(applyAsStudent(formData));
-        console.log("Dispatching application with:", formData); // Placeholder for dispatch
+        dispatch(applyAsStudent(formData))
+            .unwrap()
+            .then((res) => {
+                toast.success(res.message);
+                setIsSubmitted(true);
+            })
+            .catch((err) => toast.error(err));
     };
+
+    
+    // Conditionally render a success message and button after submission
+    if (isSubmitted) {
+        return (
+            <Box sx={{ maxWidth: 500, textAlign: 'center' }}>
+                <Alert severity="success" variant="filled" sx={{ mb: 2 }}>
+                    Your application has been submitted successfully and is now pending review.
+                </Alert>
+                <Button component={RouterLink} to="/profile" variant="contained">
+                    Back to Profile
+                </Button>
+            </Box>
+        );
+    }
 
     return (
         <Box component="form" onSubmit={handleSubmit} sx={{ maxWidth: 500 }}>

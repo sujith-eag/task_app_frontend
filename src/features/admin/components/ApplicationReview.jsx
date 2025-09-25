@@ -23,9 +23,17 @@ const ApplicationReview = () => {
     const columns = [
         { field: 'name', headerName: 'Name', flex: 1 },
         { field: 'email', headerName: 'Email', flex: 1.5 },
-        { field: 'usn', headerName: 'USN', flex: 1, valueGetter: (params) => params.row.studentDetails.usn },
-        { field: 'batch', headerName: 'Batch', flex: 0.5, valueGetter: (params) => params.row.studentDetails.batch },
-        { field: 'section', headerName: 'Section', flex: 0.5, valueGetter: (params) => params.row.studentDetails.section },
+        { 
+            field: 'usn', headerName: 'USN', flex: 1, 
+            // valueGetter: (params) => params.row.studentDetails?.usn || 'N/A' 
+            valueGetter: (params) => params?.row?.studentDetails?.usn || 'N/A' 
+        },
+        { field: 'batch', headerName: 'Batch', flex: 0.5, 
+            valueGetter: (params) => params?.row?.studentDetails?.batch || 'N/A' 
+        },
+        { field: 'section', headerName: 'Section', flex: 0.5, 
+            valueGetter: (params) => params?.row?.studentDetails?.section || 'N/A'
+        },
         {
             field: 'actions',
             headerName: 'Actions',

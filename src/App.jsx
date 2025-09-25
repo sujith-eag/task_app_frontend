@@ -61,7 +61,7 @@ function App() {
             </Route>
 
               {/* --- Student-Specific Routes --- */}
-              <Route element={<PrivateRoute roles={['student']} />}>
+              <Route element={<PrivateRoute roles={['student', 'user']} />}>
                 <Route path="/student/dashboard" element={<StudentDashboardPage />} />
               </Route>
 

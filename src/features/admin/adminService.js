@@ -58,6 +58,16 @@ const getFeedbackSummary = async (filters, token) => {
     return response.data;
 };
 
+// --- Add or update a teacher's subject assignments ---
+const updateTeacherAssignments = async (data, token) => {
+    const { teacherId, assignmentData } = data;
+    const config = { headers: { Authorization: `Bearer ${token}` } };
+    const response = await axios.post(`${API_URL}teachers/${teacherId}/assignments`, assignmentData, config);
+    return response.data;
+};
+
+
+
 const adminService = {
     getSubjects,
     createSubject,
@@ -65,6 +75,8 @@ const adminService = {
     reviewApplication,
     getAttendanceStats,
     getFeedbackSummary,
+    updateTeacherAssignments,
 };
+
 
 export default adminService;
