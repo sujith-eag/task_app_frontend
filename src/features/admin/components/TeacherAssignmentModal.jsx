@@ -17,7 +17,7 @@ const style = {
     borderRadius: 2,
 };
 
-const sections = ['A', 'B', 'C'];
+const sections = ['A', 'B'];
 
 const TeacherAssignmentModal = ({ open, handleClose, teacherId }) => {
     const dispatch = useDispatch();

@@ -17,7 +17,8 @@ const initialState = {
 // Get data for the class creation form (teacher's subjects)
 export const getClassCreationData = createAsyncThunk('teacher/getClassCreationData', async (_, thunkAPI) => {
     try {
-        return await teacherService.getClassCreationData();
+        const token = thunkAPI.getState().auth.user.token;
+        return await teacherService.getClassCreationData(token);
     } catch (error) {
         const message = (error.response?.data?.message) || error.message || error.toString();
         return thunkAPI.rejectWithValue(message);
@@ -27,7 +28,8 @@ export const getClassCreationData = createAsyncThunk('teacher/getClassCreationDa
 // Create a new class session
 export const createClassSession = createAsyncThunk('teacher/createSession', async (sessionData, thunkAPI) => {
     try {
-        return await teacherService.createClassSession(sessionData);
+        const token = thunkAPI.getState().auth.user.token;
+        return await teacherService.createClassSession(sessionData, token);
     } catch (error) {
         const message = (error.response?.data?.message) || error.message || error.toString();
         return thunkAPI.rejectWithValue(message);
@@ -37,7 +39,8 @@ export const createClassSession = createAsyncThunk('teacher/createSession', asyn
 // Get history of past sessions
 export const getTeacherSessionsHistory = createAsyncThunk('teacher/getHistory', async (_, thunkAPI) => {
     try {
-        return await teacherService.getTeacherSessionsHistory();
+        const token = thunkAPI.getState().auth.user.token;
+        return await teacherService.getTeacherSessionsHistory(token);
     } catch (error) {
         const message = (error.response?.data?.message) || error.message || error.toString();
         return thunkAPI.rejectWithValue(message);

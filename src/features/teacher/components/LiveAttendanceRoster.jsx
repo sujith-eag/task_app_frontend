@@ -1,15 +1,35 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux'; // FIX: Import useSelector
 import { Box, Typography, Chip, List, ListItem, ListItemText, Switch, Button, CircularProgress } from '@mui/material';
 import { getSessionRoster, finalizeAttendance } from '../teacherSlice.js';
 import { toast } from 'react-toastify';
 
 const LiveAttendanceRoster = ({ session }) => {
     const dispatch = useDispatch();
+    const { activeSession } = useSelector((state) => state.teacher);
     const [timeLeft, setTimeLeft] = useState(60);
     const [isWindowOpen, setIsWindowOpen] = useState(true);
-    const [roster, setRoster] = useState(session.attendanceRecords || []);
-    
+    // FIX: Safely initialize localRoster from the session prop first
+    const [localRoster, setLocalRoster] = useState(session?.attendanceRecords || []);
+
+    // Roster Polling
+    useEffect(() => {
+        const polling = setInterval(() => {
+            if (isWindowOpen) {
+                dispatch(getSessionRoster(session._id));
+            }
+        }, 5000);
+        return () => clearInterval(polling);
+    }, [dispatch, session._id, isWindowOpen]);
+
+    // Update local roster when Redux state changes
+    useEffect(() => {
+        // Ensure activeSession and its records exist before updating
+        if (activeSession && activeSession.attendanceRecords) {
+            setLocalRoster(activeSession.attendanceRecords);
+        }
+    }, [activeSession?.attendanceRecords]);
+
     // Countdown Timer
     useEffect(() => {
         if (!isWindowOpen) return;
@@ -24,26 +44,13 @@ const LiveAttendanceRoster = ({ session }) => {
         return () => clearInterval(timer);
     }, [timeLeft, isWindowOpen]);
 
-    // Roster Polling
-    useEffect(() => {
-        const polling = setInterval(() => {
-            if (isWindowOpen) {
-                dispatch(getSessionRoster(session._id));
-            }
-        }, 5000); // Poll every 5 seconds
-        return () => clearInterval(polling);
-    }, [dispatch, session._id, isWindowOpen]);
-    
-    useEffect(() => {
-        setRoster(session.attendanceRecords || []);
-    }, [session.attendanceRecords]);
 
     const handleToggle = (studentId) => {
-        setRoster(roster.map(r => r.student._id === studentId ? { ...r, status: !r.status } : r));
+        setLocalRoster(localRoster.map(r => r.student._id === studentId ? { ...r, status: !r.status } : r));
     };
 
     const handleFinalize = () => {
-        const updatedRoster = roster.map(({ student, status }) => ({ studentId: student._id, status }));
+        const updatedRoster = localRoster.map(({ student, status }) => ({ studentId: student._id, status }));
         dispatch(finalizeAttendance({ sessionId: session._id, updatedRoster }))
             .unwrap()
             .then(() => toast.success("Attendance has been finalized successfully."))
@@ -64,7 +71,7 @@ const LiveAttendanceRoster = ({ session }) => {
             </Typography>
 
             <List sx={{ maxHeight: 400, overflow: 'auto', mt: 2 }}>
-                {roster.map(({ student, status }) => (
+                {localRoster.map(({ student, status }) => (
                     <ListItem key={student._id} secondaryAction={
                         <Switch
                             edge="end"

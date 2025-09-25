@@ -66,6 +66,28 @@ const updateTeacherAssignments = async (data, token) => {
     return response.data;
 };
 
+// Update an existing subject
+const updateSubject = async (subjectData, token) => {
+    const { id, ...data } = subjectData;
+    const config = { headers: { Authorization: `Bearer ${token}` } };
+    const response = await axios.put(`${API_URL}subjects/${id}`, data, config);
+    return response.data;
+};
+
+// Delete a subject
+const deleteSubject = async (subjectId, token) => {
+    const config = { headers: { Authorization: `Bearer ${token}` } };
+    const response = await axios.delete(`${API_URL}subjects/${subjectId}`, config);
+    return response.data;
+};
+
+
+// Get all users with the teacher role
+const getAllTeachers = async (token) => {
+    const config = { headers: { Authorization: `Bearer ${token}` } };
+    const response = await axios.get(`${API_URL}teachers`, config);
+    return response.data;
+};
 
 
 const adminService = {
@@ -76,6 +98,9 @@ const adminService = {
     getAttendanceStats,
     getFeedbackSummary,
     updateTeacherAssignments,
+    updateSubject,
+    deleteSubject,
+    getAllTeachers,
 };
 
 

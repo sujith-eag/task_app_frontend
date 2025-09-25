@@ -1,32 +1,33 @@
 import React, { useState } from 'react';
 import { Box, Typography, Button } from '@mui/material';
-import TeacherAssignmentModal from './TeacherAssignmentModal';
+import TeacherAssignmentModal from './TeacherAssignmentModal.jsx';
+import TeacherList from './TeacherList.jsx';
 
 const FacultyManager = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedTeacher, setSelectedTeacher] = useState(null); // ID of teacher being edited
-
-    // This component would display a list of all teachers.
-    // For simplicity, we'll just have a button to open the assignment modal.
     
-    const handleOpenModal = (teacherId) => {
-        setSelectedTeacher(teacherId);
+    const handleOpenModal = (teacher) => {
+        setSelectedTeacher(teacher);
         setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setSelectedTeacher(null);
     };
 
     return (
         <Box>
             <Typography variant="h5">Manage Faculty Assignments</Typography>
-            {/* Placeholder to simulate selecting a teacher to edit */}
-            <Button sx={{mt: 2}} variant="outlined" onClick={() => handleOpenModal('teacher_id_placeholder')}>
-                Assign Subjects to Dr. Smith
-            </Button>
+
+            <TeacherList onAssign={handleOpenModal} />
             
             {selectedTeacher && (
                 <TeacherAssignmentModal 
                     open={isModalOpen} 
-                    handleClose={() => setIsModalOpen(false)} 
-                    teacherId={selectedTeacher} 
+                    handleClose={handleCloseModal} 
+                    teacherId={selectedTeacher._id} 
                 />
             )}
         </Box>

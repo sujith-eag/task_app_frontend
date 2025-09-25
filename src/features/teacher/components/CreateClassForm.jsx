@@ -10,10 +10,19 @@ const CreateClassForm = () => {
     const { assignedSubjects, isLoading, isError, message } = useSelector((state) => state.teacher);
 
     useEffect(() => {
-        if(isError) toast.error(message);
         dispatch(getClassCreationData());
-        return () => dispatch(reset());
-    }, [dispatch, isError, message]);
+    }, [dispatch]);
+
+    useEffect(() => {
+        if (isError) {
+            toast.error(message);
+        }
+        // Cleanup function to reset the slice's state when the component unmounts
+        return () => {
+            dispatch(reset());
+        };
+    }, [isError, message, dispatch]);
+
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -28,7 +37,7 @@ const CreateClassForm = () => {
         }
         const sessionData = {
             ...formData,
-            batch: 2025, // This should be dynamic in a real app
+            batch: new Date().getFullYear(), // This should be dynamic in a real app
             semester: selectedSubject.semester,
         };
         dispatch(createClassSession(sessionData));

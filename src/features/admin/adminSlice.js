@@ -4,6 +4,7 @@ import adminService from './adminService.js';
 // --- Initial State ---
 const initialState = {
     // Data for management tabs
+    teachers: [],
     pendingApplications: [],
     subjects: [],
     // Data for reporting tabs
@@ -97,8 +98,41 @@ export const updateTeacherAssignments = createAsyncThunk('admin/updateAssignment
     }
 });
 
+// Update an existing subject
+export const updateSubject = createAsyncThunk('admin/updateSubject', async (subjectData, thunkAPI) => {
+    try {
+        const token = thunkAPI.getState().auth.user.token;
+        return await adminService.updateSubject(subjectData, token);
+    } catch (error) {
+        const message = (error.response?.data?.message) || error.message || error.toString();
+        return thunkAPI.rejectWithValue(message);
+    }
+});
 
-// --- Slice Definition ---
+// Delete a subject
+export const deleteSubject = createAsyncThunk('admin/deleteSubject', async (subjectId, thunkAPI) => {
+    try {
+        const token = thunkAPI.getState().auth.user.token;
+        return await adminService.deleteSubject(subjectId, token);
+    } catch (error) {
+        const message = (error.response?.data?.message) || error.message || error.toString();
+        return thunkAPI.rejectWithValue(message);
+    }
+});
+
+
+// Get all users with the teacher role
+export const getAllTeachers = createAsyncThunk('admin/getAllTeachers', async (_, thunkAPI) => {
+    try {
+        const token = thunkAPI.getState().auth.user.token;
+        return await adminService.getAllTeachers(token);
+    } catch (error) {
+        const message = (error.response?.data?.message) || error.message || error.toString();
+        return thunkAPI.rejectWithValue(message);
+    }
+});
+
+
 export const adminSlice = createSlice({
     name: 'admin',
     initialState,
@@ -216,7 +250,58 @@ export const adminSlice = createSlice({
                 state.isLoading = false;
                 state.isError = true;
                 state.message = action.payload;
-            })            
+            })
+
+
+            // --- Cases for updating a subject ---
+            .addCase(updateSubject.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(updateSubject.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isSuccess = true;
+                // Find the index of the updated subject and replace it in the state
+                const index = state.subjects.findIndex(s => s._id === action.payload._id);
+                if (index !== -1) {
+                    state.subjects[index] = action.payload;
+                }
+            })
+            .addCase(updateSubject.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload;
+            })
+
+            // --- Add cases for deleting a subject ---
+            .addCase(deleteSubject.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(deleteSubject.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isSuccess = true;
+                // Remove the deleted subject from the state
+                state.subjects = state.subjects.filter(s => s._id !== action.payload.id);
+            })
+            .addCase(deleteSubject.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload;
+            })
+
+            // --- Add cases for getting all teachers ---
+            .addCase(getAllTeachers.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(getAllTeachers.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isSuccess = true;
+                state.teachers = action.payload; // Populate the teachers array
+            })
+            .addCase(getAllTeachers.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload;
+            })
     ;},
 });
 

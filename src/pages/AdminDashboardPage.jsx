@@ -2,8 +2,11 @@ import React, { useState } from 'react';
 import { Box, Container, Typography, Tabs, Tab, Paper } from '@mui/material';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
+import SchoolIcon from '@mui/icons-material/School';
+
 import ApplicationReview from '../features/admin/components/ApplicationReview.jsx';
 import SubjectManager from '../features/admin/components/SubjectManager.jsx';
+import FacultyManager from '../features/admin/components/FacultyManager';
 
 const TabPanel = (props) => {
     const { children, value, index, ...other } = props;
@@ -31,6 +34,7 @@ const AdminDashboardPage = () => {
                     <Tabs value={tabIndex} onChange={handleTabChange} aria-label="admin dashboard tabs">
                         <Tab icon={<PeopleAltIcon />} iconPosition="start" label="Student Applications" />
                         <Tab icon={<LibraryBooksIcon />} iconPosition="start" label="Subject Management" />
+                        <Tab icon={<SchoolIcon />} iconPosition="start" label="Faculty Management" />
                     </Tabs>
                 </Box>
                 <TabPanel value={tabIndex} index={0}>
@@ -38,6 +42,9 @@ const AdminDashboardPage = () => {
                 </TabPanel>
                 <TabPanel value={tabIndex} index={1}>
                     <SubjectManager />
+                </TabPanel>
+                <TabPanel value={tabIndex} index={2}>
+                    <FacultyManager />
                 </TabPanel>
             </Paper>
         </Container>
