@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Modal, Box, Typography, Button, TextField, MenuItem, 
     CircularProgress, FormGroup, FormControlLabel, Checkbox,
@@ -6,7 +6,9 @@ import { Modal, Box, Typography, Button, TextField, MenuItem,
 import DeleteIcon from '@mui/icons-material/Delete';
 import { toast } from 'react-toastify';
 
-import { updateTeacherAssignments, deleteTeacherAssignment } from '../adminSlice.js';
+import { updateTeacherAssignments, 
+    deleteTeacherAssignment, getSubjects } from '../adminSlice.js';
+
 
 const style = {
     position: 'absolute',
@@ -29,7 +31,15 @@ const TeacherAssignmentModal = ({ open, handleClose, teacher }) => {
     const [subject, setSubject] = useState('');
     const [selectedSections, setSelectedSections] = useState([]);
     const [batch, setBatch] = useState(new Date().getFullYear());
+    const [semester, setSemester] = useState('');
 
+    useEffect(() => {
+        // Re-fetch subjects every time the modal opens to ensure fresh data
+        if (open) {
+            dispatch(getSubjects());
+        }
+    }, [open, dispatch]);
+    
     const handleSectionChange = (event) => {
         const { name, checked } = event.target;
         setSelectedSections(prev => 
@@ -42,7 +52,7 @@ const TeacherAssignmentModal = ({ open, handleClose, teacher }) => {
         if (!subject || selectedSections.length === 0 || !batch) {
             return toast.error("Please fill all fields to add an assignment.");
         }
-        const assignmentData = { subject, sections: selectedSections, batch };
+        const assignmentData = { subject, sections: selectedSections, batch, semester };
         
         dispatch(updateTeacherAssignments({ teacherId: teacher._id, assignmentData }))
             .unwrap()
@@ -51,6 +61,9 @@ const TeacherAssignmentModal = ({ open, handleClose, teacher }) => {
                 // Reset form after successful submission
                 setSubject('');
                 setSelectedSections([]);
+                setSemester('');
+                setBatch(new Date().getFullYear());
+                handleClose();
             })
             .catch(err => toast.error(err));
     };
@@ -89,7 +102,7 @@ const TeacherAssignmentModal = ({ open, handleClose, teacher }) => {
                             >
                                 <ListItemText 
                                     primary={`${assign.subject.name} (${assign.subject.subjectCode})`}
-                                    secondary={`Batch: ${assign.batch}, Sections: ${assign.sections.join(', ')}`}
+                                    secondary={`Batch: ${assign.batch}, Semester: ${assign.semester}, Sections: ${assign.sections.join(', ')}`}
                                 />
                             </ListItem>
                         ))
@@ -134,25 +147,49 @@ const TeacherAssignmentModal = ({ open, handleClose, teacher }) => {
                     margin="normal" 
                 />
 
+                <TextField 
+                    label="Semester" 
+                    type="number" 
+                    value={semester} 
+                    onChange={(e) => setSemester(e.target.value)} 
+                    fullWidth 
+                    required 
+                    margin="normal" 
+                />
+
                 <FormGroup row>
                     {sections.map(sec => (
                         <FormControlLabel 
                             key={sec} 
                             control={<Checkbox checked={selectedSections.includes(sec)} 
-                                onChange={handleSectionChange} 
-                                name={sec} 
-                                />} label={sec} />
+                            onChange={handleSectionChange} 
+                            name={sec} 
+                        />} label={sec} />
                     ))}
                 </FormGroup>
 
-                <Button 
+                {/* <Button 
                     onClick={handleAddAssignment} 
                     variant="contained" 
                     sx={{ mt: 2 }} 
                     disabled={isLoading}
                     >
                     {isLoading ? <CircularProgress size={24} /> : 'Add Assignment'}
-                </Button>
+                </Button> */}
+
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 2 }}>
+                    <Button onClick={handleClose} variant="outlined">
+                        Close
+                    </Button>
+                    <Button 
+                        onClick={handleAddAssignment} 
+                        variant="contained" 
+                        disabled={isLoading}
+                    >
+                        {isLoading ? <CircularProgress size={24} /> : 'Add Assignment'}
+                    </Button>
+                </Box>
+
             </Box>
         </Modal>
     );

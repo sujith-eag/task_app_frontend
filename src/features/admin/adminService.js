@@ -36,6 +36,12 @@ const reviewApplication = async (userId, action, token) => {
     return response.data;
 };
 
+const updateStudentEnrollment = async (studentId, subjectIds, token) => {
+    const config = { headers: { Authorization: `Bearer ${token}` } };
+    const response = await axios.put(`${API_URL}students/${studentId}/enrollment`, { subjectIds }, config);
+    return response.data;
+};
+
 // --- Reporting ---
 
 // Get aggregated attendance statistics with optional filters
@@ -149,6 +155,7 @@ const adminService = {
     getUsersByRole,
     promoteToFaculty,
     updateStudentDetails,
+    updateStudentEnrollment
 };
 
 

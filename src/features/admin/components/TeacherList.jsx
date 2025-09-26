@@ -1,4 +1,3 @@
-// Create this new file: features/admin/components/TeacherList.jsx
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Box, Button, CircularProgress } from '@mui/material';
@@ -8,7 +7,7 @@ import { getAllTeachers } from '../adminSlice';
 const TeacherList = ({ onAssign }) => { // onAssign is a function to open the modal
     const dispatch = useDispatch();
     const { teachers, isLoading } = useSelector((state) => state.admin);
-
+    
     useEffect(() => {
         dispatch(getAllTeachers());
     }, [dispatch]);
@@ -19,8 +18,33 @@ const TeacherList = ({ onAssign }) => { // onAssign is a function to open the mo
         { 
             field: 'assignments', 
             headerName: 'Assigned Subjects', 
-            flex: 1,
-            valueGetter: (params) => params?.row?.teacherDetails?.assignments?.length || 0
+            flex: 1.5,
+            renderCell: (params) => {
+                const assignments = params.row.teacherDetails?.assignments || [];
+                if (!assignments.length) return "0";
+
+                return (
+                <span title={assignments.map(a => a.subject?.name).join(", ")}>
+                    {assignments.length}
+                </span>
+                );
+            },
+
+            // valueGetter: (params) => params?.row?.teacherDetails?.assignments?.length || 0
+
+            // valueGetter: (params) => { 
+            //     const assignments = params?.row?.teacherDetails?.assignments;
+            //     if (Array.isArray(assignments)) {
+            //         return assignments.length;
+            //     }
+            //     return 0;
+            // },
+
+            // renderCell: (params) => {
+            //     const assignments = params.row.teacherDetails?.assignments || [];
+            //     if (!assignments.length) return "None";
+            //     return assignments.map(a => a.subject?.name || "Unknown").join(", ");
+            // }
         },
         {
             field: 'actions',
@@ -34,7 +58,7 @@ const TeacherList = ({ onAssign }) => { // onAssign is a function to open the mo
         },
     ];
 
-    if (isLoading && !teachers.length == 0) return <CircularProgress />;
+    if (isLoading && teachers.length === 0) return <CircularProgress />;
 
     return (
         <Box sx={{ height: 400, width: '100%', mt: 2 }}>
@@ -43,6 +67,9 @@ const TeacherList = ({ onAssign }) => { // onAssign is a function to open the mo
                 columns={columns}
                 getRowId={(row) => row._id}
                 loading={isLoading}
+                slots={{
+                    noRowsOverlay: () => <Typography>No teachers found.</Typography>
+                }}                
             />
         </Box>
     );

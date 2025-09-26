@@ -10,6 +10,7 @@ const initialState = {
     // Data for reporting tabs
     attendanceStats: [],
     feedbackSummary: [],
+    userList: [],
     // Standard async state flags
     isError: false,
     isSuccess: false,
@@ -148,6 +149,53 @@ export const getAllTeachers = createAsyncThunk('admin/getAllTeachers', async (_,
     }
 });
 
+// Get users by their role
+export const getUsersByRole = createAsyncThunk('admin/getUsersByRole', async (role, thunkAPI) => {
+    try {
+        const token = thunkAPI.getState().auth.user.token;
+        return await adminService.getUsersByRole(role, token);
+    } catch (error) {
+        const message = (error.response?.data?.message) || error.message || error.toString();
+        return thunkAPI.rejectWithValue(message);
+    }
+});
+
+// Promote a user to a faculty role
+export const promoteToFaculty = createAsyncThunk('admin/promoteToFaculty', async (data, thunkAPI) => {
+    // data = { userId, facultyData }
+    try {
+        const token = thunkAPI.getState().auth.user.token;
+        return await adminService.promoteToFaculty(data.userId, data.facultyData, token);
+    } catch (error) {
+        const message = (error.response?.data?.message) || error.message || error.toString();
+        return thunkAPI.rejectWithValue(message);
+    }
+});
+
+// Update an existing student's details
+export const updateStudentDetails = createAsyncThunk('admin/updateStudent', async (data, thunkAPI) => {
+    // data = { studentId, studentData }
+    try {
+        const token = thunkAPI.getState().auth.user.token;
+        return await adminService.updateStudentDetails(data.studentId, data.studentData, token);
+    } catch (error) {
+        const message = (error.response?.data?.message) || error.message || error.toString();
+        return thunkAPI.rejectWithValue(message);
+    }
+});
+
+
+export const updateStudentEnrollment = createAsyncThunk('admin/updateEnrollment', async (data, thunkAPI) => {
+    // data = { studentId, subjectIds }
+    try {
+        const token = thunkAPI.getState().auth.user.token;
+        return await adminService.updateStudentEnrollment(data.studentId, data.subjectIds, token);
+    } catch (error) {
+        const message = (error.response?.data?.message) || error.message || error.toString();
+        return thunkAPI.rejectWithValue(message);
+    }
+});
+
 
 export const adminSlice = createSlice({
     name: 'admin',
@@ -259,13 +307,20 @@ export const adminSlice = createSlice({
                 state.isLoading = false;
                 state.isSuccess = true;
                 const { teacherId } = action.meta.arg; // Get teacherId from the original thunk argument
+        
                 const updatedDetails = action.payload.teacherDetails;
-            
-                const teacherIndex = state.teachers.findIndex(t => t._id === teacherId);
-                if (teacherIndex !== -1) {
-                    // Replace the teacher's details with the updated ones from the server
-                    state.teachers[teacherIndex].teacherDetails = updatedDetails;
-                }
+
+                state.teachers = state.teachers.map((teacher) => {
+                    if(teacher._id === teacherId){
+                        return{ ...teacher, teacherDetails: updatedDetails};
+                    }
+                    return teacher;
+                });
+                // const teacherIndex = state.teachers.findIndex(t => t._id === teacherId);
+                // if (teacherIndex !== -1) {
+                //     // Replace the teacher's details with the updated ones from the server
+                //     state.teachers[teacherIndex].teacherDetails = updatedDetails;
+                // }
             })
             .addCase(updateTeacherAssignments.rejected, (state, action) => {
                 state.isLoading = false;
@@ -346,8 +401,82 @@ export const adminSlice = createSlice({
                 state.isLoading = false;
                 state.isError = true;
                 state.message = action.payload;
-            })            
+            })
+
+
+            // Get Users by Role
+            .addCase(getUsersByRole.pending, (state) => {
+                state.isLoading = true;
+                state.userList = []; // Clear previous list while loading
+            })
+            .addCase(getUsersByRole.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isSuccess = true;
+                state.userList = action.payload;
+            })
+            .addCase(getUsersByRole.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload;
+            })
+            // Promote User to Faculty
+            .addCase(promoteToFaculty.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(promoteToFaculty.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isSuccess = true;
+                // Remove the promoted user from the list of general 'users'
+                state.userList = state.userList.filter(
+                    (user) => user._id !== action.payload.user.id
+                );
+            })
+            .addCase(promoteToFaculty.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload;
+            })
+            // Update Student Details
+            .addCase(updateStudentDetails.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(updateStudentDetails.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isSuccess = true;
+                const { studentId } = action.meta.arg;
+                const updatedDetails = action.payload.studentDetails;
+
+                const index = state.userList.findIndex((user) => user._id === studentId);
+                if (index !== -1) {
+                    state.userList[index].studentDetails = updatedDetails;
+                }
+            })
+            .addCase(updateStudentDetails.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload;
+            })
+
             
+            .addCase(updateStudentEnrollment.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(updateStudentEnrollment.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isSuccess = true;
+                const { studentId } = action.meta.arg;
+                const { enrolledSubjects } = action.payload;
+
+                const index = state.userList.findIndex((user) => user._id === studentId);
+                if (index !== -1) {
+                    state.userList[index].studentDetails.enrolledSubjects = enrolledSubjects;
+                }
+            })
+            .addCase(updateStudentEnrollment.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload;
+            })
     ;},
 });
 
