@@ -48,6 +48,7 @@ const getAttendanceStats = async (filters, token) => {
     return response.data;
 };
 
+
 // Get aggregated feedback summary with optional filters
 const getFeedbackSummary = async (filters, token) => {
     const config = {
@@ -58,6 +59,7 @@ const getFeedbackSummary = async (filters, token) => {
     return response.data;
 };
 
+
 // --- Add or update a teacher's subject assignments ---
 const updateTeacherAssignments = async (data, token) => {
     const { teacherId, assignmentData } = data;
@@ -66,6 +68,7 @@ const updateTeacherAssignments = async (data, token) => {
     return response.data;
 };
 
+
 // Update an existing subject
 const updateSubject = async (subjectData, token) => {
     const { id, ...data } = subjectData;
@@ -73,6 +76,7 @@ const updateSubject = async (subjectData, token) => {
     const response = await axios.put(`${API_URL}subjects/${id}`, data, config);
     return response.data;
 };
+
 
 // Delete a subject
 const deleteSubject = async (subjectId, token) => {
@@ -90,6 +94,46 @@ const getAllTeachers = async (token) => {
 };
 
 
+// --- deleting a teacher's assignment ---
+const deleteTeacherAssignment = async (data, token) => {
+    const { teacherId, assignmentId } = data;
+    const config = { headers: { Authorization: `Bearer ${token}` } };
+
+    const response = await axios.delete(`${API_URL}teachers/${teacherId}/assignments/${assignmentId}`, config);
+    return response.data;
+};
+
+
+// Get users by their role ( 'user', 'student')
+// GET /api/admin/users
+const getUsersByRole = async (role, token) => {
+    const config = {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { role } // Axios will create the query string ?role=...
+    };
+    const response = await axios.get(API_URL + 'users', config);
+    return response.data;
+};
+
+
+// Promote a user to a faculty role
+// PATCH /api/admin/users/:userId/promote
+const promoteToFaculty = async (userId, facultyData, token) => {
+    const config = { headers: { Authorization: `Bearer ${token}` } };
+    const response = await axios.patch(`${API_URL}users/${userId}/promote`, facultyData, config);
+    return response.data;
+};
+
+
+// Update an existing student's details
+// PUT /api/admin/students/:studentId
+const updateStudentDetails = async (studentId, studentData, token) => {
+    const config = { headers: { Authorization: `Bearer ${token}` } };
+    const response = await axios.put(`${API_URL}students/${studentId}`, studentData, config);
+    return response.data;
+};
+
+
 const adminService = {
     getSubjects,
     createSubject,
@@ -101,6 +145,10 @@ const adminService = {
     updateSubject,
     deleteSubject,
     getAllTeachers,
+    deleteTeacherAssignment,
+    getUsersByRole,
+    promoteToFaculty,
+    updateStudentDetails,
 };
 
 

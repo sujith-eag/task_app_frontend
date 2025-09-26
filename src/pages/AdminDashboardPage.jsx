@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+
 import { Box, Container, Typography, Tabs, Tab, Paper } from '@mui/material';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
@@ -7,6 +9,12 @@ import SchoolIcon from '@mui/icons-material/School';
 import ApplicationReview from '../features/admin/components/ApplicationReview.jsx';
 import SubjectManager from '../features/admin/components/SubjectManager.jsx';
 import FacultyManager from '../features/admin/components/FacultyManager';
+
+import { getPendingApplications, 
+            getSubjects,
+            getAllTeachers
+        } from '../features/admin/adminSlice.js';
+
 
 const TabPanel = (props) => {
     const { children, value, index, ...other } = props;
@@ -19,7 +27,15 @@ const TabPanel = (props) => {
 
 const AdminDashboardPage = () => {
     const [tabIndex, setTabIndex] = useState(0);
+    const dispatch = useDispatch(); // Get the dispatch function
 
+    useEffect(() => {
+        // Dispatch all actions to pre-fetch data for all tabs on initial component mount
+        dispatch(getPendingApplications());
+        dispatch(getSubjects());
+        dispatch(getAllTeachers());
+    }, [dispatch]);
+    
     const handleTabChange = (event, newValue) => {
         setTabIndex(newValue);
     };

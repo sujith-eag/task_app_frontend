@@ -27,7 +27,7 @@ const FacultyManager = () => {
                 <TeacherAssignmentModal 
                     open={isModalOpen} 
                     handleClose={handleCloseModal} 
-                    teacherId={selectedTeacher._id} 
+                    teacher={selectedTeacher} 
                 />
             )}
         </Box>

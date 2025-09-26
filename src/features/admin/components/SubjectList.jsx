@@ -2,15 +2,18 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Box, Typography, CircularProgress, Alert, Paper, Button } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
-import { getSubjects } from '../adminSlice.js';
+import { getSubjects, deleteSubject } from '../adminSlice.js';
 
 const SubjectList = ({ onEdit }) => {
     const dispatch = useDispatch();
     const { subjects, isLoading, isError, message } = useSelector((state) => state.admin);
 
     useEffect(() => {
+    // dispatch action if the subjects array is empty.
+    if (subjects.length === 0) {
         dispatch(getSubjects());
-    }, [dispatch]);
+    }
+    }, [dispatch, subjects.length]);
 
     const handleDelete = (subjectId) => {
         if(window.confirm('Are you sure you want to delete this subject?')) {

@@ -98,6 +98,22 @@ export const updateTeacherAssignments = createAsyncThunk('admin/updateAssignment
     }
 });
 
+
+// --- Thunk for deleting an assignment ---
+export const deleteTeacherAssignment = createAsyncThunk('admin/deleteAssignment', async (data, thunkAPI) => {
+    // data = { teacherId, assignmentId }
+    try {
+        const token = thunkAPI.getState().auth.user.token;
+        await adminService.deleteTeacherAssignment(data, token);
+        // Return the original data on success to use it in the reducer
+        return data;
+    } catch (error) {
+        const message = (error.response?.data?.message) || error.message || error.toString();
+        return thunkAPI.rejectWithValue(message);
+    }
+});
+
+
 // Update an existing subject
 export const updateSubject = createAsyncThunk('admin/updateSubject', async (subjectData, thunkAPI) => {
     try {
@@ -242,9 +258,14 @@ export const adminSlice = createSlice({
             .addCase(updateTeacherAssignments.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.isSuccess = true;
-                // Optionally, you can update the state of a specific teacher
-                // if you are storing a list of all teachers in the adminSlice.
-                state.message = action.payload.message;
+                const { teacherId } = action.meta.arg; // Get teacherId from the original thunk argument
+                const updatedDetails = action.payload.teacherDetails;
+            
+                const teacherIndex = state.teachers.findIndex(t => t._id === teacherId);
+                if (teacherIndex !== -1) {
+                    // Replace the teacher's details with the updated ones from the server
+                    state.teachers[teacherIndex].teacherDetails = updatedDetails;
+                }
             })
             .addCase(updateTeacherAssignments.rejected, (state, action) => {
                 state.isLoading = false;
@@ -302,6 +323,31 @@ export const adminSlice = createSlice({
                 state.isError = true;
                 state.message = action.payload;
             })
+
+            
+            
+            // --- Cases for deleting an assignment ---
+            .addCase(deleteTeacherAssignment.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(deleteTeacherAssignment.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isSuccess = true;
+                const { teacherId, assignmentId } = action.payload; // Data passed from the thunk
+                const teacher = state.teachers.find(t => t._id === teacherId);
+                if (teacher) {
+                    // Filter out the deleted assignment from the specific teacher's assignments array
+                    teacher.teacherDetails.assignments = teacher.teacherDetails.assignments.filter(
+                        a => a._id !== assignmentId
+                    );
+                }
+            })
+            .addCase(deleteTeacherAssignment.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload;
+            })            
+            
     ;},
 });
 

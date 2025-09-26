@@ -34,7 +34,7 @@ const TeacherList = ({ onAssign }) => { // onAssign is a function to open the mo
         },
     ];
 
-    if (isLoading && !teachers) return <CircularProgress />;
+    if (isLoading && !teachers.length == 0) return <CircularProgress />;
 
     return (
         <Box sx={{ height: 400, width: '100%', mt: 2 }}>

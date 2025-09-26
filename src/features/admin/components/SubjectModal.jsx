@@ -34,9 +34,19 @@ const SubjectModal = ({ open, handleClose, subject }) => {
     
     useEffect(() => {
         if (subject) {
-            setFormData(subject); // Populate form if in edit mode
+            setFormData({
+                name: subject.name || '',
+                subjectCode: subject.subjectCode || '',
+                semester: subject.semester || '',
+                department: subject.department || '',
+            }); // Populate form if in edit mode
         } else {
-            setFormData({ name: '', subjectCode: '', semester: '', department: '' }); // Clear form for create mode
+            setFormData({ 
+                name: '', 
+                subjectCode: '', 
+                semester: '', 
+                department: '' 
+            }); // Clear form for create mode
         }
     }, [subject, open]);
 
