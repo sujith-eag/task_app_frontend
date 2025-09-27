@@ -5,77 +5,113 @@ import { getClassCreationData, createClassSession, reset } from '../teacherSlice
 import { toast } from 'react-toastify';
 
 const CreateClassForm = () => {
-    const [formData, setFormData] = useState({ subject: '', type: 'Theory', section: 'A' });
     const dispatch = useDispatch();
-    const { assignedSubjects, isLoading, isError, message } = useSelector((state) => state.teacher);
+
+    const { assignments, isLoading, isError, message } = useSelector((state) => state.teacher);
+
+    // Form State
+    const [selectedAssignmentId, setSelectedAssignmentId] = useState('');
+    const [selectedSection, setSelectedSection] = useState('');
+    const [availableSections, setAvailableSections] = useState([]);
+    const [selectedType, setSelectedType] = useState('Theory');
 
     useEffect(() => {
         dispatch(getClassCreationData());
+        return () => { dispatch(reset()); };
     }, [dispatch]);
 
     useEffect(() => {
-        if (isError) {
-            toast.error(message);
+        if (isError) { toast.error(message); }
+    }, [isError, message]);
+
+    // --- cascading logic ---
+    const handleAssignmentChange = (e) => {
+        const assignmentId = e.target.value;
+        setSelectedAssignmentId(assignmentId);
+
+        // Find the selected assignment to populate the section dropdown
+        const assignment = assignments.find(a => a._id === assignmentId);
+        if (assignment) {
+            setAvailableSections(assignment.sections);
+            // Auto-select the first available section
+            setSelectedSection(assignment.sections[0] || '');
+        } else {
+            setAvailableSections([]);
+            setSelectedSection('');
         }
-        // Cleanup function to reset the slice's state when the component unmounts
-        return () => {
-            dispatch(reset());
-        };
-    }, [isError, message, dispatch]);
-
-
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        const selectedSubject = assignedSubjects.find(s => s._id === formData.subject);
-        if (!selectedSubject) {
-            toast.error("Please select a valid subject.");
+        const selectedAssignment = assignments.find(a => a._id === selectedAssignmentId);
+        if (!selectedAssignment || !selectedSection) {
+            toast.error("Please select a valid assignment and section.");
             return;
         }
+
         const sessionData = {
-            ...formData,
-            batch: new Date().getFullYear(), // This should be dynamic in a real app
-            semester: selectedSubject.semester,
+            subject: selectedAssignment.subject._id,
+            batch: selectedAssignment.batch,
+            semester: selectedAssignment.semester,
+            section: selectedSection,
+            type: selectedType,
         };
         dispatch(createClassSession(sessionData));
-    };
 
     return (
         <Box component="form" onSubmit={handleSubmit}>
             <Typography variant="h5" gutterBottom>Start a New Class</Typography>
             <TextField
                 select
-                label="Subject"
-                name="subject"
-                value={formData.subject}
-                onChange={handleChange}
+                label="Select Assignment"
+                value={selectedAssignmentId}
+                onChange={handleAssignmentChange}
                 fullWidth
                 required
                 margin="normal"
             >
-                {assignedSubjects.map((subject) => (
-                    <MenuItem key={subject._id} value={subject._id}>
-                        {subject.name} ({subject.subjectCode})
+                <MenuItem value="" disabled><em>Select an assignment...</em></MenuItem>
+                {assignments.map((assign) => (
+                    <MenuItem key={assign._id} value={assign._id}>
+                        {`${assign.subject.name} - Batch ${assign.batch} (Sem ${assign.semester})`}
                     </MenuItem>
                 ))}
             </TextField>
-             <TextField select label="Class Type" name="type" value={formData.type} onChange={handleChange} fullWidth required margin="normal">
+
+            <TextField
+                select
+                label="Class Type"
+                value={selectedType}
+                onChange={(e) => setSelectedType(e.target.value)}
+                fullWidth
+                required
+                margin="normal"
+            >
                 <MenuItem value="Theory">Theory</MenuItem>
                 <MenuItem value="Lab">Lab</MenuItem>
             </TextField>
-            <TextField select label="Section" name="section" value={formData.section} onChange={handleChange} fullWidth required margin="normal">
-                <MenuItem value="A">A</MenuItem>
-                <MenuItem value="B">B</MenuItem>
-            </TextField>
+
+            <TextField
+                select
+                label="Section"
+                value={selectedSection}
+                onChange={(e) => setSelectedSection(e.target.value)}
+                fullWidth
+                required
+                margin="normal"
+                disabled={!selectedAssignmentId} // Disabled until an assignment is chosen
+            >
+                {availableSections.map((sec) => (
+                    <MenuItem key={sec} value={sec}>{sec}</MenuItem>
+                ))}
+            </TextField>            
+
             <Button type="submit" variant="contained" size="large" disabled={isLoading} sx={{ mt: 2, position: 'relative' }}>
                 Start Class & Generate Code
                 {isLoading && <CircularProgress size={24} sx={{ position: 'absolute' }} />}
             </Button>
         </Box>
     );
-};
+}};
 
 export default CreateClassForm;

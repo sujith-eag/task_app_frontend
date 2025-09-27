@@ -45,7 +45,12 @@ export const submitFeedback = createAsyncThunk('student/submitFeedback', async (
 export const markAttendance = createAsyncThunk('student/markAttendance', async (attendanceData, thunkAPI) => {
     try {
         const token = thunkAPI.getState().auth.user.token;
-        return await studentService.markAttendance(attendanceData, token);
+        const response = await studentService.markAttendance(attendanceData, token);
+        // On success, automatically dispatch the action to refetch the dashboard stats.
+        thunkAPI.dispatch(getStudentDashboardStats());
+
+        return response;
+
     } catch (error) {
         const message = (error.response?.data?.message) || error.message || error.toString();
         return thunkAPI.rejectWithValue(message);

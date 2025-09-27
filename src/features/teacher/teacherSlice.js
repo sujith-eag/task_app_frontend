@@ -3,12 +3,13 @@ import teacherService from './teacherService.js';
 
 // --- Initial State ---
 const initialState = {
-    assignedSubjects: [],
+    assignments: [],
     activeSession: null, // Will hold the object of the currently live session
     sessionHistory: [],
     isError: false,
     isSuccess: false,
     isLoading: false,
+    isRosterLoading: false,
     message: '',
 };
 
@@ -84,7 +85,22 @@ export const teacherSlice = createSlice({
         // Reducer to manually end a session from the frontend (e.g., on finalize or closing the view)
         endActiveSession: (state) => {
             state.activeSession = null;
-        }
+        },
+        
+        updateRosterOnSocketEvent: (state, action) => {
+            // action.payload should be the student record updated by the server
+            if (state.activeSession) {
+                const studentId = action.payload.student;
+                const recordIndex = state.activeSession.attendanceRecords.findIndex(
+                    (rec) => rec.student.toString() === studentId.toString()
+                );
+
+                if (recordIndex !== -1) {
+                    // Update the specific student's status to 'present'
+                    state.activeSession.attendanceRecords[recordIndex].status = true;
+                }
+            }
+        }        
     },
     extraReducers: (builder) => {
         builder
@@ -95,7 +111,7 @@ export const teacherSlice = createSlice({
             .addCase(getClassCreationData.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.isSuccess = true;
-                state.assignedSubjects = action.payload.subjects;
+                state.assignments = action.payload.assignments;
             })
             .addCase(getClassCreationData.rejected, (state, action) => {
                 state.isLoading = false;
@@ -135,14 +151,20 @@ export const teacherSlice = createSlice({
                 state.message = action.payload;
             })
 
-            // --- Get Session Roster ---
+            // --- Get Session Roster for initial load ---
+            .addCase(getSessionRoster.pending, (state) => {
+                state.isRosterLoading = true;
+            })
             .addCase(getSessionRoster.fulfilled, (state, action) => {
+                state.isRosterLoading = false;
                 if (state.activeSession) {
-                    // Update the roster within the active session object
                     state.activeSession.attendanceRecords = action.payload;
                 }
             })
-
+            .addCase(getSessionRoster.rejected, (state, action) => {
+                state.isRosterLoading = false;
+                state.message = `Failed to load roster: ${action.payload}`; 
+            })
 
             // --- Finalize Attendance ---
             .addCase(finalizeAttendance.pending, (state) => {

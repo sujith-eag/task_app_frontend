@@ -168,13 +168,10 @@ const TeacherAssignmentModal = ({ open, handleClose, teacher }) => {
                     ))}
                 </FormGroup>
 
-                {/* <Button 
-                    onClick={handleAddAssignment} 
-                    variant="contained" 
-                    sx={{ mt: 2 }} 
+                {/* <Button onClick={handleAddAssignment} 
+                    variant="contained" sx={{ mt: 2 }} 
                     disabled={isLoading}
-                    >
-                    {isLoading ? <CircularProgress size={24} /> : 'Add Assignment'}
+                    > {isLoading ? <CircularProgress size={24} /> : 'Add Assignment'}
                 </Button> */}
 
                 <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 2 }}>

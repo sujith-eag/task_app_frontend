@@ -16,8 +16,6 @@ const AttendanceEntry = () => {
                 .unwrap()
                 .then((result) => toast.success(result.message))
                 .catch((error) => toast.error(error));
-            console.log("Submitting code:", attendanceCode); // Placeholder
-            toast.success("Attendance marked successfully!"); // Placeholder
             setAttendanceCode('');
         } else {
             toast.error("Please enter a valid 8-digit code.");

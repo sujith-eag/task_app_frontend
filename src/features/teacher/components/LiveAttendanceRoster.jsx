@@ -1,26 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux'; // FIX: Import useSelector
 import { Box, Typography, Chip, List, ListItem, ListItemText, Switch, Button, CircularProgress } from '@mui/material';
-import { getSessionRoster, finalizeAttendance } from '../teacherSlice.js';
+import { getSessionRoster, finalizeAttendance, updateRosterOnSocketEvent } from '../teacherSlice.js';
 import { toast } from 'react-toastify';
+import { useSocket } from '../../../context/SocketContext.jsx';
 
 const LiveAttendanceRoster = ({ session }) => {
     const dispatch = useDispatch();
+    const socket = useSocket();
+
     const { activeSession } = useSelector((state) => state.teacher);
     const [timeLeft, setTimeLeft] = useState(60);
     const [isWindowOpen, setIsWindowOpen] = useState(true);
-    // FIX: Safely initialize localRoster from the session prop first
     const [localRoster, setLocalRoster] = useState(session?.attendanceRecords || []);
 
     // Roster Polling
+    // useEffect(() => {
+    //     const polling = setInterval(() => {
+    //         if (isWindowOpen) {
+    //             dispatch(getSessionRoster(session._id));
+    //         }
+    //     }, 5000);
+    //     return () => clearInterval(polling);
+    // }, [dispatch, session._id, isWindowOpen]);
+
+    // Runs only ONCE on mount to get the initial roster state.
     useEffect(() => {
-        const polling = setInterval(() => {
-            if (isWindowOpen) {
-                dispatch(getSessionRoster(session._id));
-            }
-        }, 5000);
-        return () => clearInterval(polling);
-    }, [dispatch, session._id, isWindowOpen]);
+        dispatch(getSessionRoster(session._id));
+    }, [dispatch, session._id]);
 
     // Update local roster when Redux state changes
     useEffect(() => {
@@ -30,6 +37,29 @@ const LiveAttendanceRoster = ({ session }) => {
         }
     }, [activeSession?.attendanceRecords]);
 
+	// This useEffect handles all real-time communication
+	useEffect(() => {
+	    // Have the teacher's client join a private "room" for this session
+	    if (socket) {
+	        socket.emit('join-session-room', session._id);
+	
+	        // Define the handler for incoming check-in events
+	        const handleStudentCheckIn = (studentData) => {
+	            // Dispatch the synchronous reducer to instantly update the UI
+	            dispatch(updateRosterOnSocketEvent(studentData));
+	        };
+	        
+	        // Listen for the 'student-checked-in' event from the server
+	        socket.on('student-checked-in', handleStudentCheckIn);
+	
+	        // Cleanup: Leave the room, remove the listener on component unmount
+	        return () => {
+	            socket.off('student-checked-in', handleStudentCheckIn);
+	            socket.emit('leave-session-room', session._id);
+	        };
+	    }
+	}, [dispatch, session._id, socket]);
+    
     // Countdown Timer
     useEffect(() => {
         if (!isWindowOpen) return;

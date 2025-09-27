@@ -7,7 +7,7 @@ import {
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import LockResetIcon from '@mui/icons-material/LockReset';
-import DashboardIcon from '@mui/icons-material/Dashboard'; // testing
+import DashboardIcon from '@mui/icons-material/Dashboard';
 
 import UpdateProfileForm from '../features/profile/components/UpdateProfileForm';
 import PreferencesSection from '../features/profile/components/PreferencesSection';

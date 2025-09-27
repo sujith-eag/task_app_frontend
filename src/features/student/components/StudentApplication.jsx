@@ -6,13 +6,13 @@ import { applyAsStudent } from '../../auth/authSlice.js';
 import { toast } from 'react-toastify';
 
 const StudentApplication = () => {
+    const dispatch = useDispatch();
+    const { user, isLoading, isError, message } = useSelector((state) => state.auth); 
     const [formData, setFormData] = useState({ usn: '', batch: '', section: '' });
-    // This would likely come from your authSlice since it modifies the user object
     const [isSubmitted, setIsSubmitted] = useState(false); // To track submission success
 
-    const { isLoading, isError, message } = useSelector((state) => state.auth); 
-    const dispatch = useDispatch();
-
+    const applicationStatus = user?.studentDetails?.applicationStatus;
+    
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
@@ -47,7 +47,13 @@ const StudentApplication = () => {
         <Box component="form" onSubmit={handleSubmit} sx={{ maxWidth: 500 }}>
             <Typography variant="h5" gutterBottom>Apply for Student Status</Typography>
             {isError && <Alert severity="error" sx={{ mb: 2 }}>{message}</Alert>}
-             {/* Add a specific message for rejected applications */}
+             
+            {applicationStatus === 'rejected' && (
+                <Alert severity="warning" sx={{ mb: 2 }}>
+                    Your previous application was not approved. Please review your details carefully before resubmitting.
+                </Alert>
+            )}             
+
             <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                 Please fill in your details accurately to get access to attendance and feedback features.
             </Typography>

@@ -116,45 +116,46 @@ const Header = () => {
           </IconButton>
 
 
-                    {user ? (
-                        <>
-                            {/* --- User menu trigger for both desktop and mobile --- */}
-                            <IconButton color="inherit" onClick={handleMenuOpen}>
-                                {/* Show user's avatar if available, otherwise a generic icon */}
-                                {user.avatar ? <Avatar sx={{ width: 32, height: 32 }} src={user.avatar} /> : <AccountCircle />}
-                            </IconButton>
-                        </>
-                    ) : (
-                        <>
-                            {/* Desktop Buttons for logged-out */}
-                            <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-                                <Stack direction="row" spacing={0.5}>
-                                    <Button component={Link} to='/login' 
-                                        color="inherit" startIcon={<FaSignInAlt />} 
-                                        size={isDesktop ? 'medium' : 'small'}
-                                        >Login</Button>
-                                    <Button component={Link} to='/register' 
-                                        color="inherit" startIcon={<FaUser />} 
-                                        size={isDesktop ? 'medium' : 'small'}>
-                                          Register</Button>
-                                </Stack>
-                            </Box>
-                            {/* Mobile Menu Icon for logged-out */}
-                            <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
-                                <IconButton color="inherit" onClick={handleMenuOpen}>
-                                  <MenuIcon />
-                                </IconButton>
-                            </Box>
-                        </>
-                    )}
-                </Stack>
-            </Toolbar>
+        {user ? (
+            <>
+                {/* --- User menu trigger for both desktop and mobile --- */}
+                <IconButton color="inherit" onClick={handleMenuOpen}>
+                    {/* Show user's avatar if available, otherwise a generic icon */}
+                    {user.avatar ? <Avatar sx={{ width: 32, height: 32 }} src={user.avatar} /> : <AccountCircle />}
+                </IconButton>
+            </>
+        ) : (
+            <>
+                {/* Desktop Buttons for logged-out */}
+                <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+                    <Stack direction="row" spacing={0.5}>
+                        <Button component={Link} to='/login' 
+                            color="inherit" startIcon={<FaSignInAlt />} 
+                            size={isDesktop ? 'medium' : 'small'}
+                            >Login</Button>
+                        <Button component={Link} to='/register' 
+                            color="inherit" startIcon={<FaUser />} 
+                            size={isDesktop ? 'medium' : 'small'}>
+                                Register</Button>
+                    </Stack>
+                </Box>
+                {/* Mobile Menu Icon for logged-out */}
+                <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
+                    <IconButton color="inherit" onClick={handleMenuOpen}>
+                        <MenuIcon />
+                    </IconButton>
+                </Box>
+            </>
+        )}
+    </Stack>
+</Toolbar>
 
             {/* --- SINGLE, DYNAMIC MENU --- */}
             <Menu anchorEl={anchorEl} open={isMenuOpen} onClose={handleMenuClose}>
                 {user ? (
                     // Logged-in menu items
                     <div>
+                        
                         {/* --- Dashboard Link --- */}
                         {location.pathname !== '/dashboard' && (
                             <MenuItem component={Link} to='/dashboard' onClick={handleMenuClose}>
@@ -178,16 +179,32 @@ const Header = () => {
                         )}
                         
                         {/* --- Admin Link --- */}
-                        {user?.role === 'admin' && (
+                        {user?.role === 'admin' && location.pathname !== '/admin/dashboard' && (
                             <MenuItem component={Link} to='/admin/dashboard' onClick={handleMenuClose}>
                                 <ListItemIcon><AdminPanelSettingsIcon fontSize="small" /></ListItemIcon>
-                                Admin
+                                Admin Dashboard
                             </MenuItem>
                         )}
+
+                        {user.role === 'teacher' && location.pathname !== '/teacher/dashboard' && (
+                            <MenuItem component={Link} to='/teacher/dashboard' onClick={handleMenuClose}>
+                                <ListItemIcon><DashboardIcon fontSize="small" /></ListItemIcon>
+                                My Dashboard
+                            </MenuItem>
+                        )}
+
+                        {user.role === 'student' && location.pathname !== '/student/dashboard' && (
+                            <MenuItem component={Link} to='/student/dashboard' onClick={handleMenuClose}>
+                                <ListItemIcon><DashboardIcon fontSize="small" /></ListItemIcon>
+                                My Dashboard
+                            </MenuItem>
+                        )}
+                        
                         <MenuItem onClick={onLogout}>
                             <ListItemIcon><LogoutIcon fontSize="small" /></ListItemIcon>
                             Logout
                         </MenuItem>
+
                     </div>
                 ) : (
                     // Logged-out menu items
