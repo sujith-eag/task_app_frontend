@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Box, Typography, Tabs, Tab, Button, CircularProgress, Alert } from '@mui/material';
+import { Box, Typography, Tabs, Tab, Button, Alert } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 
 import ManageEnrollmentModal from './ManageEnrollmentModal.jsx';
@@ -18,6 +18,8 @@ const UserManagement = () => {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
     const [isEnrollmentModalOpen, setIsEnrollmentModalOpen] = useState(false);
+
+    const validUserList = userList ? userList.filter(user => user && user._id) : [];
 
     // Fetch the correct list of users when the component mounts or the tab changes
     useEffect(() => {
@@ -64,9 +66,10 @@ const UserManagement = () => {
     const studentColumns = [
         { field: 'name', headerName: 'Name', flex: 1 },
         { field: 'email', headerName: 'Email', flex: 1.5 },
-        { field: 'usn', headerName: 'USN', flex: 1, valueGetter: (params) => params.row.studentDetails?.usn || 'N/A' },
-        { field: 'batch', headerName: 'Batch', flex: 0.5, valueGetter: (params) => params.row.studentDetails?.batch || 'N/A' },
-        { field: 'section', headerName: 'Section', flex: 0.5, valueGetter: (params) => params.row.studentDetails?.section || 'N/A' },
+        { field: 'usn', headerName: 'USN', flex: 1, valueGetter: (params) => params?.row?.studentDetails?.usn || 'N/A' },
+        { field: 'batch', headerName: 'Batch', flex: 0.5, valueGetter: (params) => params?.row?.studentDetails?.batch || 'N/A' },
+        { field: 'semester', headerName: 'Sem', flex: 0.5, valueGetter: (params) => params?.row?.studentDetails?.semester || 'N/A' },
+        { field: 'section', headerName: 'Section', flex: 0.5, valueGetter: (params) => params?.row?.studentDetails?.section || 'N/A' },
         {
             field: 'actions', headerName: 'Actions', flex: 1.5, sortable: false,
             renderCell: (params) => (
@@ -97,7 +100,7 @@ const UserManagement = () => {
 
             <Box sx={{ height: 400, width: '100%', mt: 2 }}>
                 <DataGrid
-                    rows={userList}
+                    rows={validUserList}
                     columns={activeTab === 'user' ? userColumns : studentColumns}
                     getRowId={(row) => row._id}
                     loading={isLoading}
