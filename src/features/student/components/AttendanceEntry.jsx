@@ -10,17 +10,21 @@ const AttendanceEntry = () => {
     const { isLoading } = useSelector((state) => state.student);
     const dispatch = useDispatch();
 
+    const isCodeValid = attendanceCode.trim().length === 8;
+
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (attendanceCode.length === 8) {
-            dispatch(markAttendance({ attendanceCode }))
-                .unwrap()
-                .then((result) => toast.success(result.message))
-                .catch((error) => toast.error(error));
-            setAttendanceCode('');
-        } else {
+
+        if (!isCodeValid) {
             toast.error("Please enter a valid 8-digit code.");
+            return;
         }
+        dispatch(markAttendance({ attendanceCode }))
+            .unwrap()
+            .then((result) => toast.success(result.message))
+            .catch((error) => toast.error(error))
+            .finally(() => {
+                setAttendanceCode('')});
     };
 
     return (
@@ -35,14 +39,23 @@ const AttendanceEntry = () => {
                 onChange={(e) => setAttendanceCode(e.target.value)}
                 fullWidth
                 required
-                inputProps={{ maxLength: 8, style: { fontSize: '1.5rem', letterSpacing: '0.2rem', textAlign: 'center' } }}
+                slotProps={{
+                    input: {
+                        maxLength: 8,
+                        style: {
+                            fontSize: '1.5rem',
+                            letterSpacing: '0.2rem',
+                            textAlign: 'center',
+                        },
+                    },
+                }}
             />
             <Button
                 type="submit"
                 variant="contained"
                 size="large"
                 fullWidth
-                disabled={isLoading}
+                disabled={isLoading || !isCodeValid}
                 sx={{ mt: 2, py: 1.5, position: 'relative' }}
             >
                 Check In

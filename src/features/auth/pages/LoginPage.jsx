@@ -35,9 +35,9 @@ const Login = () => {
     }
     if (isSuccess && user) {
       toast.success(`Welcome back, ${user.name}!`);
-      navigate('/dashboard');
+      navigate('/profile');
     } else if (user || isSuccess){
-      navigate('/dashboard');
+      navigate('/profile');
     }
     return () => {
       dispatch(reset());

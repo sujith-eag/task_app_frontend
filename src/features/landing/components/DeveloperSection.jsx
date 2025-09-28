@@ -57,21 +57,25 @@ const DeveloperSection = () => {
                     About Me
                   </Typography>
                   <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-                    Hi! I’m the developer behind <strong>Eagle Tasks</strong> and <strong>Sujith's Library</strong>. 
-                    <br></br>I originally built it for my own productivity needs after struggling to find a tool that fit just
-                    right. This project also demonstrates modern web development using the MERN stack and Material-UI.
+                    Hi! I’m the developer behind <strong>Eagle Campus</strong>. What started as a personal 
+                    productivity tool has evolved into a full-stack showcase of a modern, production-grade 
+                    MERN application. This project demonstrates a deep integration of technologies including 
+                    AI planning, real-time messaging with Socket.IO, secure file storage on AWS, and a 
+                    comprehensive college management system.
                   </Typography>
 
                   <Typography
                     variant="h6"
                     sx={{ mt: 3, mb: 1, fontWeight: 'bold' }}
                   >
-                    Future Plans
+                    What's Next?
                   </Typography>
                   <Typography variant="body1" color="text.secondary">
-                    Major Feature planned in upcoming updates. Will introduce user profiles, real-time
-                    collaboration, a dedicated mobile app, and advanced analytics with each new version —
-                    making Eagle Tasks even more powerful. Stay tuned!
+                    The vision for Eagle Campus continues to grow. 
+                    Major Feature planned in upcoming updates will focus on expanding the 
+                    analytics dashboards with rich data visualizations, 
+                    integrating Google OAuth 2.0 for enhanced security, 
+                    and developing a dedicated mobile application. Stay tuned!
                   </Typography>
                 </Box>
               </Box>

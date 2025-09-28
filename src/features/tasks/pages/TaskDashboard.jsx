@@ -80,11 +80,9 @@ const Dashboard = () => {
 
           <TaskForm />
           
-                
-
         </Box>
         
-                                          {/* Right Column for the Task List */}
+        {/* Right Column for the Task List */}
         <Box sx={{ flexGrow: 1 }}>      {/* flexGrow allows this column to take all remaining space */}
           
           <TaskList />

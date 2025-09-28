@@ -4,6 +4,12 @@ import { Box, Container, Typography, Card, CardContent } from '@mui/material';
 import { motion } from 'framer-motion';
 import PlaylistAddCheckIcon from '@mui/icons-material/PlaylistAddCheck';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import ForumIcon from '@mui/icons-material/Forum';
+import SchoolIcon from '@mui/icons-material/School';
+import AssuredWorkloadIcon from '@mui/icons-material/AssuredWorkload';
+import FactCheckIcon from '@mui/icons-material/FactCheck';
+import RateReviewIcon from '@mui/icons-material/RateReview';
 import FolderSharedIcon from '@mui/icons-material/FolderShared';
 import GroupsIcon from '@mui/icons-material/Groups';
 import VpnKeyIcon from '@mui/icons-material/VpnKey';
@@ -15,28 +21,44 @@ import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 const FeaturesSection = () => {
     const features = [
         {
+            title: 'The Modern Campus',
+            description: 'A dedicated suite for educational institutions. Manage role-based access, track attendance in real-time, and gather anonymous feedback, all in one place.',
+            icon: <AssuredWorkloadIcon fontSize="large" />, // Changed Icon
+        },
+        // {
+        //     title: 'Real-Time Attendance & Feedback',
+        //     description: 'Teachers initiate a 60-second window with unique code for check in. Attendance is recorded instantly. Simple, secure, and fast.',
+        //     icon: <FactCheckIcon fontSize="large" />, // Changed Icon
+        // },
+        {
+            title: 'Anonymous Student Feedback',
+            description: 'Empowers students to provide honest, anonymized feedback on classes they attend, with data aggregated for administrative review.',
+            icon: <RateReviewIcon fontSize="large" />, // Changed Icon
+        },
+        {
             title: 'Comprehensive Task Management',
             description: 'Organize your workflow with priorities, due dates, sub-tasks, and powerful filtering options.',
             icon: <PlaylistAddCheckIcon fontSize="large" />,
         },
         {
-            title: 'AI-Powered Planning',
-            description: 'Describe a goal, and let our AI assistant generate a detailed, actionable plan for you to review, refine, and adopt.',
+            title: 'Personal AI Planner',
+            description: 'Transform high-level goals into structured task plans. Our conversational AI assistant interactively builds your task list, complete with sub-tasks, priorities, and tags.',
             icon: <AutoAwesomeIcon fontSize="large" />,
         },
         {
-            title: 'Secure File Storage & Sharing',
-            description: 'Upload documents to the cloud and securely share them with other users, with full control over who has access.',
-            icon: <FolderSharedIcon fontSize="large" />,
+            title: 'Secure Cloud Storage',
+            description: 'Your personal file drive in the cloud. Upload, manage, and securely share files with other users with granular access controls.',
+            icon: <CloudUploadIcon fontSize="large" />,
         },
         {
-            title: 'Real-Time Messaging & Collaboration',
-            description: 'Communicate instantly with other users via secure, private messaging, complete with online presence indicators and read receipts.',
-            icon: <GroupsIcon fontSize="large" />,
+            title: 'Private Messaging & Collaboration',
+            description: 'Real-time messaging is built right in with multi-device support. See who is online, send instant messages, and get read receipts without leaving the app.',
+            // icon: <GroupsIcon fontSize="large" />,
+            icon: <ForumIcon fontSize="large" />,
         },
         {
-            title: 'Robust Security',
-            description: 'Your account is protected with mandatory email verification, brute-force login detection, and secure password management.',
+            title: 'Enterprise-Grade Security',
+            description: 'Built with security first: mandatory email verification, brute-force lockwouts, role-based access control, JWT authentication, and granular rate limiting on all sensitive endpoints.',
             icon: <SecurityIcon fontSize="large" />,
         },
         {

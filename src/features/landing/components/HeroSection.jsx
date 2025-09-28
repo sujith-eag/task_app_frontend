@@ -26,7 +26,7 @@ const HeroSection = () => {
           >
             <img
               src={eagleLogo}
-              alt="Eagle Tasks Logo"
+              alt="Eagle Campus Logo"
               style={{
                 height: '90px',
                 marginBottom: '1.5rem',
@@ -39,7 +39,7 @@ const HeroSection = () => {
               gutterBottom
               sx={{ fontWeight: 'bold', fontSize: { xs: '2rem', md: '3rem' } }}
             >
-              Eagle Tasks
+              Eagle Campus
             </Typography>
           </motion.div>
 
@@ -54,12 +54,11 @@ const HeroSection = () => {
               sx={{
                 mb: 5,
                 color: 'primary.contrastText',
-                maxWidth: '600px',
+                maxWidth: '700px',
                 mx: 'auto',
               }}
             >
-              Soar above your workload. Organize, prioritize, and accomplish your
-              goals with effortless clarity.
+            The Smart unified Campus platform where educational management meets student productivity and empowerment.
             </Typography>
             <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2 }}>
               <Button

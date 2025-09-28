@@ -94,7 +94,7 @@ const Header = () => {
                 fontSize: { xs: '1.1rem', md: '1.5rem' }, 
                 transition: 'font-size 0.3s' 
               }}>
-            Eagle Tasks
+            Eagle Campus
           </Typography>
         </Link>
 
