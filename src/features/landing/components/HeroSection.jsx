@@ -3,8 +3,12 @@ import eagleLogo from '../../../assets/eagle-logo.png';
 import { Box, Container, Typography, Button } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useSelector } from 'react-redux';
 
 const HeroSection = () => {
+  
+  const { user } = useSelector((state) => state.auth);
+
   return (
       <Box
         sx={{
@@ -60,6 +64,8 @@ const HeroSection = () => {
             >
             The Smart unified Campus platform where educational management meets student productivity and empowerment.
             </Typography>
+            
+          {!user && (
             <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2 }}>
               <Button
                 variant="contained"
@@ -71,6 +77,7 @@ const HeroSection = () => {
                 Get Started
               </Button>
             </Box>
+          )}
           </motion.div>
         </Container>
       </Box>

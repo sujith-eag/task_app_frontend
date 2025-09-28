@@ -187,10 +187,6 @@ const TeacherAssignmentModal = ({ open, handleClose, teacher }) => {
                     </Button>
                     
                     <Divider sx={{ my: 2 }} />
-
-                    <Button onClick={handleClose} variant="outlined" fullWidth>
-                        Close
-                    </Button>
                 </Box>
             </Box>
         </Modal>

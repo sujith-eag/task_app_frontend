@@ -109,10 +109,11 @@ const EditStudentModal = ({ open, handleClose, student }) => {
                     required
                     margin="normal"
                 >
-                    {sections.map((sec) => (
-                        <MenuItem key={sec} value={sec}>{sec}</MenuItem>
-                    ))}
+                {sections.map((sec) => (
+                    <MenuItem key={sec} value={sec}>{sec}</MenuItem>
+                ))}
                 </TextField>
+
                 <Button type="submit" variant="contained" sx={{ mt: 2 }} disabled={isLoading}>
                     {isLoading ? <CircularProgress size={24} /> : 'Save Changes'}
                 </Button>

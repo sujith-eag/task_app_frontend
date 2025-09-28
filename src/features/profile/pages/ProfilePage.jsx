@@ -110,7 +110,7 @@ const ProfilePage = () => {
                         component={RouterLink} 
                         to="/student/dashboard" 
                         variant="contained" 
-                        sx={{ transition: "0.2s", "&:hover": { transform: "scale(1.05)" } }}
+                        sx={{ transition: "0.2s", "&:hover": { transform: "scale(1.02)" } }}
                         startIcon={<HowToRegIcon />}
                         >
                         Apply for Student Access

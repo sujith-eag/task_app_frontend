@@ -5,12 +5,15 @@ import eagleLogo from '../../assets/eagle-logo.png';
 
 import { useState, useContext } from 'react';
 import { useTheme } from '@mui/material/styles';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { FaSignInAlt, FaUser } from 'react-icons/fa';
+
 import {
     AppBar, Toolbar, Typography, Button, Box, Stack, IconButton, Tooltip,
     Menu, MenuItem, useMediaQuery, Avatar, ListItemIcon
 } from '@mui/material';
-import { toast } from 'react-toastify';
-
 import MenuIcon from '@mui/icons-material/Menu';
 import Brightness4Icon from '@mui/icons-material/Brightness4'; // Moon Icon
 import Brightness7Icon from '@mui/icons-material/Brightness7'; // Sun icon
@@ -24,9 +27,6 @@ import ChatIcon from '@mui/icons-material/Chat'; // message
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile' // file
 import LogoutIcon from '@mui/icons-material/Logout'; // logout
 
-import { FaSignInAlt, FaUser } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
 
 const Header = () => {
     const theme = useTheme();
