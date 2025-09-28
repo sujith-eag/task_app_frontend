@@ -75,6 +75,9 @@ const ManageEnrollmentModal = ({ open, handleClose, student }) => {
                 <Button type="submit" variant="contained" sx={{ mt: 2 }} disabled={isLoading}>
                     {isLoading ? <CircularProgress size={24} /> : 'Save Enrollment'}
                 </Button>
+                <Button onClick={handleClose} sx={{ mt: 2, ml: 1 }}>
+                    Cancel
+                </Button>
             </Box>
         </Modal>
     );

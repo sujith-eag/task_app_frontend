@@ -82,6 +82,10 @@ const SubjectModal = ({ open, handleClose, subject }) => {
                 <Button type="submit" variant="contained" sx={{ mt: 2 }} disabled={isLoading}>
                     {isLoading ? <CircularProgress size={24} /> : (subject ? 'Save Changes' : 'Create Subject')}
                 </Button>
+
+                <Button onClick={handleClose} sx={{ mt: 2, ml: 1 }}>
+                    Cancel
+                </Button>
             </Box>
         </Modal>
     );

@@ -181,11 +181,17 @@ const TeacherAssignmentModal = ({ open, handleClose, teacher }) => {
                         onClick={handleAddAssignment} 
                         variant="contained" 
                         disabled={isLoading}
+                        sx={{ mt:2 }}
                     >
                         {isLoading ? <CircularProgress size={24} /> : 'Add Assignment'}
                     </Button>
-                </Box>
+                    
+                    <Divider sx={{ my: 2 }} />
 
+                    <Button onClick={handleClose} variant="outlined" fullWidth>
+                        Close
+                    </Button>
+                </Box>
             </Box>
         </Modal>
     );

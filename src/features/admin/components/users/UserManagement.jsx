@@ -66,19 +66,41 @@ const UserManagement = () => {
     const studentColumns = [
         { field: 'name', headerName: 'Name', flex: 1 },
         { field: 'email', headerName: 'Email', flex: 1.5 },
-        { field: 'usn', headerName: 'USN', flex: 1, valueGetter: (params) => params?.row?.studentDetails?.usn || 'N/A' },
-        { field: 'batch', headerName: 'Batch', flex: 0.5, valueGetter: (params) => params?.row?.studentDetails?.batch || 'N/A' },
-        { field: 'semester', headerName: 'Sem', flex: 0.5, valueGetter: (params) => params?.row?.studentDetails?.semester || 'N/A' },
-        { field: 'section', headerName: 'Section', flex: 0.5, valueGetter: (params) => params?.row?.studentDetails?.section || 'N/A' },
+        { field: 'usn', headerName: 'USN', flex: 1, 
+            renderCell: (params) => {
+            return params.row.studentDetails?.usn || 'N/A';
+            }
+            // valueGetter: (params) => params?.row?.studentDetails?.usn || 'N/A' 
+        },
+        { field: 'batch', headerName: 'Batch', flex: 0.5, 
+            // valueGetter: (params) => params?.row?.studentDetails?.batch || 'N/A' 
+            renderCell: (params) => {
+                return params.row.studentDetails?.batch || 'N/A';
+            }        
+        },
+        { field: 'semester', headerName: 'Sem', flex: 0.5, 
+            // valueGetter: (params) => params?.row?.studentDetails?.semester || 'N/A' 
+            renderCell: (params) => {
+                return params.row.studentDetails?.semester || 'N/A';
+            }        
+        },
+        { field: 'section', headerName: 'Section', flex: 0.5, 
+            // valueGetter: (params) => params?.row?.studentDetails?.section || 'N/A' 
+            renderCell: (params) => {
+                return params.row.studentDetails?.section || 'N/A';
+            }        
+        },
         {
             field: 'actions', headerName: 'Actions', flex: 1.5, sortable: false,
             renderCell: (params) => (
                 <Box>
-                    <Button variant="outlined" size="small" sx={{ mr: 1 }} onClick={() => handleOpenEditModal(params.row)}>
-                        Edit Details
+                    <Button variant="outlined" size="small" sx={{ mr: 1 }} 
+                            onClick={() => handleOpenEditModal(params.row)}
+                    >Edit Details
                     </Button>
-                    <Button variant="outlined" size="small" color="secondary" onClick={() => handleOpenEnrollmentModal(params.row)}>
-                        Enrollment
+                    <Button variant="outlined" size="small" color="secondary" 
+                            onClick={() => handleOpenEnrollmentModal(params.row)}
+                    >Enrollment
                     </Button>
                 </Box>
             ),

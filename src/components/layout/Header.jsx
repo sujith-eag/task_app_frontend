@@ -6,22 +6,27 @@ import eagleLogo from '../../assets/eagle-logo.png';
 import { useState, useContext } from 'react';
 import { useTheme } from '@mui/material/styles';
 import {
-    AppBar, Toolbar, Typography, Button, Box, Stack, IconButton,
+    AppBar, Toolbar, Typography, Button, Box, Stack, IconButton, Tooltip,
     Menu, MenuItem, useMediaQuery, Avatar, ListItemIcon
 } from '@mui/material';
+import { toast } from 'react-toastify';
+
 import MenuIcon from '@mui/icons-material/Menu';
 import Brightness4Icon from '@mui/icons-material/Brightness4'; // Moon Icon
 import Brightness7Icon from '@mui/icons-material/Brightness7'; // Sun icon
 import AccountCircle from '@mui/icons-material/AccountCircle'; // Generic user icon
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
-import LogoutIcon from '@mui/icons-material/Logout';
-import PersonIcon from '@mui/icons-material/Person';
-import ChatIcon from '@mui/icons-material/Chat';
+import AccountBoxIcon from '@mui/icons-material/AccountBox'; // Profile
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'; // Admin
+import AssignmentIcon from '@mui/icons-material/Assignment'; // for task
+import SchoolIcon from '@mui/icons-material/School';  // for student
+import ClassIcon from '@mui/icons-material/Class'; // for teacher
+import ChatIcon from '@mui/icons-material/Chat'; // message
+import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile' // file
+import LogoutIcon from '@mui/icons-material/Logout'; // logout
+
 import { FaSignInAlt, FaUser } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { toast } from 'react-toastify';
 
 const Header = () => {
     const theme = useTheme();
@@ -33,9 +38,9 @@ const Header = () => {
     const { user } = useSelector((state) => state.auth);
 
     const [anchorEl, setAnchorEl] = useState(null);
+    const [confirmingLogout, setConfirmingLogout] = useState(false);
     
     const isDesktop = useMediaQuery(theme.breakpoints.up('md'));  
-    
     const isMenuOpen = Boolean(anchorEl);
 
     const handleMenuOpen = (event) => {
@@ -44,18 +49,17 @@ const Header = () => {
     const handleMenuClose = () => {
         setAnchorEl(null);
     };
-
-    const onLogout = () => {
+    const handleLogoutConfirm = () => {
         const userName = user?.name;
-        
         dispatch(logout());
         dispatch(resetAuth());
         dispatch(resetTasks());
         handleMenuClose();
+        setConfirmingLogout(false);
         toast.success(`Goodbye, ${userName || 'User'}!`);
         navigate('/');
     };
-
+    
   return (
     <AppBar 
       position="sticky" 
@@ -107,6 +111,8 @@ const Header = () => {
             direction="row" 
             spacing={1} 
             alignItems="center">
+
+        <Tooltip title={theme.palette.mode === 'dark' ? 'Switch to light' : 'Switch to dark'}>
           <IconButton 
               sx={{ ml: 1 }} 
               onClick={colorMode.toggleColorMode} 
@@ -114,7 +120,7 @@ const Header = () => {
               >
             {theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
           </IconButton>
-
+        </Tooltip>
 
         {user ? (
             <>
@@ -155,55 +161,152 @@ const Header = () => {
                 {user ? (
                     // Logged-in menu items
                     <div>
-                        
-                        {/* --- Dashboard Link --- */}
-                        {location.pathname !== '/dashboard' && (
-                            <MenuItem component={Link} to='/dashboard' onClick={handleMenuClose}>
-                                <ListItemIcon><DashboardIcon fontSize="small" /></ListItemIcon>
-                                Task Manager
-                            </MenuItem>
-                        )}
                         {/* --- My Profile Link --- */}
                         {location.pathname !== '/profile' && (
-                        <MenuItem component={Link} to='/profile' onClick={handleMenuClose}>
-                            <ListItemIcon><PersonIcon fontSize="small" /></ListItemIcon>
-                            My Profile
+                        <MenuItem component={Link} to='/profile' onClick={handleMenuClose}
+                            sx={{
+                                transition: 'background-color 0.2s ease, transform 0.15s ease',
+                                '&:hover': {
+                                    bgcolor: 'action.hover',
+                                    transform: 'translateX(4px)',
+                                },
+                            }}
+                        >
+                        <ListItemIcon><AccountBoxIcon fontSize="small" /></ListItemIcon>
+                        My Profile
                         </MenuItem>)
-                        }
-                        {/* --- Message Link --- */}
-                        {location.pathname !== '/chat' && (
-                        <MenuItem component={Link} to='/chat' onClick={handleMenuClose}>
-                            <ListItemIcon><ChatIcon fontSize="small" /></ListItemIcon>
-                            Messages
-                        </MenuItem>
-                        )}
-                        
-                        {/* --- Admin Link --- */}
+                        }                        
+
+                        {/* --- Admin Dashboard Link --- */}
                         {user?.role === 'admin' && location.pathname !== '/admin/dashboard' && (
-                            <MenuItem component={Link} to='/admin/dashboard' onClick={handleMenuClose}>
+                            <MenuItem component={Link} to='/admin/dashboard' onClick={handleMenuClose}
+                                sx={{
+                                    transition: 'background-color 0.2s ease, transform 0.15s ease',
+                                    '&:hover': {
+                                        bgcolor: 'action.hover',
+                                        transform: 'translateX(4px)',
+                                    },
+                                }}
+                            >
                                 <ListItemIcon><AdminPanelSettingsIcon fontSize="small" /></ListItemIcon>
                                 Admin Dashboard
                             </MenuItem>
                         )}
-
+                        {/* --- Teacher Dashboard --- */}
                         {user.role === 'teacher' && location.pathname !== '/teacher/dashboard' && (
-                            <MenuItem component={Link} to='/teacher/dashboard' onClick={handleMenuClose}>
-                                <ListItemIcon><DashboardIcon fontSize="small" /></ListItemIcon>
+                            <MenuItem component={Link} to='/teacher/dashboard' onClick={handleMenuClose}
+                                sx={{
+                                    transition: 'background-color 0.2s ease, transform 0.15s ease',
+                                    '&:hover': {
+                                        bgcolor: 'action.hover',
+                                        transform: 'translateX(4px)',
+                                    },
+                                }}                            
+                            >
+                            <ListItemIcon><ClassIcon fontSize="small" /></ListItemIcon>
                                 My Dashboard
+                            </MenuItem>
+                        )}
+                        {/* --- Student Dashboard --- */}
+                        {user.role === 'student' && location.pathname !== '/student/dashboard' && (
+                            <MenuItem component={Link} to='/student/dashboard' onClick={handleMenuClose}
+                                sx={{
+                                    transition: 'background-color 0.2s ease, transform 0.15s ease',
+                                    '&:hover': {
+                                        bgcolor: 'action.hover',
+                                        transform: 'translateX(4px)',
+                                    },
+                                }}                            
+                            >
+                            <ListItemIcon><SchoolIcon fontSize="small" /></ListItemIcon>
+                                My Dashboard
+                            </MenuItem>
+                        )}
+                        {/* --- Task Dashboard Link --- */}
+                        {location.pathname !== '/dashboard' && (
+                            <MenuItem component={Link} to='/dashboard' onClick={handleMenuClose}
+                                sx={{
+                                    transition: 'background-color 0.2s ease, transform 0.15s ease',
+                                    '&:hover': {
+                                        bgcolor: 'action.hover',
+                                        transform: 'translateX(4px)',
+                                    },
+                                }}                            
+                            >
+                            <ListItemIcon><AssignmentIcon fontSize="small" /></ListItemIcon>
+                                Task Manager
                             </MenuItem>
                         )}
 
-                        {user.role === 'student' && location.pathname !== '/student/dashboard' && (
-                            <MenuItem component={Link} to='/student/dashboard' onClick={handleMenuClose}>
-                                <ListItemIcon><DashboardIcon fontSize="small" /></ListItemIcon>
-                                My Dashboard
+
+                        {/* --- Files Page Link --- */}
+                        {location.pathname !== '/files' && (
+                            <MenuItem component={Link} to='/files' onClick={handleMenuClose}
+                                sx={{
+                                    transition: 'background-color 0.2s ease, transform 0.15s ease',
+                                    '&:hover': {
+                                        bgcolor: 'action.hover',
+                                        transform: 'translateX(4px)',
+                                    },
+                                }}                        
+                            >
+                            <ListItemIcon><InsertDriveFileIcon fontSize="small" /></ListItemIcon>
+                                Files
                             </MenuItem>
                         )}
-                        
-                        <MenuItem onClick={onLogout}>
-                            <ListItemIcon><LogoutIcon fontSize="small" /></ListItemIcon>
+                        {/* --- Message Link --- */}
+                        {location.pathname !== '/chat' && (
+                            <MenuItem component={Link} to='/chat' onClick={handleMenuClose}
+                                sx={{
+                                    transition: 'background-color 0.2s ease, transform 0.15s ease',
+                                    '&:hover': {
+                                        bgcolor: 'action.hover',
+                                        transform: 'translateX(4px)',
+                                    },
+                                }}                            
+                            >
+                            <ListItemIcon><ChatIcon fontSize="small" /></ListItemIcon>
+                                Messages
+                            </MenuItem>
+                        )}
+
+                        {/* --- Interactive Logout Link --- */}
+                        {!confirmingLogout ? (
+                            <MenuItem onClick={() => setConfirmingLogout(true)}
+                                sx={{
+                                    transition: 'background-color 0.2s ease, transform 0.15s ease',
+                                    '&:hover': {
+                                        bgcolor: 'action.hover',
+                                        transform: 'translateX(4px)',
+                                    },
+                                }}
+                            > <ListItemIcon> <LogoutIcon fontSize="small" /></ListItemIcon>
                             Logout
-                        </MenuItem>
+                            </MenuItem>
+                            ) : (
+                            <>
+                            <MenuItem onClick={handleLogoutConfirm} 
+                                    sx={{ color: 'error.main' }}>
+                                Confirm Logout
+                            </MenuItem>
+                            <MenuItem onClick={() => setConfirmingLogout(false)}>
+                                Cancel
+                            </MenuItem>
+                            </>
+                        )}
+
+                        {/* <MenuItem onClick={onLogout}
+                            sx={{
+                                transition: 'background-color 0.2s ease, transform 0.15s ease',
+                                '&:hover': {
+                                    bgcolor: 'action.hover',
+                                    transform: 'translateX(4px)',
+                                },
+                            }}                        
+                        >
+                        <ListItemIcon><LogoutIcon fontSize="small" /></ListItemIcon>
+                            Logout
+                        </MenuItem> */}
 
                     </div>
                 ) : (

@@ -13,6 +13,7 @@ const Footer = () => {
         py: 3,
         px: 2,
         mt: 'auto',
+        borderTop: (theme) => `1px solid ${theme.palette.divider}`,
         backgroundColor: (theme) =>
           theme.palette.mode === 'light'
             ? theme.palette.grey[200]
@@ -32,7 +33,7 @@ const Footer = () => {
           {/* Left Column: Copyright */}
           <Box sx={{ width: { xs: '100%', sm: '33.33%' }, textAlign: { xs: 'center', sm: 'left' } }}>
             <Typography variant="body2" color="text.secondary">
-              {'Copyright © '}
+              {'© '}
               <Link color="inherit" href="https://sujith-eag.in/">
                 Sujith Kumar
               </Link>{' '}
@@ -44,7 +45,7 @@ const Footer = () => {
           {/* Center Column: App Version */}
           <Box sx={{ width: { xs: '100%', sm: '33.33%' }, textAlign: 'center' }}>
             <Typography variant="body2" color="text.secondary">
-              Version: {pkg.version}
+              Version:&nbsp;<strong>{pkg.version}</strong>
             </Typography>
           </Box>
 
@@ -55,6 +56,10 @@ const Footer = () => {
               component="a"
               href="https://github.com/sujith-eag/"
               target="_blank"
+              rel="noopener noreferrer"
+              sx={{ transition: '0.3s', 
+                  '&:hover': { color: 'text.primary', transform: 'scale(1.1)' } 
+              }}
             >
               <GitHubIcon />
             </IconButton>
@@ -63,6 +68,10 @@ const Footer = () => {
               component="a"
               href="https://www.linkedin.com/in/sujith-eag"
               target="_blank"
+              rel="noopener noreferrer"
+              sx={{ transition: '0.3s', 
+                  '&:hover': { color: '#0A66C2', transform: 'scale(1.1)' } 
+              }}
             >
               <LinkedInIcon />
             </IconButton>

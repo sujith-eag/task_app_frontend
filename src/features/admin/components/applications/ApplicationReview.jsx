@@ -25,15 +25,23 @@ const ApplicationReview = () => {
         { field: 'name', headerName: 'Name', flex: 1 },
         { field: 'email', headerName: 'Email', flex: 1.5 },
         { 
-            field: 'usn', headerName: 'USN', flex: 1, 
-            // valueGetter: (params) => params.row.studentDetails?.usn || 'N/A' 
-            valueGetter: (params) => params?.row?.studentDetails?.usn || 'N/A' 
+            field: 'usn', headerName: 'USN', flex: 1,
+            // valueGetter: (params) => params?.row?.studentDetails?.usn || 'N/A' 
+            renderCell: (params) => {
+                return params.row.studentDetails?.usn || 'N/A';
+            }
         },
         { field: 'batch', headerName: 'Batch', flex: 0.5, 
-            valueGetter: (params) => params?.row?.studentDetails?.batch || 'N/A' 
+            // valueGetter: (params) => params?.row?.studentDetails?.batch || 'N/A' 
+            renderCell: (params) => {
+                return params.row.studentDetails?.batch || 'N/A';
+            }
         },
         { field: 'section', headerName: 'Section', flex: 0.5, 
-            valueGetter: (params) => params?.row?.studentDetails?.section || 'N/A'
+            // valueGetter: (params) => params?.row?.studentDetails?.section || 'N/A'
+            renderCell: (params) => {
+                return params.row.studentDetails?.section || 'N/A';
+            }
         },
         {
             field: 'actions',
@@ -42,8 +50,12 @@ const ApplicationReview = () => {
             sortable: false,
             renderCell: (params) => (
                 <Box>
-                    <Button variant="contained" color="success" size="small" sx={{ mr: 1 }} onClick={() => handleReview(params.id, 'approve')}>Approve</Button>
-                    <Button variant="contained" color="error" size="small" onClick={() => handleReview(params.id, 'reject')}>Reject</Button>
+                    <Button variant="contained" color="success" 
+                            size="small" sx={{ mr: 1 }} onClick={() => handleReview(params.id, 'approve')}
+                        >Approve</Button>
+                    <Button variant="contained" color="error" 
+                            size="small" onClick={() => handleReview(params.id, 'reject')}
+                        >Reject</Button>
                 </Box>
             ),
         },

@@ -81,6 +81,9 @@ const PromoteUserModal = ({ open, handleClose, user }) => {
                 <Button type="submit" variant="contained" sx={{ mt: 2 }} disabled={isLoading}>
                     {isLoading ? <CircularProgress size={24} /> : `Promote User`}
                 </Button>
+                <Button onClick={handleClose} sx={{ mt: 2, ml: 1 }}>
+                    Cancel
+                </Button>
             </Box>
         </Modal>
     );
