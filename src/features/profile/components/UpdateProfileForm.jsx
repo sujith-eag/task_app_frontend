@@ -5,8 +5,9 @@ import {
     CircularProgress, Stack
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
-import { updateProfile, updateAvatar, resetProfileStatus } from '../profileSlice.js';
 import { toast } from 'react-toastify';
+
+import { updateProfile, updateAvatar, resetProfileStatus } from '../profileSlice.js';
 
 
 const UpdateProfileForm = ({ user, onCancel }) => {

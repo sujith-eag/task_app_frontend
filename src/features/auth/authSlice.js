@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import authService from './authServices.js'
+
 import { updateProfile, updateAvatar } from '../profile/profileSlice.js'; // actions from profileSlice
 
 // Get user from localStorage

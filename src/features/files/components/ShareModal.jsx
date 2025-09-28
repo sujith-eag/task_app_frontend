@@ -14,8 +14,8 @@ import {
     CircularProgress,
     TextField
 } from '@mui/material';
-import profileService from '../../profile/profileService';
-import { shareFile } from '../fileSlice';
+import profileService from '../../profile/profileService.js';
+import { shareFile } from '../fileSlice.js';
 import { toast } from 'react-toastify';
 
 const style = {

@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link as RouterLink } from 'react-router-dom';
 import { Box, TextField, Button, Typography, Alert, CircularProgress } from '@mui/material';
-import { applyAsStudent } from '../../auth/authSlice.js';
 import { toast } from 'react-toastify';
+
+import { applyAsStudent } from '../../auth/authSlice.js';
 
 const StudentApplication = () => {
     const dispatch = useDispatch();

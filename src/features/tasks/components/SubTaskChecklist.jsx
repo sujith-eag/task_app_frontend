@@ -1,5 +1,12 @@
 import { useCallback, useState } from 'react';
 import { useDispatch } from 'react-redux';
+// MUI Components & Icons
+import {
+  Box, Typography, List, ListItem, ListItemText,
+  Checkbox, TextField, IconButton, Popover, Stack, Button
+} from '@mui/material';
+import { DeleteOutline as DeleteOutlineIcon, Add as AddIcon } from '@mui/icons-material';
+
 import {
   addSubTask,
   updateSubTask,
@@ -9,12 +16,6 @@ import {
   removeSubTaskOptimistic
 } from '../taskSlice.js';
 
-// MUI Components & Icons
-import {
-  Box, Typography, List, ListItem, ListItemText,
-  Checkbox, TextField, IconButton, Popover, Stack, Button
-} from '@mui/material';
-import { DeleteOutline as DeleteOutlineIcon, Add as AddIcon } from '@mui/icons-material';
 
 const MAX_SUBTASK_LENGTH = 120;
 

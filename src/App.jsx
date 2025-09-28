@@ -6,29 +6,29 @@ import { Box } from '@mui/material';
 
 // --- Layout Components ---
 import Header from './components/layout/Header.jsx';
-import Footer from "./components/layout/Footer.jsx";
+import Footer from './components/layout/Footer.jsx';
 import PrivateRoute from './components/layout/PrivateRoute.jsx';
 
 // --- Page Components ---
-import LandingPage from "./pages/LandingPage.jsx";
-import LoginPage from './pages/LoginPage.jsx';
-import RegisterPage from './pages/RegisterPage.jsx';
-import ForgotPasswordPage from './pages/ForgotPasswordPage.jsx';
-import ResetPasswordPage from './pages/ResetPasswordPage.jsx'; 
-import VerifyEmailPage from './pages/VerifyEmailPage.jsx';
-import NotFoundPage from './pages/NotFoundPage.jsx';
+import LandingPage from './features/landing/pages/LandingPage.jsx';
+import LoginPage from './features/auth/pages/LoginPage.jsx';
+import RegisterPage from './features/auth/pages/RegisterPage.jsx'
+import ForgotPasswordPage from './features/auth/pages/ForgotPasswordPage.jsx';
+import ResetPasswordPage from './features/auth/pages/ResetPasswordPage.jsx'; 
+import VerifyEmailPage from './features/auth/pages/VerifyEmailPage.jsx';
+import NotFoundPage from './NotFoundPage.jsx';
 
 // General Private Pages
-import Dashboard from './pages/Dashboard.jsx';
-import ProfilePage from './pages/ProfilePage.jsx';
-import FilesPage from './pages/FilePage.jsx';
-import ChatPage from './pages/ChatPage.jsx';
+import TaskDashboard from './features/tasks/pages/TaskDashboard.jsx'
+import ProfilePage from './features/profile/pages/ProfilePage.jsx'
+import FilesPage from './features/files/pages/FilePage.jsx';
+import ChatPage from './features/chat/pages/ChatPage.jsx';
 
 // --- ROLE-SPECIFIC PAGES ---
-import StudentDashboardPage from './pages/StudentDashboardPage.jsx';
-import TeacherDashboardPage from './pages/TeacherDashboardPage.jsx';
-import AdminDashboardPage from './pages/AdminDashboardPage.jsx';
-import ReportingPage from './pages/ReportingPage.jsx';
+import StudentDashboardPage from './features/student/pages/StudentDashboardPage.jsx';
+import TeacherDashboardPage from './features/teacher/pages/TeacherDashboardPage.jsx';
+import AdminDashboardPage from './features/admin/pages/AdminDashboardPage.jsx';
+import ReportingPage from './features/admin/pages/ReportingPage.jsx';
 
 
 function App() {
@@ -54,7 +54,7 @@ function App() {
 
             {/* --- General Private Routes (Accessible to all logged-in users) --- */}
             <Route element={<PrivateRoute />}>
-                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/dashboard" element={<TaskDashboard />} />
                 <Route path='/profile' element={<ProfilePage />} />
                 <Route path='/files' element={<FilesPage />} />
               <Route path='/chat' element={<ChatPage />} />

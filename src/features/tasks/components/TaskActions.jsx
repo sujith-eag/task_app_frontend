@@ -1,13 +1,13 @@
 import React, { useState, useCallback, useRef } from 'react';
 import { useDispatch } from 'react-redux';
-import { deleteTask, removeTaskOptimistic, undoDeleteTask } from '../taskSlice.js';
 import { toast } from 'react-toastify';
-
 // MUI Components & Icons
 import { Box, IconButton, Dialog, DialogActions, 
     DialogContent, DialogContentText, DialogTitle, Button, Typography } from '@mui/material';
 import { Close as CloseIcon, Edit as EditIcon } from '@mui/icons-material';
 
+import { deleteTask, removeTaskOptimistic, 
+  undoDeleteTask } from '../taskSlice.js';
 
 const UndoToast = ({ onConfirmUndo, closeToast }) => {
   const handleConfirmAndClose = () => {

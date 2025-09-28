@@ -1,7 +1,8 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { Box, Typography, FormGroup, FormControlLabel, Switch, Paper, Stack } from '@mui/material';
-import { updateProfile } from '../profileSlice';
+
+import { updateProfile } from '../profileSlice.js';
 
 const PreferencesSection = ({ preferences }) => {
     const dispatch = useDispatch();

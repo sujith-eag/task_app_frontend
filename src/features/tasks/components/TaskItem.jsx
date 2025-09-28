@@ -1,13 +1,13 @@
 import React, { useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { motion } from 'framer-motion';
+// MUI Components & Icons
+import { Card, CardContent, Box, Typography, Chip, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
+
 import { updateTask } from '../taskSlice.js';
 import EditTaskModal from './EditTaskModal.jsx';
 import SubTaskChecklist from './SubTaskChecklist.jsx';
-import TaskActions from './TaskActions.jsx'; // 1. Import the new component
-import { motion } from 'framer-motion';
-
-// MUI Components & Icons
-import { Card, CardContent, Box, Typography, Chip, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
+import TaskActions from './TaskActions.jsx';
 
 const TaskItem = ({ taskId }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false); // Only manages its own modal

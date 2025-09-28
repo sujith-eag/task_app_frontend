@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Box, TextField, Button, Typography, CircularProgress } from '@mui/material';
 import { toast } from 'react-toastify';
+
 import { markAttendance } from '../studentSlice.js';
 
 const AttendanceEntry = () => {

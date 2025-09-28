@@ -160,7 +160,7 @@ const Header = () => {
                         {location.pathname !== '/dashboard' && (
                             <MenuItem component={Link} to='/dashboard' onClick={handleMenuClose}>
                                 <ListItemIcon><DashboardIcon fontSize="small" /></ListItemIcon>
-                                Dashboard
+                                Task Manager
                             </MenuItem>
                         )}
                         {/* --- My Profile Link --- */}

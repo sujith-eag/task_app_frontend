@@ -1,11 +1,9 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-
-import aiTaskService from './aiTaskService.js';
-import taskService from '../tasks/taskService.js';
-
 import { toast } from 'react-toastify';
 import { v4 as uuidv4 } from 'uuid';
 
+import aiTaskService from './aiTaskService.js';
+import taskService from '../tasks/taskService.js';
 
 const initialState = {
     sessionId: null,

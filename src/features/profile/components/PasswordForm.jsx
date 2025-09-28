@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Box, Typography, TextField, Button, CircularProgress } from '@mui/material';
-import { changePassword, resetProfileStatus } from '../profileSlice';
 import { toast } from 'react-toastify';
+
+import { changePassword, resetProfileStatus } from '../profileSlice.js';
 
 const PasswordForm = (onSuccess) => {
     const dispatch = useDispatch();

@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux'; // FIX: Import useSelector
 import { Box, Typography, Chip, List, ListItem, ListItemText, Switch, Button, CircularProgress } from '@mui/material';
-import { getSessionRoster, finalizeAttendance, updateRosterOnSocketEvent } from '../teacherSlice.js';
+
 import { toast } from 'react-toastify';
+
 import { useSocket } from '../../../context/SocketContext.jsx';
+import { getSessionRoster, finalizeAttendance, updateRosterOnSocketEvent } from '../teacherSlice.js';
+
 
 const LiveAttendanceRoster = ({ session }) => {
     const dispatch = useDispatch();

@@ -1,7 +1,5 @@
-import { createTask, addTaskOptimistic } from "../taskSlice";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-
 import {
   Box, Paper, Typography, TextField,
   FormControl, InputLabel, Select, MenuItem,
@@ -10,6 +8,8 @@ import {
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { toast } from "react-toastify";
+
+import { createTask, addTaskOptimistic } from "../taskSlice.js";
 
 const TaskForm = () => {
   const { user } = useSelector((state) => state.auth);

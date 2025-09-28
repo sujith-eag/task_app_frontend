@@ -4,8 +4,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Box, Typography, Button, CircularProgress, List, ListItem, ListItemIcon, ListItemText, IconButton } from '@mui/material';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { uploadFiles } from '../fileSlice';
 import { toast } from 'react-toastify';
+
+import { uploadFiles } from '../fileSlice.js';
 
 const FileUpload = () => {
     const dispatch = useDispatch();

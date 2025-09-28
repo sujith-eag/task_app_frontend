@@ -17,12 +17,11 @@ import DownloadIcon from '@mui/icons-material/Download';
 import ShareIcon from '@mui/icons-material/Share';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
-import fileService from '../fileService';
-import { deleteFile, manageShareAccess } from '../fileSlice.js';
-import ShareModal from './ShareModal.jsx';
-
 import { toast } from 'react-toastify';
 
+import fileService from '../fileService.js';
+import { deleteFile, manageShareAccess } from '../fileSlice.js';
+import ShareModal from './ShareModal.jsx';
 
 
 

@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import taskService from './taskService.js'
 
-import { generateTasksWithAI, saveAIPlan } from '../ai/aiTaskSlice.js'; 
+import taskService from './taskService.js'
+import { generateTasksWithAI, saveAIPlan } from '../ai/aiTaskSlice.js';
 
 
 const initialState = {

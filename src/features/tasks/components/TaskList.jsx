@@ -1,13 +1,13 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { Box, Typography, CircularProgress, Collapse } from "@mui/material";
+import { TransitionGroup } from 'react-transition-group';
+import { toast } from 'react-toastify';
 
 import { getTasks } from '../taskSlice.js';
-import { toast } from 'react-toastify';
 import TaskItem from './TaskItem.jsx';
 import TaskFilters from './TaskFilters.jsx';
 
-import { Box, Typography, CircularProgress, Collapse } from "@mui/material";
-import { TransitionGroup } from 'react-transition-group';
 
 const TaskList = () => {
   const dispatch = useDispatch();

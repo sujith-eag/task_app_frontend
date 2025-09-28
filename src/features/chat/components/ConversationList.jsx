@@ -5,12 +5,13 @@ import {
     ListItemText, Typography, Box, CircularProgress, Alert, 
     TextField, InputAdornment,
 } from '@mui/material';
+import { toast } from 'react-toastify';
+
+import profileService from '../../profile/profileService.js';
 import { getMessages, 
     setActiveConversationId, 
     startConversation, 
     selectAllConversations } from '../chatSlice.js';
-import profileService from '../../profile/profileService.js';
-import { toast } from 'react-toastify';
 
 
 const ConversationList = () => {

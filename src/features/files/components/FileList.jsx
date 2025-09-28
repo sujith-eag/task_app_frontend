@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { Box, Typography, Tabs, Tab, List } from '@mui/material';
 
 // We will create this component in the next step
-import FileItem from './FileItem';
+import FileItem from './FileItem.jsx';
 
 const FileList = ({ files }) => {
     const [tabValue, setTabValue] = useState('myFiles');

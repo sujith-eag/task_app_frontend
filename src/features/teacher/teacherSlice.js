@@ -185,5 +185,5 @@ export const teacherSlice = createSlice({
     ;},
 });
 
-export const { reset, endActiveSession } = teacherSlice.actions;
+export const { reset, endActiveSession, updateRosterOnSocketEvent } = teacherSlice.actions;
 export default teacherSlice.reducer;
