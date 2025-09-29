@@ -83,6 +83,8 @@ const TeacherAssignmentModal = ({ open, handleClose, teacher }) => {
         }
     };
 
+    const isFormInvalid = !subject || selectedSections.length === 0 || !batch || !semester;
+    
     return (
         <Modal open={open} onClose={handleClose}>
             <Box sx={style}>
@@ -173,27 +175,16 @@ const TeacherAssignmentModal = ({ open, handleClose, teacher }) => {
                     ))}
                 </FormGroup>
 
-                {/* <Button onClick={handleAddAssignment} 
-                    variant="contained" sx={{ mt: 2 }} 
-                    disabled={isLoading}
-                    > {isLoading ? <CircularProgress size={24} /> : 'Add Assignment'}
-                </Button> */}
 
-                <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 2 }}>
-                    <Button onClick={handleClose} variant="outlined">
-                        Close
-                    </Button>
-                    <Button 
-                        onClick={handleAddAssignment} 
-                        variant="contained" 
-                        disabled={isLoading}
-                        sx={{ mt:2 }}
-                    >
-                        {isLoading ? <CircularProgress size={24} /> : 'Add Assignment'}
-                    </Button>
-                    
-                    <Divider sx={{ my: 2 }} />
-                </Box>
+                <Button type="submit" variant="contained" 
+                    sx={{ mt: 2 }} 
+                    disabled={isLoading || isFormInvalid}
+                    onClick={handleAddAssignment}
+                >{isLoading ? <CircularProgress size={24} /> : 'Add Assignment'}
+                </Button>
+                <Button onClick={handleClose} sx={{ mt: 2, ml: 1 }}>
+                    Cancel
+                </Button> 
             </Box>
         </Modal>
     );
