@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Modal, Box, Typography, Button, TextField, MenuItem, CircularProgress } from '@mui/material';
+import { Modal, Box, Typography, Button, TextField, MenuItem,
+     CircularProgress } from '@mui/material';
 import { toast } from 'react-toastify';
 
-import { promoteToFaculty } from '../../adminSlice.js';
+import { promoteToFaculty } from '../../adminSlice/adminUserSlice.js';
 
 const style = {
     position: 'absolute',
@@ -19,7 +20,7 @@ const style = {
 
 const PromoteUserModal = ({ open, handleClose, user }) => {
     const dispatch = useDispatch();
-    const { isLoading } = useSelector((state) => state.admin);
+    const { isLoading } = useSelector((state) => state.adminUsers);
 
     const [role, setRole] = useState('teacher');
     const [staffId, setStaffId] = useState('');

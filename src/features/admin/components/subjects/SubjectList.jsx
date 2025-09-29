@@ -3,11 +3,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Box, Typography, CircularProgress, Alert, Paper, Button } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 
-import { getSubjects, deleteSubject } from '../../adminSlice.js';
+import { getSubjects, deleteSubject } from '../../adminSlice/adminSubjectSlice.js';
 
 const SubjectList = ({ onEdit }) => {
     const dispatch = useDispatch();
-    const { subjects, isLoading, isError, message } = useSelector((state) => state.admin);
+    const { subjects, isLoading, isError, message } = useSelector((state) => state.adminSubjects);
 
     useEffect(() => {
     // dispatch action if the subjects array is empty.

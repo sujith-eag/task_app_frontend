@@ -3,11 +3,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Box, Button, CircularProgress } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 
-import { getAllTeachers } from '../../adminSlice.js';
+import { getAllTeachers } from '../../adminSlice/adminTeacherSlice.js';
 
 const TeacherList = ({ onAssign }) => { // onAssign is a function to open the modal
     const dispatch = useDispatch();
-    const { teachers, isLoading } = useSelector((state) => state.admin);
+    const { teachers, isLoading } = useSelector((state) => state.adminTeachers);
     
     useEffect(() => {
         dispatch(getAllTeachers());
@@ -18,7 +18,7 @@ const TeacherList = ({ onAssign }) => { // onAssign is a function to open the mo
         { field: 'email', headerName: 'Email', flex: 1.5 },
         { 
             field: 'assignments', 
-            headerName: 'Assigned Subjects', 
+            headerName: 'Assigned Subjects',
             flex: 1.5,
             renderCell: (params) => {
                 const assignments = params.row.teacherDetails?.assignments || [];
@@ -30,22 +30,6 @@ const TeacherList = ({ onAssign }) => { // onAssign is a function to open the mo
                 </span>
                 );
             },
-
-            // valueGetter: (params) => params?.row?.teacherDetails?.assignments?.length || 0
-
-            // valueGetter: (params) => { 
-            //     const assignments = params?.row?.teacherDetails?.assignments;
-            //     if (Array.isArray(assignments)) {
-            //         return assignments.length;
-            //     }
-            //     return 0;
-            // },
-
-            // renderCell: (params) => {
-            //     const assignments = params.row.teacherDetails?.assignments || [];
-            //     if (!assignments.length) return "None";
-            //     return assignments.map(a => a.subject?.name || "Unknown").join(", ");
-            // }
         },
         {
             field: 'actions',

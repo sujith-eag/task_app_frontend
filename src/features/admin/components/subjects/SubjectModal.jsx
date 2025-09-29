@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Modal, Box, Typography, Button, TextField, MenuItem, CircularProgress } from '@mui/material';
 import { toast } from 'react-toastify';
 
-import { createSubject, updateSubject } from '../../adminSlice.js';
+import { createSubject, updateSubject } from '../../adminSlice/adminSubjectSlice.js';
 
 const style = {
     position: 'absolute',
@@ -19,7 +19,7 @@ const style = {
 
 const SubjectModal = ({ open, handleClose, subject }) => {
     const dispatch = useDispatch();
-    const { isLoading } = useSelector((state) => state.admin);
+    const { isLoading } = useSelector((state) => state.adminSubjects);
     const [formData, setFormData] = useState({
         name: '',
         subjectCode: '',

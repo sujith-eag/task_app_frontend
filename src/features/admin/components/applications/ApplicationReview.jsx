@@ -3,12 +3,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Box, Typography, Button, CircularProgress, Alert } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import { toast } from 'react-toastify';
+import { getPendingApplications, reviewApplication } from '../../adminSlice/adminUserSlice.js'
 
-import { getPendingApplications, reviewApplication } from '../../adminSlice.js';
 
 const ApplicationReview = () => {
     const dispatch = useDispatch();
-    const { pendingApplications, isLoading, isError, message } = useSelector((state) => state.admin);
+    const { pendingApplications, isLoading, isError, message } = useSelector((state) => state.adminUsers);
 
     useEffect(() => {
         dispatch(getPendingApplications());

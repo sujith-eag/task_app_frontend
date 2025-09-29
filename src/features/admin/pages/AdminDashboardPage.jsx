@@ -12,9 +12,9 @@ import FacultyManager from '../components/faculty/FacultyManager.jsx';
 import SubjectManager from '../components/subjects/SubjectManager.jsx'
 import UserManagement from '../components/users/UserManagement.jsx';
 
-import { getPendingApplications,
-    getSubjects, getAllTeachers } from '../adminSlice.js';
-
+import { getPendingApplications, getUsersByRole } from '../adminSlice/adminUserSlice.js';
+import { getSubjects } from '../adminSlice/adminSubjectSlice.js';
+import { getAllTeachers } from '../adminSlice/adminTeacherSlice.js';
 
 const TabPanel = (props) => {
     const { children, value, index, ...other } = props;
@@ -34,6 +34,7 @@ const AdminDashboardPage = () => {
         dispatch(getPendingApplications());
         dispatch(getSubjects());
         dispatch(getAllTeachers());
+        dispatch(getUsersByRole('student'));
     }, [dispatch]);
     
     const handleTabChange = (event, newValue) => {
@@ -47,10 +48,16 @@ const AdminDashboardPage = () => {
             </Typography>
             <Paper elevation={3} sx={{ borderRadius: 2, mt: 2 }}>
                 <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                    <Tabs value={tabIndex} onChange={handleTabChange} aria-label="admin dashboard tabs">
-                        <Tab icon={<PeopleAltIcon />} iconPosition="start" label="Student Applications" />
-                        <Tab icon={<LibraryBooksIcon />} iconPosition="start" label="Subject Management" />
-                        <Tab icon={<SchoolIcon />} iconPosition="start" label="Faculty Management" />
+                    <Tabs value={tabIndex} onChange={handleTabChange}
+                        aria-label="admin dashboard tabs"
+                        variant="scrollable" scrollButtons="auto"
+                        >
+                        <Tab icon={<PeopleAltIcon />} iconPosition="start"
+                            label="Student Applications" />
+                        <Tab icon={<LibraryBooksIcon />} iconPosition="start"
+                            label="Subject Management" />
+                        <Tab icon={<SchoolIcon />} iconPosition="start"
+                            label="Faculty Management" />
                         <Tab icon={<ManageAccountsIcon />} iconPosition="start" label="User Management" />
                     </Tabs>
                 </Box>

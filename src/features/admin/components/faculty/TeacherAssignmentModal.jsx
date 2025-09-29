@@ -6,8 +6,10 @@ import { Modal, Box, Typography, Button, TextField, MenuItem,
 import DeleteIcon from '@mui/icons-material/Delete';
 import { toast } from 'react-toastify';
 
-import { updateTeacherAssignments, deleteTeacherAssignment,
-    getSubjects } from '../../adminSlice.js';
+import { updateTeacherAssignments, deleteTeacherAssignment
+    } from '../../adminSlice/adminTeacherSlice.js';
+
+import { getSubjects } from '../../adminSlice/adminSubjectSlice.js'
 
 const style = {
     position: 'absolute',
@@ -26,7 +28,11 @@ const sections = ['A', 'B'];
 const TeacherAssignmentModal = ({ open, handleClose, teacher }) => {
     const dispatch = useDispatch();
 
-    const { subjects, isLoading } = useSelector((state) => state.admin);
+    const { subjects, isLoading: isSubjectsLoading } = useSelector((state) => state.adminSubjects);
+    const { isLoading: isTeacherLoading } = useSelector((state) => state.adminTeachers);
+    // Combining Both loading into one
+    const isLoading = isSubjectsLoading || isTeacherLoading;
+
     const [subject, setSubject] = useState('');
     const [selectedSections, setSelectedSections] = useState([]);
     const [batch, setBatch] = useState(new Date().getFullYear());

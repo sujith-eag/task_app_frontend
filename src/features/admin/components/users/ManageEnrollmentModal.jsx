@@ -5,7 +5,8 @@ import { Modal, Box, Typography, Button, FormGroup,
         Paper } from '@mui/material';
 import { toast } from 'react-toastify';
 
-import { updateStudentEnrollment } from '../../adminSlice.js';
+import { updateStudentEnrollment } from '../../adminSlice/adminUserSlice.js';
+import { getSubjects } from '../../adminSlice/adminSubjectSlice.js';
 
 const style = {
     position: 'absolute',
@@ -21,10 +22,17 @@ const style = {
 
 const ManageEnrollmentModal = ({ open, handleClose, student }) => {
     const dispatch = useDispatch();
-    const { subjects, isLoading } = useSelector((state) => state.admin);
+    const { subjects, isLoading: isSubjectsLoading } = useSelector((state) => state.adminSubjects);
+    const { isLoading: isUserLoading } = useSelector((state) => state.adminUsers);
+    const isLoading = isSubjectsLoading || isUserLoading;
+
+    
     const [selectedSubjects, setSelectedSubjects] = useState([]);
 
     useEffect(() => {
+        if (open){ // Fetch the list of all subjects when the modal opens
+            dispatch(getSubjects());
+        }
         if (student) {
             // Initialize the state with the student's currently enrolled subjects
             setSelectedSubjects(student.studentDetails?.enrolledSubjects || []);
@@ -72,12 +80,16 @@ const ManageEnrollmentModal = ({ open, handleClose, student }) => {
                         ))}
                     </FormGroup>
                 </Paper>
-                <Button type="submit" variant="contained" sx={{ mt: 2 }} disabled={isLoading}>
-                    {isLoading ? <CircularProgress size={24} /> : 'Save Enrollment'}
-                </Button>
-                <Button onClick={handleClose} sx={{ mt: 2, ml: 1 }}>
-                    Cancel
-                </Button>
+                
+                <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
+                    <Button onClick={handleClose}>
+                        Cancel
+                    </Button>
+                    <Button type="submit" variant="contained" disabled={isLoading}>
+                        {isLoading ? <CircularProgress size={24} /> : 'Save Enrollment'}
+                    </Button>
+                </Box>
+
             </Box>
         </Modal>
     );

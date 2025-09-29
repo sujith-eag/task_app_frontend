@@ -7,11 +7,11 @@ import ManageEnrollmentModal from './ManageEnrollmentModal.jsx';
 import PromoteUserModal from './PromoteUserModal.jsx';
 import EditStudentModal from './EditStudentModal.jsx';
 
-import { getUsersByRole } from '../../adminSlice.js';
+import { getUsersByRole } from '../../adminSlice/adminUserSlice.js';
 
 const UserManagement = () => {
     const dispatch = useDispatch();
-    const { userList, isLoading, isError, message } = useSelector((state) => state.admin);
+    const { userList, isLoading, isError, message } = useSelector((state) => state.adminUsers);
 
     const [activeTab, setActiveTab] = useState('user'); // 'user' or 'student'
     const [isPromoteModalOpen, setIsPromoteModalOpen] = useState(false);

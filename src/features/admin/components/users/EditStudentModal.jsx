@@ -4,7 +4,7 @@ import { Modal, Box, Typography, Button, TextField,
     MenuItem, CircularProgress } from '@mui/material';
 import { toast } from 'react-toastify';
 
-import { updateStudentDetails } from '../../adminSlice.js';
+import { updateStudentDetails } from '../../adminSlice/adminUserSlice.js';
 
 const style = {
     position: 'absolute',
@@ -22,7 +22,7 @@ const sections = ['A', 'B', 'C'];
 
 const EditStudentModal = ({ open, handleClose, student }) => {
     const dispatch = useDispatch();
-    const { isLoading } = useSelector((state) => state.admin);
+    const { isLoading } = useSelector((state) => state.adminUsers);
 
     const [formData, setFormData] = useState({
         usn: '',
