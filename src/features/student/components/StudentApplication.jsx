@@ -4,7 +4,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import { Box, TextField, Button, Typography, Alert, CircularProgress } from '@mui/material';
 import { toast } from 'react-toastify';
 
-import { applyAsStudent } from '../../auth/authSlice.js';
+import { applyAsStudent } from '../../profile/profileSlice.js';
 
 const StudentApplication = () => {
     const dispatch = useDispatch();
