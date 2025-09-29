@@ -7,7 +7,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { toast } from 'react-toastify';
 
 import { updateTeacherAssignments, deleteTeacherAssignment,
-    getSubjects } from '../../adminSlice';
+    getSubjects } from '../../adminSlice.js';
 
 const style = {
     position: 'absolute',
