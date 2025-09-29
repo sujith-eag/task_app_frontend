@@ -3,40 +3,50 @@ import adminService from '../adminService';
 
 
 // --- Async Thunks ---
+
+// Get all subjects
 export const getSubjects = createAsyncThunk('adminSubjects/getAll', async (_, thunkAPI) => {
     try {
         const token = thunkAPI.getState().auth.user.token;
         return await adminService.getSubjects(token);
     } catch (error) {
-        return thunkAPI.rejectWithValue(error.response?.data?.message || error.message);
+        const message = (error.response?.data?.message) || error.message || error.toString();
+        return thunkAPI.rejectWithValue(message);
     }
 });
 
+// Create a new subject
 export const createSubject = createAsyncThunk('adminSubjects/create', async (subjectData, thunkAPI) => {
     try {
         const token = thunkAPI.getState().auth.user.token;
         return await adminService.createSubject(subjectData, token);
     } catch (error) {
-        return thunkAPI.rejectWithValue(error.response?.data?.message || error.message);
+        const message = (error.response?.data?.message) || error.message || error.toString();
+        return thunkAPI.rejectWithValue(message);
     }
 });
 
+// Update an existing subject
 export const updateSubject = createAsyncThunk('adminSubjects/update', async (subjectData, thunkAPI) => {
     try {
         const token = thunkAPI.getState().auth.user.token;
         return await adminService.updateSubject(subjectData, token);
     } catch (error) {
-        return thunkAPI.rejectWithValue(error.response?.data?.message || error.message);
+        const message = (error.response?.data?.message) || error.message || error.toString();
+        return thunkAPI.rejectWithValue(message);
     }
 });
 
+// Delete a subject
 export const deleteSubject = createAsyncThunk('adminSubjects/delete', async (subjectId, thunkAPI) => {
     try {
         const token = thunkAPI.getState().auth.user.token;
-        await adminService.deleteSubject(subjectId, token);
-        return subjectId; // Return the ID on success
+        return await adminService.deleteSubject(subjectId, token);
+        // await adminService.deleteSubject(subjectId, token);
+        // return subjectId; // Return the ID on success
     } catch (error) {
-        return thunkAPI.rejectWithValue(error.response?.data?.message || error.message);
+        const message = (error.response?.data?.message) || error.message || error.toString();
+        return thunkAPI.rejectWithValue(message);
     }
 });
 
@@ -49,16 +59,23 @@ const initialState = {
     message: '',
 };
 
-export const subjectSlice = createSlice({
+export const adminSubjectSlice = createSlice({
     name: 'adminSubjects',
     initialState,
     reducers: {
-        reset: (state) => initialState,
+        reset: (state) => {
+            state.isLoading = false;
+            state.isSuccess = false;
+            state.isError = false;
+            state.message = '';
+        },
     },
     extraReducers: (builder) => {
         builder
             // Get Subjects
-            .addCase(getSubjects.pending, (state) => { state.isLoading = true; })
+            .addCase(getSubjects.pending, (state) => { 
+                state.isLoading = true; 
+            })
             .addCase(getSubjects.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.isSuccess = true;
@@ -69,8 +86,12 @@ export const subjectSlice = createSlice({
                 state.isError = true;
                 state.message = action.payload;
             })
+            
+            
             // Create Subject
-            .addCase(createSubject.pending, (state) => { state.isLoading = true; })
+            .addCase(createSubject.pending, (state) => { 
+                state.isLoading = true; 
+            })
             .addCase(createSubject.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.isSuccess = true;
@@ -81,25 +102,38 @@ export const subjectSlice = createSlice({
                 state.isError = true;
                 state.message = action.payload;
             })
+            
+            
             // Update Subject
-            .addCase(updateSubject.pending, (state) => { state.isLoading = true; })
+            .addCase(updateSubject.pending, (state) => { 
+                state.isLoading = true; 
+            })
             .addCase(updateSubject.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.isSuccess = true;
+                // Find index of updated subject and replace it in the state
                 const index = state.subjects.findIndex(s => s._id === action.payload._id);
-                if (index !== -1) state.subjects[index] = action.payload;
+                if (index !== -1) {
+                    state.subjects[index] = action.payload
+                };
             })
             .addCase(updateSubject.rejected, (state, action) => {
                 state.isLoading = false;
                 state.isError = true;
                 state.message = action.payload;
             })
+            
+            
             // Delete Subject
-            .addCase(deleteSubject.pending, (state) => { state.isLoading = true; })
+            .addCase(deleteSubject.pending, (state) => { 
+                state.isLoading = true; 
+            })
             .addCase(deleteSubject.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.isSuccess = true;
-                state.subjects = state.subjects.filter(s => s._id !== action.payload);
+                // Remove the deleted subject from the state
+                // state.subjects = state.subjects.filter(s => s._id !== action.payload);
+                state.subjects = state.subjects.filter(s => s._id !== action.payload.id);
             })
             .addCase(deleteSubject.rejected, (state, action) => {
                 state.isLoading = false;
@@ -109,5 +143,5 @@ export const subjectSlice = createSlice({
     },
 });
 
-export const { reset } = subjectSlice.actions;
-export default subjectSlice.reducer;
+export const { reset } = adminSubjectSlice.actions;
+export default adminSubjectSlice.reducer;
