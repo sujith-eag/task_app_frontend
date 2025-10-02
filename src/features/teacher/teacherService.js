@@ -3,6 +3,24 @@ import axios from 'axios';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const API_URL = `${API_BASE_URL}/college/teachers/`;
 
+
+
+// --- Submit a teacher's reflection for a class session ---
+const createSessionReflection = async (reflectionData, token) => {
+    const config = { headers: { Authorization: `Bearer ${token}` } };
+    const response = await axios.post(API_URL + 'session-reflection', reflectionData, config);
+    return response.data;
+};
+
+// --- Get the feedback summary for a specific session ---
+const getFeedbackSummaryForSession = async (sessionId, token) => {
+    const config = { headers: { Authorization: `Bearer ${token}` } };
+    const response = await axios.get(`${API_URL}feedback-summary/${sessionId}`, config);
+    return response.data;
+};
+
+
+
 /**
  * Retrieves the necessary data for a teacher to create a class (e.g., their assigned subjects).
  * @route GET /api/college/teachers/class-creation-data
@@ -68,6 +86,8 @@ const finalizeAttendance = async (data, token) => {
 };
 
 const teacherService = {
+    createSessionReflection,
+    getFeedbackSummaryForSession,
     getClassCreationData,
     createClassSession,
     getTeacherSessionsHistory,

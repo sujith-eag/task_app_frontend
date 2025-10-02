@@ -38,7 +38,17 @@ const getFeedbackSummary = async (filters, token) => {
     return response.data;
 };
 
+
+// --- Get a detailed feedback report for a single class session ---
+const getFeedbackReport = async (classSessionId, token) => {
+    const config = { headers: { Authorization: `Bearer ${token}` } };
+    const response = await axios.get(`${API_URL}feedback-report/${classSessionId}`, config);
+    return response.data;
+};
+
+
 export const reportingService = {
     getAttendanceStats,
     getFeedbackSummary,
+    getFeedbackReport
 };

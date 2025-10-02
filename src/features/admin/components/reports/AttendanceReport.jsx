@@ -1,20 +1,134 @@
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Box, Typography, Grid, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { DataGrid } from '@mui/x-data-grid';
 
-import React from 'react';
-import { Box, Typography, Alert } from '@mui/material';
+import { getAttendanceStats } from '../../adminSlice/adminReportingSlice.js';
+import { getAllTeachers } from '../../adminSlice/adminTeacherSlice.js';
+import { getSubjects } from '../../adminSlice/adminSubjectSlice.js'
 
 const AttendanceReport = () => {
-    // This component would include:
-    // 1. State for filters (teacher, subject, semester).
-    // 2. Dropdown/select inputs to set these filters.
-    // 3. A useEffect hook that re-fetches data by dispatching `getAttendanceStats` when filters change.
-    // 4. A DataGrid to display the results from the `attendanceStats` state in the adminSlice.
+    const dispatch = useDispatch();
+    
+    // --- Selectors for Redux State ---
+    const { attendanceStats, isLoading } = useSelector((state) => state.adminReporting);
+    const { teachers } = useSelector((state) => state.adminTeachers); 
+    const { subjects } = useSelector((state) => state.adminSubjects);
+    
+    // --- Local State for Filter Values ---
+    const [filters, setFilters] = useState({
+        teacherId: '',
+        subjectId: '',
+        semester: '',
+    });
+
+    // --- Data Fetching Effects ---
+    useEffect(() => {
+        dispatch(getAllTeachers());
+        dispatch(getSubjects());
+    }, [dispatch]);
+
+    useEffect(() => {
+        // runs whenever the filters change to re-fetch the report data.
+        const activeFilters = Object.fromEntries(
+            Object.entries(filters).filter(([_, value]) => value !== '')
+        );
+        dispatch(getAttendanceStats(activeFilters));
+    }, [dispatch, filters]);
+
+    // --- Event Handlers ---
+    const handleFilterChange = (e) => {
+        setFilters(prevFilters => ({
+            ...prevFilters,
+            [e.target.name]: e.target.value,
+        }));
+    };
+
+    // --- DataGrid Column Definitions ---
+    // These fields match the response from the getAttendanceStats controller
+    const columns = [
+        { field: 'subjectName', headerName: 'Subject', flex: 1.5 },
+        { field: 'teacherName', headerName: 'Teacher', flex: 1.5 },
+        { 
+            field: 'attendancePercentage', 
+            headerName: 'Attendance %', 
+            width: 150,
+            renderCell: (params) => `${params.value.toFixed(2)}%`
+        },
+        { field: 'presentStudents', headerName: 'Present', width: 120, type: 'number' },
+        { field: 'totalStudents', headerName: 'Total Students', width: 150, type: 'number' },
+    ];
+
     return (
         <Box>
             <Typography variant="h5" gutterBottom>Attendance Statistics</Typography>
-            <Alert severity="info">
-                Attendance reporting UI placeholder. This would contain filters and a data grid
-                to show attendance percentages by subject, teacher, etc.
-            </Alert>
+            
+            <Grid container spacing={2} sx={{ mb: 3 }}>
+                <Grid item xs={12} sm={4}>
+                    <FormControl fullWidth>
+                        <InputLabel id="teacher-filter-label">Teacher</InputLabel>
+                        <Select
+                            labelId="teacher-filter-label"
+                            name="teacherId"
+                            value={filters.teacherId}
+                            label="Teacher"
+                            onChange={handleFilterChange}
+                        >
+                            <MenuItem value=""><em>All Teachers</em></MenuItem>
+                            {/* --- Map over the 'teachers' array --- */}
+                            {teachers.map((teacher) => (
+                                <MenuItem key={teacher._id} value={teacher._id}>{teacher.name}</MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                    <FormControl fullWidth>
+                        <InputLabel id="subject-filter-label">Subject</InputLabel>
+                        <Select
+                            labelId="subject-filter-label"
+                            name="subjectId"
+                            value={filters.subjectId}
+                            label="Subject"
+                            onChange={handleFilterChange}
+                        >
+                            <MenuItem value=""><em>All Subjects</em></MenuItem>
+                            {/* --- Map over the 'subjects' array --- */}
+                            {subjects.map((subject) => (
+                                <MenuItem key={subject._id} value={subject._id}>{subject.name}</MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                     <FormControl fullWidth>
+                        <InputLabel id="semester-filter-label">Semester</InputLabel>
+                        <Select
+                            labelId="semester-filter-label"
+                            name="semester"
+                            value={filters.semester}
+                            label="Semester"
+                            onChange={handleFilterChange}
+                        >
+                             <MenuItem value=""><em>All Semesters</em></MenuItem>
+                             <MenuItem value="1">1</MenuItem>
+                             <MenuItem value="2">2</MenuItem>
+                             <MenuItem value="3">3</MenuItem>
+                             <MenuItem value="4">4</MenuItem>
+                        </Select>
+                    </FormControl>
+                </Grid>
+            </Grid>
+
+            <Box sx={{ height: 600, width: '100%' }}>
+                <DataGrid
+                    rows={attendanceStats}
+                    columns={columns}
+                    loading={isLoading}
+                    getRowId={(row) => `${row.teacherName}-${row.subjectName}`} // Provide a stable unique ID
+                    disableRowSelectionOnClick
+                />
+            </Box>
         </Box>
     );
 };

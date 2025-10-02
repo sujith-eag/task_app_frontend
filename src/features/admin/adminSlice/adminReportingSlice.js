@@ -27,10 +27,23 @@ export const getFeedbackSummary = createAsyncThunk('adminReporting/getFeedback',
 });
 
 
+export const getFeedbackReport = createAsyncThunk('adminReporting/getDetailedReport', async (classSessionId, thunkAPI) => {
+    try {
+        const token = thunkAPI.getState().auth.user.token;
+        return await adminService.getFeedbackReport(classSessionId, token);
+    } catch (error) {
+        const message = (error.response?.data?.message) || error.message || error.toString();
+        return thunkAPI.rejectWithValue(message);
+    }
+});
+
+
 // --- Slice Definition ---
 const initialState = {
     attendanceStats: [],
     feedbackSummary: [],
+    detailedReport: null,
+    isDetailLoading: false,
     isLoading: false,
     isSuccess: false,
     isError: false,
@@ -79,8 +92,23 @@ export const adminReportingSlice = createSlice({
                 state.isLoading = false;
                 state.isError = true;
                 state.message = action.payload;
-            });
-    },
+            })
+
+            
+            // --- Reducers for the detailed feedback report ---
+            .addCase(getFeedbackReport.pending, (state) => {
+                state.isDetailLoading = true;
+            })
+            .addCase(getFeedbackReport.fulfilled, (state, action) => {
+                state.isDetailLoading = false;
+                state.detailedReport = action.payload;
+            })
+            .addCase(getFeedbackReport.rejected, (state, action) => {
+                state.isDetailLoading = false;
+                state.isError = true;
+                state.message = action.payload;
+            })
+    ;},
 });
 
 export const { reset } = adminReportingSlice.actions;
