@@ -17,11 +17,10 @@ const markAttendance = async (attendanceData, token) => {
     return response.data;
 };
 
-
 /**
- * Submits anonymous feedback for a specific class session.
+ * Submits anonymous, detailed feedback for a specific class session.
  * @route POST /api/college/students/feedback
- * @param {object} feedbackData - The feedback payload, e.g., { classSessionId, rating, comment }.
+ * @param {object} feedbackData - The feedback payload, e.g., { classSessionId, ratings: { clarity, ... }, positiveFeedback, improvementSuggestions }.
  * @param {string} token - The user's JWT for authentication.
  * @returns {Promise<object>} A promise that resolves to a success confirmation message.
  */
@@ -33,7 +32,7 @@ const submitFeedback = async (feedbackData, token) => {
 
 
 /**
- * Retrieves the personal dashboard statistics (e.g., attendance) for the authenticated student.
+ * Retrieves the personal dashboard statistics for the authenticated student.
  * @route GET /api/college/students/dashboard-stats
  * @param {string} token - The user's JWT for authentication.
  * @returns {Promise<Array<object>>} A promise that resolves to an array of statistics objects.
@@ -45,10 +44,24 @@ const getStudentDashboardStats = async (token) => {
 };
 
 
+/**
+ * Retrieves past class sessions for the authenticated student that are awaiting feedback.
+ * @route GET /api/college/students/sessions-for-feedback
+ * @param {string} token - The user's JWT for authentication.
+ * @returns {Promise<Array<object>>} A promise that resolves to an array of class session objects.
+ */
+const getSessionsForFeedback = async (token) => {
+    const config = { headers: { Authorization: `Bearer ${token}` } };
+    const response = await axios.get(API_URL + 'sessions-for-feedback', config);
+    return response.data;
+};
+
+
 const studentService = {
     markAttendance,
     submitFeedback,
     getStudentDashboardStats,
+    getSessionsForFeedback
 };
 
 export default studentService;

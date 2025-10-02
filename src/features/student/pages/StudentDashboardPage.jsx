@@ -5,6 +5,8 @@ import { Box, Container, Typography, Paper, Alert } from '@mui/material';
 import AttendanceEntry from '../components/AttendanceEntry.jsx';
 import MyAttendanceStats from '../components/MyAttendanceStats.jsx';
 import StudentApplication from '../components/StudentApplication.jsx';
+import PastSessionsList from '../components/PastSessionsList.jsx';
+
 
 const StudentDashboardPage = () => {
     const { user } = useSelector((state) => state.auth);
@@ -14,8 +16,17 @@ const StudentDashboardPage = () => {
         if (user && user.role === 'student') {
             return (
                 <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3 }}>
-                    <AttendanceEntry />
-                    <MyAttendanceStats />
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                        <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
+                             <AttendanceEntry />
+                        </Paper>
+                        <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
+                            <MyAttendanceStats />
+                        </Paper>
+                    </Box>
+                    <Box>
+                         <PastSessionsList />
+                    </Box>
                 </Box>
             );
         }
@@ -43,9 +54,9 @@ const StudentDashboardPage = () => {
             <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'bold' }}>
                 Student Dashboard
             </Typography>
-            <Paper elevation={3} sx={{ p: 3, mt: 2, borderRadius: 2 }}>
+            <Box sx={{ mt: 2 }}>
                 {renderContent()}
-            </Paper>
+            </Box>
         </Container>
     );
 };

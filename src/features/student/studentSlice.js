@@ -4,8 +4,7 @@ import studentService from './studentService.js';
 // --- Initial State ---
 const initialState = {
     dashboardStats: [],
-    // We can add a state for classes awaiting feedback if needed,
-    // for now, we'll keep the slice focused on the main dashboard stats.
+    sessionsAwaitingFeedback: [],
     isError: false,
     isSuccess: false,
     isLoading: false,
@@ -58,6 +57,19 @@ export const markAttendance = createAsyncThunk('student/markAttendance', async (
 });
 
 
+export const getSessionsForFeedback = createAsyncThunk('student/getSessionsForFeedback', async (_, thunkAPI) => {
+    try {
+        const token = thunkAPI.getState().auth.user.token;
+        // Requires a new backend endpoint.
+        return await studentService.getSessionsForFeedback(token); 
+    } catch (error) {
+        const message = (error.response?.data?.message) || error.message || error.toString();
+        return thunkAPI.rejectWithValue(message);
+    }
+});
+
+
+
 // --- Slice Definition ---
 export const studentSlice = createSlice({
     name: 'student',
@@ -86,6 +98,8 @@ export const studentSlice = createSlice({
                 state.isError = true;
                 state.message = action.payload;
             })
+
+
             // Submit Feedback
             .addCase(submitFeedback.pending, (state) => {
                 state.isLoading = true;
@@ -103,6 +117,7 @@ export const studentSlice = createSlice({
                 state.message = action.payload;
             })
             
+
             // --- Mark Attendance ---
             .addCase(markAttendance.pending, (state) => {
                 state.isLoading = true;
@@ -116,8 +131,23 @@ export const studentSlice = createSlice({
                 state.isLoading = false;
                 state.isError = true;
                 state.message = action.payload;
-            });
-    },
+            })
+            
+    
+            .addCase(getSessionsForFeedback.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(getSessionsForFeedback.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isSuccess = true;
+                state.sessionsAwaitingFeedback = action.payload;
+            })
+            .addCase(getSessionsForFeedback.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload;
+            })
+    ;},
 });
 
 export const { reset } = studentSlice.actions;
