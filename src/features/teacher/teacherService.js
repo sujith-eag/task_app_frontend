@@ -5,20 +5,32 @@ const API_URL = `${API_BASE_URL}/college/teachers/`;
 
 
 
-// --- Submit a teacher's reflection for a class session ---
+/**
+ * Submits a teacher's personal reflection for a completed class session.
+ * @route   POST /api/college/teachers/session-reflection
+ * @param   {object} reflectionData - The reflection payload, including the `classSessionId` and self-assessment data.
+ * @param   {string} token - The teacher's JWT for authentication.
+ * @returns {Promise<object>} A promise that resolves to the newly created teacher reflection object.
+ */
 const createSessionReflection = async (reflectionData, token) => {
     const config = { headers: { Authorization: `Bearer ${token}` } };
     const response = await axios.post(API_URL + 'session-reflection', reflectionData, config);
     return response.data;
 };
 
-// --- Get the feedback summary for a specific session ---
+
+/**
+ * Retrieves an anonymized, aggregated summary of student feedback for a teacher's own class session.
+ * @route   GET /api/college/teachers/feedback-summary/:sessionId
+ * @param   {string} sessionId - The unique ID of the class session to get the summary for.
+ * @param   {string} token - The teacher's JWT for authentication.
+ * @returns {Promise<object>} A promise that resolves to an object containing the student feedback summary and the teacher's own reflection.
+ */
 const getFeedbackSummaryForSession = async (sessionId, token) => {
     const config = { headers: { Authorization: `Bearer ${token}` } };
     const response = await axios.get(`${API_URL}feedback-summary/${sessionId}`, config);
     return response.data;
 };
-
 
 
 /**
@@ -33,6 +45,7 @@ const getClassCreationData = async (token) => {
     return response.data;
 };
 
+
 /**
  * Creates a new class session for attendance.
  * @route POST /api/college/teachers/class-sessions
@@ -46,6 +59,7 @@ const createClassSession = async (sessionData, token) => {
     return response.data;
 };
 
+
 /**
  * Retrieves a history of the authenticated teacher's past class sessions.
  * @route GET /api/college/teachers/class-sessions
@@ -57,6 +71,7 @@ const getTeacherSessionsHistory = async (token) => {
     const response = await axios.get(API_URL + 'class-sessions', config);
     return response.data;
 };
+
 
 /**
  * Retrieves the current attendance roster for a specific, active class session.
@@ -71,6 +86,7 @@ const getSessionRoster = async (sessionId, token) => {
     return response.data;
 };
 
+
 /**
  * Finalizes the attendance for a session, including any manual overrides by the teacher.
  * @route PATCH /api/college/teachers/class-sessions/:sessionId/roster
@@ -84,6 +100,7 @@ const finalizeAttendance = async (data, token) => {
     const response = await axios.patch(`${API_URL}class-sessions/${sessionId}/roster`, { updatedRoster }, config);
     return response.data;
 };
+
 
 const teacherService = {
     createSessionReflection,

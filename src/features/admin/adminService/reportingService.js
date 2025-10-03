@@ -22,6 +22,7 @@ const getAttendanceStats = async (filters, token) => {
     return response.data;
 };
 
+
 /**
  * Gets an aggregated summary of feedback, with optional filtering.
  * @route GET /api/admin/feedback-summary
@@ -39,7 +40,14 @@ const getFeedbackSummary = async (filters, token) => {
 };
 
 
-// --- Get a detailed feedback report for a single class session ---
+/**
+ * Retrieves a detailed, 360-degree feedback report for a single class session.
+ * This report includes session details, aggregated anonymous student feedback, and the teacher's own reflection.
+ * @route   GET /api/admin/feedback-report/:classSessionId
+ * @param   {string} classSessionId - The unique ID of the class session to get the report for.
+ * @param   {string} token - The admin's or HOD's JWT for authentication.
+ * @returns {Promise<object>} A promise that resolves to a comprehensive report object.
+ */
 const getFeedbackReport = async (classSessionId, token) => {
     const config = { headers: { Authorization: `Bearer ${token}` } };
     const response = await axios.get(`${API_URL}feedback-report/${classSessionId}`, config);

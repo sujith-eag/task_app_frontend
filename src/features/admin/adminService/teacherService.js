@@ -18,6 +18,7 @@ const getAllTeachers = async (token) => {
     return response.data;
 };
 
+
 /**
  * Adds or updates subject assignments for a teacher.
  * @route POST /api/admin/teachers/:teacherId/assignments
@@ -31,6 +32,7 @@ const updateTeacherAssignments = async (data, token) => {
     const response = await axios.post(`${API_URL}teachers/${teacherId}/assignments`, assignmentData, config);
     return response.data;
 };
+
 
 /**
  * Removes a specific subject assignment from a teacher.
