@@ -47,11 +47,11 @@ export const updateAvatar = createAsyncThunk(
 
 // Apply to become a student
 export const applyAsStudent = createAsyncThunk(
-  'auth/applyAsStudent',
+  'profile/applyAsStudent',
   async (applicationData, thunkAPI) => {
     try {
       const token = thunkAPI.getState().auth.user.token;
-      return await authService.applyAsStudent(applicationData, token);
+      return await profileService.applyAsStudent(applicationData, token);
     } catch (error) {
       const message =
         (error.response?.data?.message || error.message || error.toString())
