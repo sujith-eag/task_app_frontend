@@ -1,16 +1,44 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+
 import { Box, Container, Typography, Paper, Alert } from '@mui/material';
+import { toast } from 'react-toastify';
 
 import AttendanceEntry from '../components/AttendanceEntry.jsx';
 import MyAttendanceStats from '../components/MyAttendanceStats.jsx';
 import StudentApplication from '../components/StudentApplication.jsx';
 import PastSessionsList from '../components/PastSessionsList.jsx';
 
+import { resetProfileStatus } from '../../profile/profileSlice.js';
 
 const StudentDashboardPage = () => {
-    const { user } = useSelector((state) => state.auth);
 
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    
+    const { user } = useSelector((state) => state.auth);
+    const { profileStatus, message } = useSelector((state) => state.profile);
+
+    // useEffect in the PARENT now handles the side effects
+    useEffect(() => {
+        // When the applyAsStudent action succeeds...
+        if (profileStatus === 'succeeded') {
+            // ...show the toast and navigate to the profile page.
+            toast.success("Your application has been submitted successfully!");
+            navigate('/profile');
+            // Reset the status to prevent this from running again
+            dispatch(resetProfileStatus());
+        }
+
+        // Handle the error case as well
+        if (profileStatus === 'failed') {
+            toast.error(message);
+            dispatch(resetProfileStatus());
+        }
+    }, [profileStatus, message, navigate, dispatch]);
+    
+    
     const renderContent = () => {
         // Case 1: User is an approved student
         if (user && user.role === 'student') {

@@ -6,7 +6,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 import { Container, Box, Avatar, Typography, TextField, 
-  Button, Backdrop, CircularProgress } from '@mui/material';
+  Button, Backdrop, CircularProgress, Alert } from '@mui/material';
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
 
 const ForgotPassword = () => {
@@ -36,7 +36,7 @@ const ForgotPassword = () => {
           dispatch(reset());
         };
       }
-  }, [isError, isSuccess, message, navigate, dispatch]);
+  }, [isError, isSuccess, message, dispatch]);
 
   const onSubmit = (e) => {
     e.preventDefault();

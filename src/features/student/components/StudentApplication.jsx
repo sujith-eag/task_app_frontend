@@ -1,17 +1,29 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link as RouterLink } from 'react-router-dom';
-import { Box, TextField, Button, Typography, Alert, CircularProgress } from '@mui/material';
+
+import { Box, TextField, Button, Typography, Alert, 
+    CircularProgress, MenuItem } from '@mui/material';
 import { toast } from 'react-toastify';
 
 import { applyAsStudent } from '../../profile/profileSlice.js';
 
 const StudentApplication = () => {
     const dispatch = useDispatch();
-    const { user, isLoading, isError, isSuccess, message } = useSelector((state) => state.auth);
-    const [formData, setFormData] = useState({ usn: '', batch: '', section: '' });
-    const [isSubmitted, setIsSubmitted] = useState(false); // To track submission success
 
+    const { user } = useSelector((state) => state.auth);
+    const { profileStatus, message } = useSelector((state) => state.profile);
+    
+    const [formData, setFormData] = useState({ 
+        usn: '',
+        batch: new Date().getFullYear(),
+        section: '' 
+    });
+    const { usn, batch, section } = formData;
+    
+    
+    // --- Client-side validation ---
+    const canSubmit = usn.trim() !== '' && batch.toString().length === 4 && section !== '';
+    
     const applicationStatus = user?.studentDetails?.applicationStatus;
     
     const handleChange = (e) => {
@@ -20,48 +32,33 @@ const StudentApplication = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        dispatch(applyAsStudent(formData))
-            .unwrap()
-            .then((res) => {
-                toast.success(res.message);
-                setIsSubmitted(true);
-            })
-            .catch((err) => toast.error(err));
+        if(!canSubmit){
+            toast.error("Please fill out all required fields.");
+            return;
+        }
+        dispatch(applyAsStudent(formData));
     };
 
+    const isLoading = profileStatus === 'loading';
     
-    // Conditionally render a success message and button after submission
-    if (isSubmitted) {
-        return (
-            <Box sx={{ maxWidth: 500, textAlign: 'center' }}>
-                <Alert severity="success" variant="filled" sx={{ mb: 2 }}>
-                    Your application has been submitted successfully and is now pending review.
-                </Alert>
-                <Button component={RouterLink} to="/profile" variant="contained">
-                    Back to Profile
-                </Button>
-            </Box>
-        );
-    }
-
     return (
         <Box component="form" onSubmit={handleSubmit} sx={{ maxWidth: 500 }}>
             <Typography variant="h5" gutterBottom>Apply for Student Status</Typography>
-            {isError && <Alert severity="error" sx={{ mb: 2 }}>{message}</Alert>}
+            {profileStatus === 'failed' && <Alert severity="error" sx={{ mb: 2 }}>{message}</Alert>}
              
             {applicationStatus === 'rejected' && (
                 <Alert severity="warning" sx={{ mb: 2 }}>
-                    Your previous application was not approved. Please review your details carefully before resubmitting.
+                    Your previous application was not approved. Please review your details and resubmit.
                 </Alert>
-            )}             
+            )}
 
             <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                Please fill in your details accurately to get access to attendance and feedback features.
+                Please fill in your details accurately to get access to student features.
             </Typography>
             <TextField
                 label="University Seat Number (USN)"
                 name="usn"
-                value={formData.usn}
+                value={usn}
                 onChange={handleChange}
                 fullWidth
                 required
@@ -71,7 +68,7 @@ const StudentApplication = () => {
                 label="Batch (Year)"
                 name="batch"
                 type="number"
-                value={formData.batch}
+                value={batch}
                 onChange={handleChange}
                 fullWidth
                 required
@@ -80,13 +77,14 @@ const StudentApplication = () => {
             <TextField
                 label="Section"
                 name="section"
-                value={formData.section}
+                value={section}
                 onChange={handleChange}
                 fullWidth
                 required
                 margin="normal"
                 select
             >
+                <MenuItem value=""><em>Select a section</em></MenuItem>
                 <MenuItem value="A">A</MenuItem>
                 <MenuItem value="B">B</MenuItem>
                 {/* <MenuItem value="C">C</MenuItem> */}
@@ -95,7 +93,7 @@ const StudentApplication = () => {
                 type="submit"
                 variant="contained"
                 size="large"
-                disabled={isLoading}
+                disabled={ !canSubmit || isLoading}
                 sx={{ mt: 2, position: 'relative' }}
             >
                 Submit Application

@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import authService from './authServices.js'
 
-import { updateProfile, updateAvatar } from '../profile/profileSlice.js'; // actions from profileSlice
+import { updateProfile, updateAvatar, applyAsStudent } from '../profile/profileSlice.js'; // actions from profileSlice
 
 // Get user from localStorage
 const user = JSON.parse(localStorage.getItem('user'))
@@ -213,6 +213,13 @@ export const authSlice = createSlice({
           state.message = action.payload;
       })
 
+      
+      .addCase(applyAsStudent.fulfilled, (state, action) => {
+          // The action.payload is the full user object returned by the API
+          state.user = action.payload;
+          localStorage.setItem('user', JSON.stringify(action.payload));
+      })      
+      
   ;},
 })
 

@@ -121,20 +121,16 @@ export const profileSlice = createSlice({
 
             // --- Apply as Student State Observers ---
             .addCase(applyAsStudent.pending, (state) => {
-                state.isLoading = true;
+                state.profileStatus = 'loading';
             })
             .addCase(applyAsStudent.fulfilled, (state, action) => {
-                state.isLoading = false;
-                state.isSuccess = true;
-                state.user = action.payload;
-                // update localStorage with the definitive user object.
-                localStorage.setItem('user', JSON.stringify(action.payload));
+                state.profileStatus = 'succeeded';
+                // No longer need to update the user here because the authSlice
+                // is already listening for this action and will update its own user object.
                 state.message = "Application submitted successfully."; 
             })
-            
             .addCase(applyAsStudent.rejected, (state, action) => {
-                state.isLoading = false;
-                state.isError = true;
+                state.profileStatus = 'failed';
                 state.message = action.payload;
             })
             
