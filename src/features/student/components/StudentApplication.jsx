@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link as RouterLink } from 'react-router-dom';
 import { Box, TextField, Button, Typography, Alert, CircularProgress } from '@mui/material';
@@ -8,7 +8,7 @@ import { applyAsStudent } from '../../profile/profileSlice.js';
 
 const StudentApplication = () => {
     const dispatch = useDispatch();
-    const { user, isLoading, isError, message } = useSelector((state) => state.auth); 
+    const { user, isLoading, isError, isSuccess, message } = useSelector((state) => state.auth);
     const [formData, setFormData] = useState({ usn: '', batch: '', section: '' });
     const [isSubmitted, setIsSubmitted] = useState(false); // To track submission success
 
@@ -86,12 +86,10 @@ const StudentApplication = () => {
                 required
                 margin="normal"
                 select
-                SelectProps={{ native: true }}
             >
-                <option value=""></option>
-                <option value="A">A</option>
-                <option value="B">B</option>
-                <option value="C">C</option>
+                <MenuItem value="A">A</MenuItem>
+                <MenuItem value="B">B</MenuItem>
+                {/* <MenuItem value="C">C</MenuItem> */}
             </TextField>
             <Button
                 type="submit"

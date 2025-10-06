@@ -126,19 +126,12 @@ export const profileSlice = createSlice({
             .addCase(applyAsStudent.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.isSuccess = true;
-                state.message = action.payload.message;
-                
-                // Update the user object in the state with the new pending status
-                if (state.user) {
-                const updatedUserDetails = {
-                    ...state.user.studentDetails,
-                    applicationStatus: action.payload.applicationStatus,
-                };
-                const updatedUser = { ...state.user, studentDetails: updatedUserDetails };
-                state.user = updatedUser;
-                localStorage.setItem('user', JSON.stringify(updatedUser));
-                }
+                state.user = action.payload;
+                // update localStorage with the definitive user object.
+                localStorage.setItem('user', JSON.stringify(action.payload));
+                state.message = "Application submitted successfully."; 
             })
+            
             .addCase(applyAsStudent.rejected, (state, action) => {
                 state.isLoading = false;
                 state.isError = true;

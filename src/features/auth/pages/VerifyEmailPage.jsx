@@ -40,4 +40,16 @@ const VerifyEmailPage = () => {
     );
 };
 
+// {isError && (
+//     <Box>
+//         <Alert severity="error">{message}</Alert>
+//         <Typography variant="body2" sx={{ mt: 2 }}>
+//             The link may have expired or is invalid. Please request a new one.
+//         </Typography>
+//         <Button component={RouterLink} to="/resend-verification" variant="contained" sx={{ mt: 1 }}>
+//             Request New Link
+//         </Button>
+//     </Box>
+// )}
+
 export default VerifyEmailPage;
