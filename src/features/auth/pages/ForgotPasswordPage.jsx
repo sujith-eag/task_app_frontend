@@ -15,7 +15,7 @@ const ForgotPassword = () => {
   const isEmailValid = emailRegex.test(email);
 
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const { isLoading, isError, isSuccess, message } = useSelector(
     (state) => state.auth
@@ -31,7 +31,7 @@ const ForgotPassword = () => {
           closeOnClick: true,
           draggable: false,
         });
-        navigate('/login');
+        // navigate('/login');
         return () => {
           dispatch(reset());
         };
@@ -47,6 +47,29 @@ const ForgotPassword = () => {
     dispatch(forgotPassword({ email }));
   };
 
+
+  // If the request was successful, show a confirmation message instead of the form.
+  if (isSuccess) {
+    return (
+      <Container component="main" maxWidth="xs">
+        <Box sx={{ marginTop: 8, textAlign: 'center' }}>
+          <Avatar sx={{ m: 1, bgcolor: 'success.main', margin: 'auto' }}>
+            <MailOutlineIcon />
+          </Avatar>
+          <Typography component="h1" variant="h5" sx={{ mt: 2 }}>
+            Check Your Email
+          </Typography>
+          <Alert severity="success" sx={{ mt: 2, textAlign: 'left' }}>
+            {message}
+          </Alert>
+          <Button component={Link} to="/login" variant="contained" sx={{ mt: 3 }}>
+            Back to Login
+          </Button>
+        </Box>
+      </Container>
+    );
+  }
+  
   return (
     <Container component="main" maxWidth="xs">
       <Backdrop
@@ -98,14 +121,14 @@ const ForgotPassword = () => {
             Send Reset Link
           </Button>
 
-          <Typography 
+          {/* <Typography 
               variant="caption" 
               display="block" 
               color="text.secondary" 
               align="center" 
               sx={{ mt: 2 }}
           > Our email bot is on a coffee break ☕️. For you clever hackers 🕵️‍♀️ out there though, you can still find the reset link. Good luck!. 😏👨‍💻
-          </Typography>
+          </Typography> */}
 
           <Box sx={{ textAlign: 'center', mt: 2 }}>
             <Link to="/login" style={{ textDecoration: 'none' }}>
