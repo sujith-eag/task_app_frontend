@@ -2,6 +2,12 @@ import developerPhoto from '../../../assets/sujith.jpg'
 import { itemVariants } from '../../../utils/animations.js';
 
 import { Box, Container, Typography, Paper, Avatar } from '@mui/material';
+import { List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
+
+import  DataExplorationIcon from '@mui/icons-material/DataExploration';
+import SecurityIcon from '@mui/icons-material/Security';
+import MobileFriendlyIcon from '@mui/icons-material/MobileFriendly';
+
 import { motion } from 'framer-motion';
 
 const DeveloperSection = () => {
@@ -38,18 +44,29 @@ const DeveloperSection = () => {
                 gap: 5,
                 flexDirection: { xs: 'column', md: 'row' },
               }}>
+
                 <Box sx={{ textAlign: 'center', flexShrink: 0 }}>
-                  <Avatar
+                  <Box
                     sx={{
-                      width: 160,
-                      height: 160,
-                      margin: 'auto',
-                      border: '4px solid #eee',
-                      boxShadow: 3,
+                      p: '4px', // The padding creates the border thickness
+                      borderRadius: '50%',
+                      display: 'inline-block',
+                      background: 'linear-gradient(45deg, #3d7dbdff, #bb3fc9ff)', // Example gradient
                     }}
-                    alt="Developer Photo"
-                    src={developerPhoto}
-                  />
+                  >
+                    <Avatar
+                      sx={{
+                        width: 160,
+                        height: 160,
+                        // margin: 'auto',
+                        border: '4px solid', // #eee
+                        // boxShadow: 3,
+                        borderColor: 'background.paper',
+                      }}
+                      alt="Developer Photo"
+                      src={developerPhoto}
+                    />
+                  </Box>
                 </Box>
 
                 <Box>
@@ -66,16 +83,28 @@ const DeveloperSection = () => {
 
                   <Typography
                     variant="h6"
-                    sx={{ mt: 3, mb: 1, fontWeight: 'bold' }}
+                    sx={{ mt: 4, mb: 2, fontWeight: 'bold' }}
                   >
                     What's Next?
                   </Typography>
-                  <Typography variant="body1" color="text.secondary">
+  <List dense>
+    <ListItem>
+      <ListItemIcon sx={{ minWidth: 40 }}><DataExplorationIcon color="primary" /></ListItemIcon>
+      <ListItemText primary="Rich Data Visualizations" secondary="Expanding analytics dashboards for deeper insights." />
+    </ListItem>
+    <ListItem>
+      <ListItemIcon sx={{ minWidth: 40 }}><SecurityIcon color="primary" /></ListItemIcon>
+      <ListItemText primary="Google OAuth 2.0 Integration" secondary="For enhanced security and seamless login." />
+    </ListItem>
+    <ListItem>
+      <ListItemIcon sx={{ minWidth: 40 }}><MobileFriendlyIcon color="primary" /></ListItemIcon>
+      <ListItemText primary="Dedicated Mobile Application" secondary="Bringing the full power of Eagle Campus to your phone." />
+    </ListItem>
+  </List>
+  
+                    <Typography variant="body1" color="text.secondary">
                     The vision for Eagle Campus continues to grow. 
-                    Major Feature planned in upcoming updates will focus on expanding the 
-                    analytics dashboards with rich data visualizations, 
-                    integrating Google OAuth 2.0 for enhanced security, 
-                    and developing a dedicated mobile application. Stay tuned!
+                    Major Feature planned in upcoming updates. Stay tuned!
                   </Typography>
                 </Box>
               </Box>

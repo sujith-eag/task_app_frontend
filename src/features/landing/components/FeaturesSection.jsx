@@ -73,14 +73,49 @@ const FeaturesSection = () => {
 
     return (
         <Container maxWidth="lg" sx={{ py: 10 }}>
-            <Typography
+            {/* <Typography
                 variant="h4"
                 align="center"
                 gutterBottom
                 sx={{ fontWeight: 'bold', mb: 8 }}
             >
                 Features Built for Productivity and Collaboration
-            </Typography>
+            </Typography> */}
+
+<Box sx={{ mb: 8 }}>
+  <motion.div
+    initial={{ opacity: 0, y: -20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    transition={{ duration: 0.5 }}
+  >
+    <Typography
+      variant="h4"
+      align="center"
+      sx={(theme) => ({
+        fontWeight: 'bold',
+        mb: 1.5,
+        // --- IMPROVEMENT: Applying a text gradient ---
+        background: `linear-gradient(45deg, ${theme.palette.primary.main} 30%, ${theme.palette.secondary.main} 90%)`,
+        WebkitBackgroundClip: 'text',
+        WebkitTextFillColor: 'transparent',
+      })}
+    >
+      Features Built for Productivity and Collaboration
+    </Typography>
+
+    {/* --- Adding a supportive sub-heading --- */}
+    <Typography 
+      variant="h6" 
+      align="center" 
+      color="text.secondary"
+      sx={{ maxWidth: '750px', mx: 'auto', fontWeight: 400 }}
+    >
+      A complete suite of tools designed to streamline your workflow and enhance modern campus life.
+    </Typography>
+  </motion.div>
+</Box>
+
 
             <Box
                 component={motion.div}
@@ -117,16 +152,28 @@ const FeaturesSection = () => {
                                 transition: 'all 0.3s ease',
                                 '&:hover': {
                                     transform: 'translateY(-6px)',
-                                    boxShadow: 6,
+                                    boxShadow: (theme) => theme.shadows[10],
+                                    borderColor: 'primary.main',
+                                    // boxShadow: 6,
                                 },
+                                border: '1px solid transparent',
                             }}
                             elevation={3}
                         >
                             <Box
                                 sx={{
-                                    display: 'flex', justifyContent: 'center', alignItems: 'center',
-                                    mb: 2, width: 70, height: 70, mx: 'auto',
-                                    borderRadius: '50%', bgcolor: 'primary.light', color: 'primary.contrastText',
+                                    display: 'flex', 
+                                    justifyContent: 'center', 
+                                    alignItems: 'center',
+                                    mb: 2, width: 70, height: 70, 
+                                    mx: 'auto',
+                                    borderRadius: '50%', 
+                                    background: (theme) => theme.palette.mode === 'light'
+        ? 'linear-gradient(135deg, #29B6F6, #1976D2)'
+        : 'linear-gradient(135deg, #0277BD, #01579B)',
+                                    // bgcolor: 'primary.light', 
+                                    color: 'primary.contrastText',
+
                                 }}
                             >
                                 {feature.icon}

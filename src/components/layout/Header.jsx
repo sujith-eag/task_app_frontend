@@ -8,7 +8,6 @@ import { useTheme } from '@mui/material/styles';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { FaSignInAlt, FaUser } from 'react-icons/fa';
 
 import {
     AppBar, Toolbar, Typography, Button, Box, Stack, IconButton, Tooltip,
@@ -25,8 +24,9 @@ import SchoolIcon from '@mui/icons-material/School';  // for student
 import ClassIcon from '@mui/icons-material/Class'; // for teacher
 import ChatIcon from '@mui/icons-material/Chat'; // message
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile' // file
+import LoginIcon from '@mui/icons-material/Login'; // login
 import LogoutIcon from '@mui/icons-material/Logout'; // logout
-
+import PersonAddIcon from '@mui/icons-material/PersonAdd'; // register
 
 const Header = () => {
     const theme = useTheme();
@@ -64,9 +64,19 @@ const Header = () => {
     <AppBar 
       position="sticky" 
       color="default" 
-      elevation={1} 
-      sx={{ marginBottom: '40px' }}
-    >
+    //   elevation={1}
+      elevation={0} // Remove shadow for a cleaner glass effect     
+      sx={{ 
+        marginBottom: '40px',
+        // --- glassmorphism styles ---
+        background: (theme) => theme.palette.mode === 'dark'
+        ? 'rgba(18, 18, 18, 0.7)' // Dark mode semi-transparent
+        : 'rgba(255, 255, 255, 0.7)', // Light mode semi-transparent
+        backdropFilter: 'blur(10px)',
+        borderBottom: (theme) => `1px solid ${theme.palette.divider}`,
+    }}
+
+>
 
     <Toolbar 
       sx={{ minHeight: { xs: 56, md: 64 }}}>
@@ -123,35 +133,17 @@ const Header = () => {
         </Tooltip>
 
         {user ? (
-            <>
-                {/* --- User menu trigger for both desktop and mobile --- */}
+            <Tooltip title="Account">
                 <IconButton color="inherit" onClick={handleMenuOpen}>
-                    {/* Show user's avatar if available, otherwise a generic icon */}
                     {user.avatar ? <Avatar sx={{ width: 32, height: 32 }} src={user.avatar} /> : <AccountCircle />}
                 </IconButton>
-            </>
+            </Tooltip>
         ) : (
-            <>
-                {/* Desktop Buttons for logged-out */}
-                <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-                    <Stack direction="row" spacing={0.5}>
-                        <Button component={Link} to='/login' 
-                            color="inherit" startIcon={<FaSignInAlt />} 
-                            size={isDesktop ? 'medium' : 'small'}
-                            >Login</Button>
-                        <Button component={Link} to='/register' 
-                            color="inherit" startIcon={<FaUser />} 
-                            size={isDesktop ? 'medium' : 'small'}>
-                                Register</Button>
-                    </Stack>
-                </Box>
-                {/* Mobile Menu Icon for logged-out */}
-                <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
-                    <IconButton color="inherit" onClick={handleMenuOpen}>
-                        <MenuIcon />
-                    </IconButton>
-                </Box>
-            </>
+            <Tooltip title="Menu">
+                <IconButton color="inherit" onClick={handleMenuOpen}>
+                    <MenuIcon />
+                </IconButton>
+            </Tooltip>
         )}
     </Stack>
 </Toolbar>
@@ -161,16 +153,21 @@ const Header = () => {
                 {user ? (
                     // Logged-in menu items
                     <div>
+                        <MenuItem disabled sx={{ '&.Mui-disabled': { opacity: 1 } }}>
+                            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                            <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                                Hi, {user?.name || 'User'}
+                            </Typography>
+                            <Typography variant="caption" color="text.secondary">
+                                {user?.email}
+                            </Typography>
+                            </Box>
+                        </MenuItem>
+
                         {/* --- My Profile Link --- */}
                         {location.pathname !== '/profile' && (
                         <MenuItem component={Link} to='/profile' onClick={handleMenuClose}
-                            sx={{
-                                transition: 'background-color 0.2s ease, transform 0.15s ease',
-                                '&:hover': {
-                                    bgcolor: 'action.hover',
-                                    transform: 'translateX(4px)',
-                                },
-                            }}
+                            sx={menuItemStyles}
                         >
                         <ListItemIcon><AccountBoxIcon fontSize="small" /></ListItemIcon>
                         My Profile
@@ -180,13 +177,7 @@ const Header = () => {
                         {/* --- Admin Dashboard Link --- */}
                         {user?.role === 'admin' && location.pathname !== '/admin/dashboard' && (
                             <MenuItem component={Link} to='/admin/dashboard' onClick={handleMenuClose}
-                                sx={{
-                                    transition: 'background-color 0.2s ease, transform 0.15s ease',
-                                    '&:hover': {
-                                        bgcolor: 'action.hover',
-                                        transform: 'translateX(4px)',
-                                    },
-                                }}
+                                sx={menuItemStyles}
                             >
                                 <ListItemIcon><AdminPanelSettingsIcon fontSize="small" /></ListItemIcon>
                                 Admin Dashboard
@@ -195,13 +186,7 @@ const Header = () => {
                         {/* --- Teacher Dashboard --- */}
                         {user.role === 'teacher' && location.pathname !== '/teacher/dashboard' && (
                             <MenuItem component={Link} to='/teacher/dashboard' onClick={handleMenuClose}
-                                sx={{
-                                    transition: 'background-color 0.2s ease, transform 0.15s ease',
-                                    '&:hover': {
-                                        bgcolor: 'action.hover',
-                                        transform: 'translateX(4px)',
-                                    },
-                                }}                            
+                                sx={menuItemStyles}                            
                             >
                             <ListItemIcon><ClassIcon fontSize="small" /></ListItemIcon>
                                 My Dashboard
@@ -210,13 +195,7 @@ const Header = () => {
                         {/* --- Student Dashboard --- */}
                         {user.role === 'student' && location.pathname !== '/student/dashboard' && (
                             <MenuItem component={Link} to='/student/dashboard' onClick={handleMenuClose}
-                                sx={{
-                                    transition: 'background-color 0.2s ease, transform 0.15s ease',
-                                    '&:hover': {
-                                        bgcolor: 'action.hover',
-                                        transform: 'translateX(4px)',
-                                    },
-                                }}                            
+                                sx={menuItemStyles}                            
                             >
                             <ListItemIcon><SchoolIcon fontSize="small" /></ListItemIcon>
                                 My Dashboard
@@ -225,13 +204,7 @@ const Header = () => {
                         {/* --- Task Dashboard Link --- */}
                         {location.pathname !== '/dashboard' && (
                             <MenuItem component={Link} to='/dashboard' onClick={handleMenuClose}
-                                sx={{
-                                    transition: 'background-color 0.2s ease, transform 0.15s ease',
-                                    '&:hover': {
-                                        bgcolor: 'action.hover',
-                                        transform: 'translateX(4px)',
-                                    },
-                                }}                            
+                                sx={menuItemStyles}                            
                             >
                             <ListItemIcon><AssignmentIcon fontSize="small" /></ListItemIcon>
                                 Task Manager
@@ -242,13 +215,7 @@ const Header = () => {
                         {/* --- Files Page Link --- */}
                         {location.pathname !== '/files' && (
                             <MenuItem component={Link} to='/files' onClick={handleMenuClose}
-                                sx={{
-                                    transition: 'background-color 0.2s ease, transform 0.15s ease',
-                                    '&:hover': {
-                                        bgcolor: 'action.hover',
-                                        transform: 'translateX(4px)',
-                                    },
-                                }}                        
+                                sx={menuItemStyles}                        
                             >
                             <ListItemIcon><InsertDriveFileIcon fontSize="small" /></ListItemIcon>
                                 Files
@@ -257,13 +224,7 @@ const Header = () => {
                         {/* --- Message Link --- */}
                         {location.pathname !== '/chat' && (
                             <MenuItem component={Link} to='/chat' onClick={handleMenuClose}
-                                sx={{
-                                    transition: 'background-color 0.2s ease, transform 0.15s ease',
-                                    '&:hover': {
-                                        bgcolor: 'action.hover',
-                                        transform: 'translateX(4px)',
-                                    },
-                                }}                            
+                                sx={menuItemStyles}                            
                             >
                             <ListItemIcon><ChatIcon fontSize="small" /></ListItemIcon>
                                 Messages
@@ -273,13 +234,7 @@ const Header = () => {
                         {/* --- Interactive Logout Link --- */}
                         {!confirmingLogout ? (
                             <MenuItem onClick={() => setConfirmingLogout(true)}
-                                sx={{
-                                    transition: 'background-color 0.2s ease, transform 0.15s ease',
-                                    '&:hover': {
-                                        bgcolor: 'action.hover',
-                                        transform: 'translateX(4px)',
-                                    },
-                                }}
+                                sx={menuItemStyles}
                             > <ListItemIcon> <LogoutIcon fontSize="small" /></ListItemIcon>
                             Logout
                             </MenuItem>
@@ -295,36 +250,48 @@ const Header = () => {
                             </>
                         )}
 
-                        {/* <MenuItem onClick={onLogout}
-                            sx={{
-                                transition: 'background-color 0.2s ease, transform 0.15s ease',
-                                '&:hover': {
-                                    bgcolor: 'action.hover',
-                                    transform: 'translateX(4px)',
-                                },
-                            }}                        
-                        >
-                        <ListItemIcon><LogoutIcon fontSize="small" /></ListItemIcon>
-                            Logout
-                        </MenuItem> */}
-
                     </div>
                 ) : (
                     // Logged-out menu items
-                    <div>
-                        <MenuItem component={Link} to='/login' 
-                            onClick={handleMenuClose}
-                            >Login
-                        </MenuItem>
-                        <MenuItem component={Link} to='/register' 
-                            onClick={handleMenuClose}
-                            >Register
-                        </MenuItem>
-                    </div>
+                <div>
+                    <MenuItem disabled sx={{ '&.Mui-disabled': { opacity: 1 } }}>
+                        <Typography variant="body2" color="text.secondary">
+                            You are not logged in.
+                        </Typography>
+                    </MenuItem>
+
+                    <MenuItem 
+                        component={Link} 
+                        to='/login' 
+                        onClick={handleMenuClose} 
+                        sx={menuItemStyles}
+                    >
+                        <ListItemIcon><LoginIcon fontSize="small" /></ListItemIcon>
+                        Login
+                    </MenuItem>
+                    <MenuItem 
+                        component={Link} 
+                        to='/register' 
+                        onClick={handleMenuClose} 
+                        sx={menuItemStyles}
+                    >
+                        <ListItemIcon><PersonAddIcon fontSize="small" /></ListItemIcon>
+                        Register
+                    </MenuItem>
+                </div>
                 )}
             </Menu>
         </AppBar>
     );
+};
+
+// Reusable styles for menu items
+const menuItemStyles = {
+    transition: 'background-color 0.2s ease, transform 0.15s ease',
+    '&:hover': {
+        bgcolor: 'action.hover',
+        transform: 'translateX(4px)',
+    },
 };
 
 export default Header;

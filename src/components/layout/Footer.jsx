@@ -1,4 +1,5 @@
 import pkg from '../../../package.json'
+import eagleLogo from '../../assets/eagle-logo.png';
 
 import { Box, Typography, Link, IconButton, Container } from '@mui/material';
 import GitHubIcon from '@mui/icons-material/GitHub';
@@ -31,11 +32,29 @@ const Footer = () => {
         }}>
           
           {/* Left Column: Copyright */}
-          <Box sx={{ width: { xs: '100%', sm: '33.33%' }, textAlign: { xs: 'center', sm: 'left' } }}>
+          <Box sx={{ 
+            width: { xs: '100%', sm: '33.33%' }, 
+            textAlign: { xs: 'center', sm: 'left' }, 
+            display: 'flex',
+            alignItems: 'center',
+            gap: 2,
+            justifyContent: { xs: 'center', sm: 'flex-start' },
+            }}>
+              
+<Box
+    component="img"
+    src={eagleLogo}
+    alt="Eagle Campus Logo"
+    sx={{ height: 24, display: { xs: 'none', sm: 'block' } }}
+  />              
             <Typography variant="body2" color="text.secondary">
               {'© '}
-              <Link color="inherit" href="https://sujith-eag.in/">
-                Sujith Kumar
+              <Link 
+                color="inherit" 
+                href="https://sujith-eag.in/"
+                sx={{ fontWeight: 'bold' }}
+                >
+                Sujith
               </Link>{' '}
               {new Date().getFullYear()}
               {'.'}
