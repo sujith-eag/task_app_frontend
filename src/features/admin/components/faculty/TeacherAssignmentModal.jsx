@@ -37,7 +37,6 @@ const TeacherAssignmentModal = ({ open, handleClose, teacher }) => {
     const [semester, setSemester] = useState('');
     const [filteredSubjects, setFilteredSubjects] = useState([]);
     const [selectedSubject, setSelectedSubject] = useState(''); // For the selected subject ID
-    // const [subject, setSubject] = useState('');
     const [selectedSections, setSelectedSections] = useState([]);
     const [batch, setBatch] = useState(new Date().getFullYear());
 

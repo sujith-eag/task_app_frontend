@@ -13,7 +13,7 @@ const UserManagement = () => {
     const dispatch = useDispatch();
     const { userList, isLoading, isError, message } = useSelector((state) => state.adminUsers);
 
-    const [activeTab, setActiveTab] = useState('user'); // 'user' or 'student'
+    const [activeTab, setActiveTab] = useState('student'); // 'user' or 'student'
     const [isPromoteModalOpen, setIsPromoteModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
@@ -70,22 +70,18 @@ const UserManagement = () => {
             renderCell: (params) => {
             return params.row.studentDetails?.usn || 'N/A';
             }
-            // valueGetter: (params) => params?.row?.studentDetails?.usn || 'N/A' 
         },
         { field: 'batch', headerName: 'Batch', flex: 0.5, 
-            // valueGetter: (params) => params?.row?.studentDetails?.batch || 'N/A' 
             renderCell: (params) => {
                 return params.row.studentDetails?.batch || 'N/A';
             }        
         },
-        { field: 'semester', headerName: 'Sem', flex: 0.5, 
-            // valueGetter: (params) => params?.row?.studentDetails?.semester || 'N/A' 
+        { field: 'semester', headerName: 'Sem', flex: 0.5,
             renderCell: (params) => {
                 return params.row.studentDetails?.semester || 'N/A';
             }        
         },
         { field: 'section', headerName: 'Section', flex: 0.5, 
-            // valueGetter: (params) => params?.row?.studentDetails?.section || 'N/A' 
             renderCell: (params) => {
                 return params.row.studentDetails?.section || 'N/A';
             }        
@@ -115,8 +111,8 @@ const UserManagement = () => {
             
             <Box sx={{ borderBottom: 1, borderColor: 'divider', mt: 2 }}>
                 <Tabs value={activeTab} onChange={handleTabChange}>
-                    <Tab label="General Users" value="user" />
                     <Tab label="Students" value="student" />
+                    <Tab label="General Users" value="user" />                    
                 </Tabs>
             </Box>
 

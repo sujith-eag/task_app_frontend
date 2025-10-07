@@ -6,7 +6,7 @@ import { Modal, Box, Typography, Button, FormGroup,
 import { toast } from 'react-toastify';
 
 import { updateStudentEnrollment } from '../../adminSlice/adminUserSlice.js';
-import { getSubjects } from '../../adminSlice/adminSubjectSlice.js';
+// import { getSubjects } from '../../adminSlice/adminSubjectSlice.js';
 
 const style = {
     position: 'absolute',
@@ -26,20 +26,26 @@ const ManageEnrollmentModal = ({ open, handleClose, student }) => {
     const { isLoading: isUserLoading } = useSelector((state) => state.adminUsers);
     const isLoading = isSubjectsLoading || isUserLoading;
 
-    
+    // local component state to store the filtered list of subjects.
+    const [filteredSubjects, setFilteredSubjects] = useState([]);    
     const [selectedSubjects, setSelectedSubjects] = useState([]);
 
     useEffect(() => {
         // Fetch subjects if the modal is open AND student has a semester assigned
-        if (open && student?.studentDetails?.semester){
-            // Fetch the list of all subjects when the modal opens
-            dispatch(getSubjects({ semester: student.studentDetails.semester }));
-        }
-        if (student) {
-            // Initialize the state with the student's currently enrolled subjects
+        // if (open && student?.studentDetails?.semester){
+        //     // Fetch the list of all subjects when the modal opens
+        //     dispatch(getSubjects());
+        // }
+        if (student && subjects.length>0) {
+            const studentSemester = student.studentDetails?.semester;
+            if (studentSemester) {
+                const filtered = subjects.filter(s => s.semester === studentSemester);
+                setFilteredSubjects(filtered);
+            }
+            // Initialize the checkboxes with the student's currently enrolled subjects.
             setSelectedSubjects(student.studentDetails?.enrolledSubjects || []);
         }
-    }, [student, open, dispatch]);
+    }, [student, open, subjects, dispatch]);
 
     const handleSubjectChange = (e) => {
         const { value, checked } = e.target;
@@ -76,7 +82,7 @@ const ManageEnrollmentModal = ({ open, handleClose, student }) => {
                 ) : (
                 <Paper variant="outlined" sx={{ p: 2, mt: 2, maxHeight: 300, overflowY: 'auto' }}>
                     <FormGroup>
-                        {subjects.map(subject => (
+                        {filteredSubjects.map(subject => (
                             <FormControlLabel
                                 key={subject._id}
                                 control={
