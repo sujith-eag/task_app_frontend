@@ -5,10 +5,10 @@ import adminService from '../adminService';
 // --- Async Thunks ---
 
 // Get all subjects
-export const getSubjects = createAsyncThunk('adminSubjects/getAll', async (_, thunkAPI) => {
+export const getSubjects = createAsyncThunk('adminSubjects/getAll', async (params, thunkAPI) => {
     try {
         const token = thunkAPI.getState().auth.user.token;
-        return await adminService.getSubjects(token);
+        return await adminService.getSubjects(token, params);
     } catch (error) {
         const message = (error.response?.data?.message) || error.message || error.toString();
         return thunkAPI.rejectWithValue(message);

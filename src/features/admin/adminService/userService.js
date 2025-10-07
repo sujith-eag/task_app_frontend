@@ -35,6 +35,7 @@ const reviewApplication = async (userId, action, token) => {
     return response.data;
 };
 
+
 /**
  * Retrieves a list of users, filtered by their role.
  * @route GET /api/admin/users
@@ -51,6 +52,7 @@ const getUsersByRole = async (role, token) => {
     return response.data;
 };
 
+
 /**
  * Promotes a regular user to a faculty (teacher) role.
  * @route PATCH /api/admin/users/:userId/promote
@@ -65,6 +67,7 @@ const promoteToFaculty = async (userId, facultyData, token) => {
     return response.data;
 };
 
+
 /**
  * Updates the profile details for a specific student.
  * @route PUT /api/admin/students/:studentId
@@ -78,6 +81,7 @@ const updateStudentDetails = async (studentId, studentData, token) => {
     const response = await axios.put(`${API_URL}students/${studentId}`, studentData, config);
     return response.data;
 };
+
 
 /**
  * Overwrites the list of subjects a student is enrolled in.

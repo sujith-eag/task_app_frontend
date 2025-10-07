@@ -28,15 +28,19 @@ const sections = ['A', 'B'];
 const TeacherAssignmentModal = ({ open, handleClose, teacher }) => {
     const dispatch = useDispatch();
 
-    const { subjects, isLoading: isSubjectsLoading } = useSelector((state) => state.adminSubjects);
+    // Different name for the subjects from the store to avoid confusion
+    const { subjects: allSubjects, isLoading: isSubjectsLoading } = useSelector((state) => state.adminSubjects);
     const { isLoading: isTeacherLoading } = useSelector((state) => state.adminTeachers);
-    // Combining Both loading into one
+    // Combining Both loading into one to handle submit button
     const isLoading = isSubjectsLoading || isTeacherLoading;
 
-    const [subject, setSubject] = useState('');
+    const [semester, setSemester] = useState('');
+    const [filteredSubjects, setFilteredSubjects] = useState([]);
+    const [selectedSubject, setSelectedSubject] = useState(''); // For the selected subject ID
+    // const [subject, setSubject] = useState('');
     const [selectedSections, setSelectedSections] = useState([]);
     const [batch, setBatch] = useState(new Date().getFullYear());
-    const [semester, setSemester] = useState('');
+
 
     useEffect(() => {
         // Re-fetch subjects every time the modal opens to ensure fresh data
@@ -44,6 +48,21 @@ const TeacherAssignmentModal = ({ open, handleClose, teacher }) => {
             dispatch(getSubjects());
         }
     }, [open, dispatch]);
+
+    
+    // --- CASCADING LOGIC ---
+    // When the semester changes, filter the list of available subjects
+    useEffect(() => {
+        if (semester) {
+            const filtered = allSubjects.filter(s => s.semester === parseInt(semester));
+            setFilteredSubjects(filtered);
+            setSelectedSubject(''); // Reset selected subject when semester changes
+        } else {
+            setFilteredSubjects([]);
+        }
+    }, [semester, allSubjects]);
+        
+    
     
     const handleSectionChange = (event) => {
         const { name, checked } = event.target;
@@ -54,17 +73,19 @@ const TeacherAssignmentModal = ({ open, handleClose, teacher }) => {
 
     // Handler for ADDING a new assignment
     const handleAddAssignment = () => {
-        if (!subject || selectedSections.length === 0 || !batch) {
+        if (!selectedSubject || selectedSections.length === 0 || !batch) {
             return toast.error("Please fill all fields to add an assignment.");
         }
-        const assignmentData = { subject, sections: selectedSections, batch, semester };
+        
+        // Semester value comes directly from our state, ensuring consistency
+        const assignmentData = { subject: selectedSubject, sections: selectedSections, batch, semester };
         
         dispatch(updateTeacherAssignments({ teacherId: teacher._id, assignmentData }))
             .unwrap()
             .then(() => {
                 toast.success("Assignment added successfully!");
                 // Reset form after successful submission
-                setSubject('');
+                setSelectedSubject('');
                 setSelectedSections([]);
                 setSemester('');
                 setBatch(new Date().getFullYear());
@@ -83,7 +104,7 @@ const TeacherAssignmentModal = ({ open, handleClose, teacher }) => {
         }
     };
 
-    const isFormInvalid = !subject || selectedSections.length === 0 || !batch || !semester;
+    const isFormInvalid = !selectedSubject || selectedSections.length === 0 || !batch || !semester;
     
     return (
         <Modal open={open} onClose={handleClose}>
@@ -126,22 +147,42 @@ const TeacherAssignmentModal = ({ open, handleClose, teacher }) => {
                     sx={{ fontWeight: 'bold' }
                     }>Add New Assignment
                 </Typography>
-                
+
+                {/* Select Semester First */}
+                <TextField 
+                    label="Semester" 
+                    type="number" 
+                    value={semester} 
+                    onChange={(e) => setSemester(e.target.value)} 
+                    fullWidth 
+                    required 
+                    margin="normal" 
+                />
+
+                {/* Subject Dropdown is dependent on Semester */}
                 <TextField 
                     select 
                     label="Select Subject" 
-                    value={subject} 
-                    onChange={(e) => setSubject(e.target.value)} 
+                    value={selectedSubject} 
+                    onChange={(e) => setSelectedSubject(e.target.value)} 
                     fullWidth 
                     required 
                     margin="normal"
-                    >
-                    {subjects.map((s) => (
-                        <MenuItem 
-                            key={s._id} 
-                            value={s._id}>{s.name} ({s.subjectCode})
+                    disabled={!semester || filteredSubjects.length === 0} // Disable if no semester or no subjects
+                >
+                    {filteredSubjects.length > 0 ? (
+                        filteredSubjects.map((s) => (
+                            <MenuItem 
+                                key={s._id} 
+                                value={s._id}
+                                >{s.name} ({s.subjectCode})
+                            </MenuItem>
+                        ))
+                    ) : (
+                        <MenuItem disabled>
+                            No subjects found for this semester.
                         </MenuItem>
-                    ))}
+                    )}
                 </TextField>
 
                 <TextField 
@@ -149,16 +190,6 @@ const TeacherAssignmentModal = ({ open, handleClose, teacher }) => {
                     type="number" 
                     value={batch} 
                     onChange={(e) => setBatch(e.target.value)} 
-                    fullWidth 
-                    required 
-                    margin="normal" 
-                />
-
-                <TextField 
-                    label="Semester" 
-                    type="number" 
-                    value={semester} 
-                    onChange={(e) => setSemester(e.target.value)} 
                     fullWidth 
                     required 
                     margin="normal" 

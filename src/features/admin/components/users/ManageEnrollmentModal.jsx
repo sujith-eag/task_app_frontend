@@ -30,14 +30,16 @@ const ManageEnrollmentModal = ({ open, handleClose, student }) => {
     const [selectedSubjects, setSelectedSubjects] = useState([]);
 
     useEffect(() => {
-        if (open){ // Fetch the list of all subjects when the modal opens
-            dispatch(getSubjects());
+        // Fetch subjects if the modal is open AND student has a semester assigned
+        if (open && student?.studentDetails?.semester){
+            // Fetch the list of all subjects when the modal opens
+            dispatch(getSubjects({ semester: student.studentDetails.semester }));
         }
         if (student) {
             // Initialize the state with the student's currently enrolled subjects
             setSelectedSubjects(student.studentDetails?.enrolledSubjects || []);
         }
-    }, [student, open]);
+    }, [student, open, dispatch]);
 
     const handleSubjectChange = (e) => {
         const { value, checked } = e.target;
@@ -57,12 +59,21 @@ const ManageEnrollmentModal = ({ open, handleClose, student }) => {
             .catch((err) => toast.error(err));
     };
 
+    // A conditional render for when a student has no semester
+    const studentSemester = student?.studentDetails?.semester;
+    
     return (
         <Modal open={open} onClose={handleClose}>
             <Box sx={style} component="form" onSubmit={handleSubmit}>
                 <Typography variant="h6" component="h2" gutterBottom>
                     Manage Enrollment for {student?.name}
                 </Typography>
+
+                {!studentSemester ? (
+                    <Typography color="error" sx={{ mt: 2 }}>
+                        Please assign a semester to this student before managing enrollment.
+                    </Typography>
+                ) : (
                 <Paper variant="outlined" sx={{ p: 2, mt: 2, maxHeight: 300, overflowY: 'auto' }}>
                     <FormGroup>
                         {subjects.map(subject => (
@@ -80,13 +91,19 @@ const ManageEnrollmentModal = ({ open, handleClose, student }) => {
                         ))}
                     </FormGroup>
                 </Paper>
-                
+                )}
+                                
                 <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
+
                     <Button onClick={handleClose}>
                         Cancel
                     </Button>
-                    <Button type="submit" variant="contained" disabled={isLoading}>
-                        {isLoading ? <CircularProgress size={24} /> : 'Save Enrollment'}
+                    
+                    <Button 
+                        type="submit" 
+                        variant="contained" 
+                        disabled={isLoading}>
+                            {isLoading ? <CircularProgress size={24} /> : 'Save Enrollment'}
                     </Button>
                 </Box>
 

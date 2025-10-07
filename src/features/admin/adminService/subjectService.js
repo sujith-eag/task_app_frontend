@@ -7,13 +7,16 @@ const SUBJECTS_API_URL = `${API_BASE_URL}/college/subjects/`;
 // --- Subject Management ---
 
 /**
- * Retrieves a list of all academic subjects.
+ * Retrieves a list of all academic subjects. with optional semester filter
  * @route GET /api/college/subjects/
  * @param {string} token - The JWT for authentication.
  * @returns {Promise<Array<object>>} An array of subject objects.
  */
-const getSubjects = async (token) => {
-    const config = { headers: { Authorization: `Bearer ${token}` } };
+const getSubjects = async (token, params={}) => {
+    const config = { 
+        headers: { Authorization: `Bearer ${token}` }, 
+        params // Passing semester as query parameter
+    };
     const response = await axios.get(SUBJECTS_API_URL, config);
     return response.data;
 };
