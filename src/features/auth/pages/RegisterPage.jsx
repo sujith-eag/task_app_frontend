@@ -65,14 +65,22 @@ const Register = () => {
     if (user) {
       navigate('/dashboard');
     }
+
     if (isError) {
       toast.error(message);
     }
-    if (isSuccess) {
+    else if (isSuccess) {
       toast.success(message, {
           autoClose: false, // persistent
           closeOnClick: true,
           draggable: false,
+      });
+      // Reset the form fields to their initial state on success.
+      setFormData({
+        name: '',
+        email: '',
+        password: '',
+        password2: '',
       });
     }
     

@@ -31,6 +31,14 @@ const ApplicationReview = () => {
                 return params.row.studentDetails?.usn || 'N/A';
             }
         },
+        {
+            field: 'semester',
+            headerName: 'Sem',
+            flex: 0.5,
+            renderCell: (params) => {
+                return params.row.studentDetails?.semester || 'N/A'
+            }
+        },
         { field: 'batch', headerName: 'Batch', flex: 0.5, 
             // valueGetter: (params) => params?.row?.studentDetails?.batch || 'N/A' 
             renderCell: (params) => {
@@ -46,7 +54,7 @@ const ApplicationReview = () => {
         {
             field: 'actions',
             headerName: 'Actions',
-            flex: 1,
+            flex: 1.5,
             sortable: false,
             renderCell: (params) => (
                 <Box>

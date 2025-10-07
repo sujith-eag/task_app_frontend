@@ -6,39 +6,31 @@ import PlaylistAddCheckIcon from '@mui/icons-material/PlaylistAddCheck';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import ForumIcon from '@mui/icons-material/Forum';
-import SchoolIcon from '@mui/icons-material/School';
 import AssuredWorkloadIcon from '@mui/icons-material/AssuredWorkload';
 import FactCheckIcon from '@mui/icons-material/FactCheck';
-import RateReviewIcon from '@mui/icons-material/RateReview';
-import FolderSharedIcon from '@mui/icons-material/FolderShared';
-import GroupsIcon from '@mui/icons-material/Groups';
 import VpnKeyIcon from '@mui/icons-material/VpnKey';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import SecurityIcon from '@mui/icons-material/Security';
-import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
-
+import MarkEmailReadIcon from '@mui/icons-material/MarkEmailRead';
+import ReviewsIcon from '@mui/icons-material/Reviews';
 
 const FeaturesSection = () => {
     const features = [
         {
             title: 'The Modern Campus',
             description: 'A dedicated suite for educational institutions. Manage role-based access, track attendance in real-time, and gather anonymous feedback, all in one place.',
-            icon: <AssuredWorkloadIcon fontSize="large" />, // Changed Icon
-        },
-        // {
-        //     title: 'Real-Time Attendance & Feedback',
-        //     description: 'Teachers initiate a 60-second window with unique code for check in. Attendance is recorded instantly. Simple, secure, and fast.',
-        //     icon: <FactCheckIcon fontSize="large" />, // Changed Icon
-        // },
-        {
-            title: 'Anonymous Student Feedback',
-            description: 'Empowers students to provide honest, anonymized feedback on classes they attend, with data aggregated for administrative review.',
-            icon: <RateReviewIcon fontSize="large" />, // Changed Icon
+            icon: <AssuredWorkloadIcon fontSize="large" />,
         },
         {
-            title: 'Comprehensive Task Management',
-            description: 'Organize your workflow with priorities, due dates, sub-tasks, and powerful filtering options.',
-            icon: <PlaylistAddCheckIcon fontSize="large" />,
+            title: '360° Feedback Loop',
+            description: 'Combines anonymous student feedback on classes they attend with private teacher reflections, providing a holistic view of every session for administrative review.',
+            icon: <FactCheckIcon fontSize="large" />,
+            // icon: <ReviewsIcon fontSize="large" />,
+        },
+        {
+            title: 'Enterprise-Grade Security',
+            description: 'Built with security first: mandatory email verification, brute-force lockwouts, role-based access control, JWT authentication, and granular rate limiting on all sensitive endpoints.',
+            icon: <SecurityIcon fontSize="large" />,
         },
         {
             title: 'Personal AI Planner',
@@ -51,15 +43,14 @@ const FeaturesSection = () => {
             icon: <CloudUploadIcon fontSize="large" />,
         },
         {
+            title: 'Comprehensive Task Management',
+            description: 'Organize your entire workflow with nested sub-tasks, assignable priorities, due dates, and powerful filtering options to stay on top of your work.',
+            icon: <PlaylistAddCheckIcon fontSize="large" />,
+        },        
+        {
             title: 'Private Messaging & Collaboration',
             description: 'Real-time messaging is built right in with multi-device support. See who is online, send instant messages, and get read receipts without leaving the app.',
-            // icon: <GroupsIcon fontSize="large" />,
             icon: <ForumIcon fontSize="large" />,
-        },
-        {
-            title: 'Enterprise-Grade Security',
-            description: 'Built with security first: mandatory email verification, brute-force lockwouts, role-based access control, JWT authentication, and granular rate limiting on all sensitive endpoints.',
-            icon: <SecurityIcon fontSize="large" />,
         },
         {
             title: 'Customizable Profiles',
@@ -67,16 +58,17 @@ const FeaturesSection = () => {
             icon: <AccountCircleIcon fontSize="large" />,
         },
         {
-            title: 'Notifications & Email Alerts (Coming Soon)',
-            description: 'Stay updated with real-time notifications for task deadlines, new messages, and other important events.',
-            icon: <NotificationsActiveIcon fontSize="large" />,
+            title: 'Automated Email Notifications',
+            description: 'Stay informed with instant email alerts for critical events, password resets, status updates, task deadlines, messages and other important events.',
+            icon: <MarkEmailReadIcon fontSize="large" />,
         },
         {
-            title: 'Advanced Security (Coming Soon)',
-            description: 'Log in with Google (OAuth 2.0) and utilize httpOnly cookies for an extra layer of security and convenience.',
+            title: 'Advanced Login (Coming Soon)',
+            description: 'Log in seamlessly with Google (OAuth 2.0) and utilize httpOnly cookies for an extra layer of security and convenience.',
             icon: <VpnKeyIcon fontSize="large" />,
         },
-  
+
+        
     ];
 
     return (

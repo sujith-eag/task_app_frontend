@@ -16,13 +16,14 @@ const StudentApplication = () => {
     const [formData, setFormData] = useState({ 
         usn: '',
         batch: new Date().getFullYear(),
-        section: '' 
+        section: '',
+        semester: '',
     });
-    const { usn, batch, section } = formData;
+    const { usn, batch, section, semester } = formData;
     
     
     // --- Client-side validation ---
-    const canSubmit = usn.trim() !== '' && batch.toString().length === 4 && section !== '';
+    const canSubmit = usn.trim() !== '' && batch.toString().length === 4 && section !== '' && semester !== '' ;
     
     const applicationStatus = user?.studentDetails?.applicationStatus;
     
@@ -89,6 +90,24 @@ const StudentApplication = () => {
                 <MenuItem value="B">B</MenuItem>
                 {/* <MenuItem value="C">C</MenuItem> */}
             </TextField>
+
+            <TextField
+                label="Current Semester"
+                name="semester"
+                value={semester}
+                onChange={handleChange}
+                fullWidth
+                required
+                margin="normal"
+                select
+            >
+                <MenuItem value=""><em>Select a semester</em></MenuItem>
+                <MenuItem value={1}>1</MenuItem>
+                <MenuItem value={2}>2</MenuItem>
+                <MenuItem value={3}>3</MenuItem>
+                <MenuItem value={4}>4</MenuItem>
+            </TextField>
+           
             <Button
                 type="submit"
                 variant="contained"

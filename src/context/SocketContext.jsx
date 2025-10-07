@@ -16,8 +16,7 @@ export const SocketContextProvider = ({ children }) => {
 
     useEffect(() => {
         if (user) {
-            // --- Only create the socket once ---
- 
+            // --- Only create the socket once --- 
             const socketURL = import.meta.env.VITE_SOCKET_URL;
             socketRef.current = io( socketURL, {
                 auth: { token: user.token },
@@ -63,9 +62,10 @@ export const SocketContextProvider = ({ children }) => {
                     console.log('🔌 Socket.IO disconnected.');
                 }
             };
-        }
-    // We change the dependency array to only react to the user object itself.
-    }, [user, dispatch]);
+        } else {
+            setSocket(null);
+        } // Dependency array only react to the token.
+    }, [user?.token, dispatch]);
 
     return (
         <SocketContext.Provider value={socket}>
