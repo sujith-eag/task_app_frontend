@@ -38,11 +38,36 @@ export const getFeedbackReport = createAsyncThunk('adminReporting/getDetailedRep
 });
 
 
+export const getTeacherReport = createAsyncThunk('adminReporting/getTeacherReport', async (teacherId, thunkAPI) => {
+    try {
+        const token = thunkAPI.getState().auth.user.token;
+        return await adminService.getTeacherReport(teacherId, token);
+    } catch (error) {
+        const message = (error.response?.data?.message) || error.message || error.toString();
+        return thunkAPI.rejectWithValue(message);
+    }
+});
+
+
+export const getStudentReport = createAsyncThunk('adminReporting/getStudentReport', async (studentId, thunkAPI) => {
+    try {
+        const token = thunkAPI.getState().auth.user.token;
+        return await adminService.getStudentReport(studentId, token);
+    } catch (error) {
+        const message = (error.response?.data?.message) || error.message || error.toString();
+        return thunkAPI.rejectWithValue(message);
+    }
+});
+
 // --- Slice Definition ---
 const initialState = {
     attendanceStats: [],
     feedbackSummary: [],
     detailedReport: null,
+    teacherReport: null,
+    isTeacherReportLoading: false,    
+    studentReport: null,
+    isStudentReportLoading: false,    
     isDetailLoading: false,
     isLoading: false,
     isSuccess: false,
@@ -98,6 +123,7 @@ export const adminReportingSlice = createSlice({
             // --- Reducers for the detailed feedback report ---
             .addCase(getFeedbackReport.pending, (state) => {
                 state.isDetailLoading = true;
+                state.detailedReport = null;
             })
             .addCase(getFeedbackReport.fulfilled, (state, action) => {
                 state.isDetailLoading = false;
@@ -108,7 +134,39 @@ export const adminReportingSlice = createSlice({
                 state.isError = true;
                 state.message = action.payload;
             })
-    ;},
+            
+            
+            // --- Reducers for the teacher report ---
+            .addCase(getTeacherReport.pending, (state) => {
+                state.isTeacherReportLoading = true;
+                state.teacherReport = null; // Clear old data on new fetch
+            })
+            .addCase(getTeacherReport.fulfilled, (state, action) => {
+                state.isTeacherReportLoading = false;
+                state.teacherReport = action.payload;
+            })
+            .addCase(getTeacherReport.rejected, (state, action) => {
+                state.isTeacherReportLoading = false;
+                state.isError = true;
+                state.message = action.payload;
+            })
+
+            // --- Reducers for the student report ---
+            .addCase(getStudentReport.pending, (state) => {
+                state.isStudentReportLoading = true;
+                state.studentReport = null; // Clear old data
+            })
+            .addCase(getStudentReport.fulfilled, (state, action) => {
+                state.isStudentReportLoading = false;
+                state.studentReport = action.payload;
+            })
+            .addCase(getStudentReport.rejected, (state, action) => {
+                state.isStudentReportLoading = false;
+                state.isError = true;
+                state.message = action.payload;
+            })
+
+        ;},
 });
 
 export const { reset } = adminReportingSlice.actions;

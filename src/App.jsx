@@ -29,7 +29,8 @@ import StudentDashboardPage from './features/student/pages/StudentDashboardPage.
 import TeacherDashboardPage from './features/teacher/pages/TeacherDashboardPage.jsx';
 import AdminDashboardPage from './features/admin/pages/AdminDashboardPage.jsx';
 import ReportingPage from './features/admin/pages/ReportingPage.jsx';
-
+import TeacherReportPage from './features/admin/pages/TeacherReportPage.jsx'
+import StudentReportPage from "./features/admin/pages/StudentReportPage.jsx";
 
 function App() {
   return (
@@ -74,6 +75,8 @@ function App() {
               <Route element={<PrivateRoute roles={['admin', 'hod']} />}>
                 <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
                 <Route path="/admin/reporting" element={<ReportingPage />} />
+                <Route path="/admin/reports/teacher" element={ <TeacherReportPage /> } />
+                <Route path="/admin/reports/student" element={ <StudentReportPage /> } />
               </Route>
 
             {/* --- Catch-all 404 Route --- */}

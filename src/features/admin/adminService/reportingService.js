@@ -55,8 +55,39 @@ const getFeedbackReport = async (classSessionId, token) => {
 };
 
 
+/**
+ * Gets a detailed performance report for a single teacher.
+ * @route GET /api/admin/reports/teacher/:teacherId
+ * @param {string} teacherId - The ID of the teacher.
+ * @param {string} token - The JWT for authentication.
+ * @returns {Promise<object>} An object containing the teacher's performance data.
+ */
+const getTeacherReport = async (teacherId, token) => {
+    const config = { headers: { Authorization: `Bearer ${token}` } };
+    const response = await axios.get(`${API_BASE_URL}/admin/reports/teacher/${teacherId}`, config);
+    return response.data;
+};
+
+
+
+/**
+ * Gets a detailed attendance report for a single student.
+ * @route GET /api/admin/reports/student/:studentId
+ * @param {string} studentId - The ID of the student.
+ * @param {string} token - The JWT for authentication.
+ * @returns {Promise<object>} An object containing the student's attendance data.
+ */
+const getStudentReport = async (studentId, token) => {
+    const config = { headers: { Authorization: `Bearer ${token}` } };
+    const response = await axios.get(`${API_BASE_URL}/admin/reports/student/${studentId}`, config);
+    return response.data;
+};
+
+
 export const reportingService = {
     getAttendanceStats,
     getFeedbackSummary,
-    getFeedbackReport
+    getFeedbackReport,
+    getTeacherReport,
+    getStudentReport,
 };

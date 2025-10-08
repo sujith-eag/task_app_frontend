@@ -22,12 +22,24 @@ const AttendanceReport = () => {
         semester: '',
     });
 
-    // --- Data Fetching Effects ---
+    // --- State for filtered subjects ---
+    const [filteredSubjects, setFilteredSubjects] = useState([]);
+
+    // --- Data Fetching and Filter Logic ---
     useEffect(() => {
         dispatch(getAllTeachers());
         dispatch(getSubjects());
     }, [dispatch]);
 
+    // This effect filters the subjects whenever the semester or main subject list changes
+    useEffect(() => {
+        if (filters.semester) {
+            setFilteredSubjects(subjects.filter(s => s.semester === parseInt(filters.semester, 10)));
+        } else {
+            setFilteredSubjects(subjects); // If no semester, show all
+        }
+    }, [filters.semester, subjects]);
+    
     useEffect(() => {
         // runs whenever the filters change to re-fetch the report data.
         const activeFilters = Object.fromEntries(
@@ -38,26 +50,34 @@ const AttendanceReport = () => {
 
     // --- Event Handlers ---
     const handleFilterChange = (e) => {
-        setFilters(prevFilters => ({
-            ...prevFilters,
-            [e.target.name]: e.target.value,
-        }));
+        const { name, value } = e.target;
+        
+        // If semester is changed, reset the subject filter
+        if (name === 'semester') {
+            setFilters(prev => ({ ...prev, subjectId: '', [name]: value }));
+        } else {
+            setFilters(prev => ({ ...prev, [name]: value }));
+        }
     };
 
     // --- DataGrid Column Definitions ---
     // These fields match the response from the getAttendanceStats controller
     const columns = [
         { field: 'subjectName', headerName: 'Subject', flex: 1.5 },
-        { field: 'teacherName', headerName: 'Teacher', flex: 1.5 },
+        { field: 'teacherName', headerName: 'Teacher', flex: 1 },
+        { field: 'semester', headerName: 'Sem', width: 80 },
+        { field: 'batch', headerName: 'Batch', width: 100 },
+        { field: 'section', headerName: 'Sec', width: 80 },
         { 
             field: 'attendancePercentage', 
             headerName: 'Attendance %', 
             width: 150,
             renderCell: (params) => `${params.value.toFixed(2)}%`
         },
-        { field: 'presentStudents', headerName: 'Present', width: 120, type: 'number' },
-        { field: 'totalStudents', headerName: 'Total Students', width: 150, type: 'number' },
+        { field: 'presentStudents', headerName: 'Present', width: 100 },
+        { field: 'totalStudents', headerName: 'Total', width: 100 },
     ];
+
 
     return (
         <Box>
@@ -94,12 +114,14 @@ const AttendanceReport = () => {
                         >
                             <MenuItem value=""><em>All Subjects</em></MenuItem>
                             {/* --- Map over the 'subjects' array --- */}
-                            {subjects.map((subject) => (
+                            {filteredSubjects.map((subject) => (
                                 <MenuItem key={subject._id} value={subject._id}>{subject.name}</MenuItem>
                             ))}
                         </Select>
                     </FormControl>
                 </Grid>
+                
+                
                 <Grid item xs={12} sm={4}>
                      <FormControl fullWidth>
                         <InputLabel id="semester-filter-label">Semester</InputLabel>
@@ -125,7 +147,6 @@ const AttendanceReport = () => {
                     rows={attendanceStats}
                     columns={columns}
                     loading={isLoading}
-                    getRowId={(row) => `${row.teacherName}-${row.subjectName}`} // Provide a stable unique ID
                     disableRowSelectionOnClick
                 />
             </Box>
