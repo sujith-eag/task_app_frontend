@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux'; // FIX: Import useSelector
+import { useDispatch, useSelector } from 'react-redux';
 import { Box, Typography, Chip, List, ListItem, ListItemText, Switch, Button, CircularProgress } from '@mui/material';
 
 import { toast } from 'react-toastify';
@@ -17,16 +17,6 @@ const LiveAttendanceRoster = ({ session }) => {
     const [isWindowOpen, setIsWindowOpen] = useState(true);
     const [localRoster, setLocalRoster] = useState(session?.attendanceRecords || []);
 
-    // Roster Polling
-    // useEffect(() => {
-    //     const polling = setInterval(() => {
-    //         if (isWindowOpen) {
-    //             dispatch(getSessionRoster(session._id));
-    //         }
-    //     }, 5000);
-    //     return () => clearInterval(polling);
-    // }, [dispatch, session._id, isWindowOpen]);
-
     // Runs only ONCE on mount to get the initial roster state.
     useEffect(() => {
         dispatch(getSessionRoster(session._id));
@@ -40,7 +30,7 @@ const LiveAttendanceRoster = ({ session }) => {
         }
     }, [activeSession?.attendanceRecords]);
 
-	// This useEffect handles all real-time communication
+	// Handles all real-time communication
 	useEffect(() => {
 	    // Have the teacher's client join a private "room" for this session
 	    if (socket) {

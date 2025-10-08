@@ -57,10 +57,12 @@ const CreateClassForm = () => {
             type: selectedType,
         };
         dispatch(createClassSession(sessionData));
+    };
 
     return (
         <Box component="form" onSubmit={handleSubmit}>
-            <Typography variant="h5" gutterBottom>Start a New Class</Typography>
+            <Typography variant="h5" gutterBottom
+                >Start a New Class</Typography>
             <TextField
                 select
                 label="Select Assignment"
@@ -70,12 +72,29 @@ const CreateClassForm = () => {
                 required
                 margin="normal"
             >
-                <MenuItem value="" disabled><em>Select an assignment...</em></MenuItem>
-                {assignments.map((assign) => (
+
+                {isLoading ? (
+                    <MenuItem disabled><em>Loading assignments...</em></MenuItem>
+                ) : assignments && assignments.length > 0 ? (
+                    [                
+                
+                <MenuItem 
+                    value=""
+                    key="default-disabled" 
+                    disabled
+                    ><em>Select an assignment...</em>
+                </MenuItem>,
+                ...assignments.map((assign) => (
                     <MenuItem key={assign._id} value={assign._id}>
                         {`${assign.subject.name} - Batch ${assign.batch} (Sem ${assign.semester})`}
                     </MenuItem>
-                ))}
+                ))
+            ]
+        ) : (
+                    <MenuItem disabled>
+                        <em>No assignments found. Please contact an admin.</em>
+                    </MenuItem>
+                )}
             </TextField>
 
             <TextField
@@ -106,12 +125,12 @@ const CreateClassForm = () => {
                 ))}
             </TextField>            
 
-            <Button type="submit" variant="contained" size="large" disabled={isLoading} sx={{ mt: 2, position: 'relative' }}>
+            <Button type="submit" variant="contained" size="large" disabled={isLoading || !selectedAssignmentId} sx={{ mt: 2, position: 'relative' }}>
                 Start Class & Generate Code
                 {isLoading && <CircularProgress size={24} sx={{ position: 'absolute' }} />}
             </Button>
         </Box>
     );
-}};
+};
 
 export default CreateClassForm;
