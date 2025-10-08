@@ -58,11 +58,25 @@ const getSessionsForFeedback = async (token) => {
 };
 
 
+/**
+ * Get the profile details for the logged-in student.
+ * @route GET /api/college/students/me/profile
+ * @param {string} token - The user's JWT for authentication.
+ * @returns  Subject name, Subject code and omplete studentdetail
+ */
+const getStudentProfile = async (token) => {
+    const config = { headers: { Authorization: `Bearer ${token}` } };
+    const response = await axios.get(API_URL + 'me/profile', config);
+    return response.data;
+};
+
+
 const studentService = {
     markAttendance,
     submitFeedback,
     getStudentDashboardStats,
-    getSessionsForFeedback
+    getSessionsForFeedback,
+    getStudentProfile,
 };
 
 export default studentService;

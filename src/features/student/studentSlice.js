@@ -3,6 +3,7 @@ import studentService from './studentService.js';
 
 // --- Initial State ---
 const initialState = {
+    profile: null,
     dashboardStats: [],
     sessionsAwaitingFeedback: [],
     isError: false,
@@ -11,7 +12,20 @@ const initialState = {
     message: '',
 };
 
+
 // --- Async Thunks ---
+
+// Getting Student details
+export const getStudentProfile = createAsyncThunk('student/getProfile', async (_, thunkAPI) => {
+    try {
+        const token = thunkAPI.getState().auth.user.token;
+        return await studentService.getStudentProfile(token);
+    } catch (error) {
+        const message = (error.response?.data?.message) || error.message || error.toString();
+        return thunkAPI.rejectWithValue(message);
+    }
+});
+
 
 // Get the student's personal dashboard stats (attendance per subject)
 export const getStudentDashboardStats = createAsyncThunk('student/getDashboardStats', async (_, thunkAPI) => {
@@ -84,6 +98,21 @@ export const studentSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
+
+            .addCase(getStudentProfile.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(getStudentProfile.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.profile = action.payload;
+            })
+            .addCase(getStudentProfile.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload;
+            })
+
+
             // Get Student Dashboard Stats
             .addCase(getStudentDashboardStats.pending, (state) => {
                 state.isLoading = true;

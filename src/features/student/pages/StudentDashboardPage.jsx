@@ -2,9 +2,10 @@ import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
-import { Box, Container, Typography, Paper, Alert } from '@mui/material';
+import { Box, Container, Typography, Alert, Stack } from '@mui/material';
 import { toast } from 'react-toastify';
 
+import StudentProfileCard from '../components/StudentProfileCard.jsx';
 import AttendanceEntry from '../components/AttendanceEntry.jsx';
 import MyAttendanceStats from '../components/MyAttendanceStats.jsx';
 import StudentApplication from '../components/StudentApplication.jsx';
@@ -41,24 +42,55 @@ const StudentDashboardPage = () => {
     
     const renderContent = () => {
         // Case 1: User is an approved student
-        if (user && user.role === 'student') {
+        // if (user && user.role === 'student') {
+        //     return (
+        //         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3 }}>
+        //             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+        //                 <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
+        //                      <AttendanceEntry />
+        //                 </Paper>
+        //                 <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
+        //                     <MyAttendanceStats />
+        //                 </Paper>
+        //             </Box>
+        //             <Box>
+        //                  <PastSessionsList />
+        //             </Box>
+        //         </Box>
+        //     );
+        // }
+
+        
+        // Case 1: User is an approved student
+        if (user?.role === 'student') {
             return (
-                <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3 }}>
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                        <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
-                             <AttendanceEntry />
-                        </Paper>
-                        <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
-                            <MyAttendanceStats />
-                        </Paper>
-                    </Box>
-                    <Box>
-                         <PastSessionsList />
-                    </Box>
-                </Box>
+                // Main container stack. Behaves as a row on medium screens and up, a column on small screens.
+                <Stack
+                    direction={{ xs: 'column', md: 'row' }}
+                    spacing={3}
+                    alignItems="flex-start"
+                >
+                    {/* --- Left Column: Profile & Stats --- */}
+                    <Stack
+                        spacing={3}
+                        sx={{ width: { xs: '100%', md: '40%' } }} // Takes 40% width on medium screens
+                    >
+                        <StudentProfileCard />
+                        <MyAttendanceStats />
+                    </Stack>
+
+                    {/* --- Right Column: Actions --- */}
+                    <Stack
+                        spacing={3}
+                        sx={{ width: { xs: '100%', md: '60%' } }} // Takes 60% width on medium screens
+                    >
+                        <AttendanceEntry />
+                        <PastSessionsList />
+                    </Stack>
+                </Stack>
             );
         }
-
+        
         // Case 2: User is a general user with a pending application
         if (user && user.studentDetails?.applicationStatus === 'pending') {
             return (
