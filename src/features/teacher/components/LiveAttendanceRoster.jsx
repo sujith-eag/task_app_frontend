@@ -12,7 +12,7 @@ const LiveAttendanceRoster = ({ session }) => {
     const dispatch = useDispatch();
     const socket = useSocket();
 
-    const { activeSession } = useSelector((state) => state.teacher);
+    const { activeSession, isRosterLoading } = useSelector((state) => state.teacher);
     const [timeLeft, setTimeLeft] = useState(60);
     const [isWindowOpen, setIsWindowOpen] = useState(true);
     const [localRoster, setLocalRoster] = useState(session?.attendanceRecords || []);
@@ -32,26 +32,28 @@ const LiveAttendanceRoster = ({ session }) => {
 
 	// Handles all real-time communication
 	useEffect(() => {
-	    // Have the teacher's client join a private "room" for this session
-	    if (socket) {
-	        socket.emit('join-session-room', session._id);
-	
-	        // Define the handler for incoming check-in events
-	        const handleStudentCheckIn = (studentData) => {
-	            // Dispatch the synchronous reducer to instantly update the UI
-	            dispatch(updateRosterOnSocketEvent(studentData));
-	        };
-	        
-	        // Listen for the 'student-checked-in' event from the server
-	        socket.on('student-checked-in', handleStudentCheckIn);
-	
-	        // Cleanup: Leave the room, remove the listener on component unmount
-	        return () => {
-	            socket.off('student-checked-in', handleStudentCheckIn);
-	            socket.emit('leave-session-room', session._id);
-	        };
-	    }
-	}, [dispatch, session._id, socket]);
+        // GUARD: Do not establish listeners until the initial roster has loaded and the socket is ready.
+        if (isRosterLoading || !socket) {
+            return;
+        }
+        // Have the teacher's client join a private "room" for this session
+        socket.emit('join-session-room', session._id);
+
+        // Define the handler for incoming check-in events
+        const handleStudentCheckIn = (studentData) => {
+            // Dispatch the synchronous reducer to instantly update the UI
+            dispatch(updateRosterOnSocketEvent(studentData));
+        };
+        
+        // Listen for the 'student-checked-in' event from the server
+        socket.on('student-checked-in', handleStudentCheckIn);
+
+        // Cleanup: Leave the room, remove the listener on component unmount
+        return () => {
+            socket.off('student-checked-in', handleStudentCheckIn);
+            socket.emit('leave-session-room', session._id);
+        };
+	}, [dispatch, session._id, socket, isRosterLoading]);
     
     // Countdown Timer
     useEffect(() => {
@@ -107,7 +109,11 @@ const LiveAttendanceRoster = ({ session }) => {
                     </ListItem>
                 ))}
             </List>
-            <Button variant="contained" onClick={handleFinalize} disabled={isWindowOpen} sx={{ mt: 2 }}>
+            <Button 
+                variant="contained" 
+                onClick={handleFinalize} 
+                disabled={isWindowOpen} 
+                sx={{ mt: 2 }}>
                 Finalize Attendance
             </Button>
         </Box>

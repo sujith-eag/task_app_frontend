@@ -125,7 +125,9 @@ export const teacherSlice = createSlice({
 
                 if (recordIndex !== -1) {
                     // Update the specific student's status to 'present'
-                    state.activeSession.attendanceRecords[recordIndex].status = true;
+                    const updated = [...state.activeSession.attendanceRecords];
+                    updated[recordIndex] = { ...updated[recordIndex], status: true };
+                    state.activeSession.attendanceRecords = updated;
                 }
             }
         }        

@@ -44,6 +44,7 @@ const CreateClassForm = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         const selectedAssignment = assignments.find(a => a._id === selectedAssignmentId);
+                
         if (!selectedAssignment || !selectedSection) {
             toast.error("Please select a valid assignment and section.");
             return;
@@ -56,7 +57,22 @@ const CreateClassForm = () => {
             section: selectedSection,
             type: selectedType,
         };
-        dispatch(createClassSession(sessionData));
+        // dispatch(createClassSession(sessionData));
+        dispatch(createClassSession(sessionData))
+            .unwrap() // Use unwrap to get the promise behavior
+            .then(() => {
+            // On success, the dashboard will automatically switch views.
+            // A success toast is optional here as the UI change is clear feedback.
+            })
+            .catch((error) => {
+                // Check for the specific error message from the backend.
+                if (typeof error === 'string' && error.includes('No verified students')) {
+                    toast.warn('Cannot start class: No verified students are enrolled for this assignment. Please contact an administrator.');
+            } else {
+                // For any other unexpected errors.
+                toast.error(error || 'An unexpected error occurred. Please try again.');
+            }
+        });        
     };
 
     return (
