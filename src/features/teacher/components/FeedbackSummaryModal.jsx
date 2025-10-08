@@ -22,12 +22,26 @@ const FeedbackSummaryModal = ({ open, onClose, session }) => {
         }
         return (
             <Box>
-                <Typography variant="h6" gutterBottom>Student Feedback Summary ({summary.feedbackCount} Responses)</Typography>
+                <Typography 
+                    variant="h6" 
+                    gutterBottom
+                    >Student Feedback Summary ({summary.feedbackCount} Responses)
+                </Typography>
+
                 <Grid container spacing={2}>
                     {Object.entries(summary.averageRatings).map(([key, value]) => (
-                        <Grid item xs={6} sm={3} key={key}>
-                            <Typography variant="body2" sx={{ textTransform: 'capitalize' }}>{key}</Typography>
-                            <Typography variant="h5">{value?.toFixed(2) || 'N/A'}</Typography>
+                        <Grid 
+                            item xs={6} sm={3} key={key}
+                        >
+                            <Typography 
+                                variant="body2" 
+                                sx={{ textTransform: 'capitalize' }}
+                                >{key}
+                            </Typography>
+                            <Typography 
+                                variant="h5"
+                                >{value?.toFixed(2) || 'N/A'}
+                            </Typography>
                         </Grid>
                     ))}
                 </Grid>
@@ -38,20 +52,41 @@ const FeedbackSummaryModal = ({ open, onClose, session }) => {
     const renderTeacherReflection = () => {
         const reflection = feedbackSummary?.teacherReflection;
         if (!reflection) {
-            return <Typography sx={{ mt: 2 }}>You have not submitted a reflection for this session.</Typography>;
+            return <Typography 
+                        sx={{ mt: 2 }}
+                        >You have not submitted a reflection for this session.
+                    </Typography>;
         }
         return (
             <Box sx={{ mt: 3 }}>
-                <Typography variant="h6" gutterBottom>Your Reflection</Typography>
-                <Typography variant="body2"><strong>Pace:</strong> {reflection.selfAssessment.pace}</Typography>
-                <Typography variant="body2" sx={{ mt: 1 }}><strong>Highlights:</strong> {reflection.sessionHighlights}</Typography>
+                <Typography 
+                    variant="h6" 
+                    gutterBottom>Your Reflection
+                </Typography>
+                <Typography 
+                    variant="body2"
+                    ><strong>Pace:</strong> {reflection.selfAssessment.pace}
+                </Typography>
+                <Typography 
+                    variant="body2" 
+                    sx={{ mt: 1 }}
+                    ><strong>Highlights:</strong> {reflection.sessionHighlights}
+                </Typography>
             </Box>
         );
     };
 
     return (
-        <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
-            <DialogTitle>Feedback Summary for {session?.subject.name}</DialogTitle>
+        <Dialog 
+            open={open} 
+            onClose={onClose} 
+            fullWidth 
+            maxWidth="md">
+            
+            <DialogTitle
+                >Feedback Summary for {session?.subject.name}
+            </DialogTitle>
+
             <DialogContent>
                 {isSummaryLoading || !feedbackSummary ? (
                     <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}><CircularProgress /></Box>

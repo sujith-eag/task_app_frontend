@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Box, Typography, List, ListItem, ListItemText, 
     CircularProgress, Alert, Button, Stack } from '@mui/material';
 import { getTeacherSessionsHistory } from '../teacherSlice.js';
+
 import TeacherReflectionModal from './TeacherReflectionModal.jsx';
 import FeedbackSummaryModal from './FeedbackSummaryModal.jsx';
 
@@ -40,21 +41,55 @@ const ClassHistory = () => {
             <List dense sx={{ maxHeight: 400, overflow: 'auto' }}>
                 {sessionHistory.length > 0 ? (
                     sessionHistory.map((session) => (
-                        <ListItem key={session._id} 
-	                        secondaryAction={
-	                            <Stack direction="row" spacing={1}>
-                                <Button size="small" variant="outlined" onClick={() => openReflectionModal(session)}>
-                                    Add Reflection
+                        <ListItem 
+                            key={session._id}
+                            sx={{ 
+                                display: 'flex', 
+                                flexDirection: 'column', 
+                                alignItems: 'flex-start',
+                                mb: 2,
+                                border: '1px solid',
+                                borderColor: 'divider',
+                                borderRadius: 2,
+                                p: 2 // Add some padding for better spacing
+                            }}
+                        >
+                            {/* Main subject info with corrected prop */}
+                            <ListItemText
+                                primary={`${session.subject.name} (${session.subject.subjectCode})`}
+                                // CORRECTED: Use slotProps to style the primary Typography component
+                                slotProps={{
+                                    primary: {
+                                        sx: { fontWeight: 'bold' }
+                                    }
+                                }}
+                                sx={{ mb: 1 }}
+                            />
+
+                            {/* Secondary details */}
+                            <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
+                                {`Sem: ${session.semester}, Sec: ${session.section} | Batch: ${session.batch}`}
+                                <br />
+                                {`On: ${new Date(session.startTime).toLocaleString()}`}
+                            </Typography>
+
+                            {/* Action Buttons */}
+                            <Stack direction="row" spacing={1}>
+                                <Button 
+                                    size="small" 
+                                    variant="outlined" 
+                                    onClick={() => openReflectionModal(session)}
+                                >
+                                    {session.hasReflection ? 'Edit/View Reflection' : 'Add Reflection'}
                                 </Button>
-                                <Button size="small" variant="contained" onClick={() => openSummaryModal(session)}>
+                                <Button 
+                                    size="small" 
+                                    variant="contained" 
+                                    onClick={() => openSummaryModal(session)}
+                                >
                                     View Summary
                                 </Button>
                             </Stack>
-                        }>
-                            <ListItemText
-                                primary={`${session.subject.name} (${session.subject.subjectCode})`}
-                                secondary={`On: ${new Date(session.startTime).toLocaleDateString()}`}
-                            />
                         </ListItem>
                     ))
                 ) : (

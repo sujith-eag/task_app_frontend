@@ -102,7 +102,7 @@ const CreateClassForm = () => {
                 </MenuItem>,
                     ...assignments.map((assign) => (
                         <MenuItem key={assign._id} value={assign._id}>
-                            {`${assign.subject.name} - Batch ${assign.batch} (Sem ${assign.semester}, Sec ${assign.sections.join(', ')})`}
+                            {`${assign.subject.name} - Sec ${assign.sections.join(', ')}  ( Sem ${assign.semester}, Batch ${assign.batch} )`}
                         </MenuItem>
                     ))
             ]

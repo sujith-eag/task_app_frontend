@@ -73,15 +73,22 @@ export const finalizeAttendance = createAsyncThunk('teacher/finalize', async (da
 });
 
 
-export const createSessionReflection = createAsyncThunk('teacher/createReflection', async (reflectionData, thunkAPI) => {
-    try {
-        const token = thunkAPI.getState().auth.user.token;
-        return await teacherService.createSessionReflection(reflectionData, token);
-    } catch (error) {
-        const message = (error.response?.data?.message) || error.message || error.toString();
-        return thunkAPI.rejectWithValue(message);
+export const upsertSessionReflection = createAsyncThunk(
+    'teacher/upsertReflection', 
+    async (reflectionData, thunkAPI) => {
+        try {
+            const token = thunkAPI.getState().auth.user.token;
+
+            const response = await teacherService.upsertSessionReflection(reflectionData, token);
+            // After success, dispatch an action to refresh the history list
+            thunkAPI.dispatch(getTeacherSessionsHistory());
+            return response;
+        } catch (error) {
+            const message = (error.response?.data?.message) || error.message || error.toString();
+            return thunkAPI.rejectWithValue(message);
+        }
     }
-});
+);
 
 
 export const getFeedbackSummaryForSession = createAsyncThunk('teacher/getSummary', async (sessionId, thunkAPI) => {
@@ -228,22 +235,21 @@ export const teacherSlice = createSlice({
             })
             
 
-            // --- Reducers for createSessionReflection ---
-            .addCase(createSessionReflection.pending, (state) => {
+            // --- Reducers for upsertSessionReflection ---
+            .addCase(upsertSessionReflection.pending, (state) => {
                 state.isLoading = true;
             })
-            .addCase(createSessionReflection.fulfilled, (state) => {
+            .addCase(upsertSessionReflection.fulfilled, (state) => {
                 state.isLoading = false;
                 state.isSuccess = true;
-                // Optionally, we could refetch session history here if we want to show a "reflection submitted" status
             })
-            .addCase(createSessionReflection.rejected, (state, action) => {
+            .addCase(upsertSessionReflection.rejected, (state, action) => {
                 state.isLoading = false;
                 state.isError = true;
                 state.message = action.payload;
             })
 
-
+            
             // --- Reducers for getFeedbackSummaryForSession ---
             .addCase(getFeedbackSummaryForSession.pending, (state) => {
                 state.isSummaryLoading = true;

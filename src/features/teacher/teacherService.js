@@ -4,17 +4,17 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const API_URL = `${API_BASE_URL}/college/teachers/`;
 
 
-
 /**
- * Submits a teacher's personal reflection for a completed class session.
- * @route   POST /api/college/teachers/session-reflection
+ * Creates or updates a teacher's personal reflection for a completed class session.
+ * @route   PUT /api/college/teachers/session-reflection
  * @param   {object} reflectionData - The reflection payload, including the `classSessionId` and self-assessment data.
  * @param   {string} token - The teacher's JWT for authentication.
- * @returns {Promise<object>} A promise that resolves to the newly created teacher reflection object.
+ * @returns {Promise<object>} A promise that resolves to the created/updated reflection object.
  */
-const createSessionReflection = async (reflectionData, token) => {
+const upsertSessionReflection = async (reflectionData, token) => {
     const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.post(API_URL + 'session-reflection', reflectionData, config);
+    // Change axios.post to axios.put to match the updated route
+    const response = await axios.put(API_URL + 'session-reflection', reflectionData, config);
     return response.data;
 };
 
@@ -103,7 +103,7 @@ const finalizeAttendance = async (data, token) => {
 
 
 const teacherService = {
-    createSessionReflection,
+    upsertSessionReflection,
     getFeedbackSummaryForSession,
     getClassCreationData,
     createClassSession,
