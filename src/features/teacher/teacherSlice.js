@@ -119,19 +119,35 @@ export const teacherSlice = createSlice({
             // action.payload should be the student record updated by the server
             if (state.activeSession) {
                 const studentId = action.payload.student;
+
                 const recordIndex = state.activeSession.attendanceRecords.findIndex(
-                    (rec) => rec.student.toString() === studentId.toString()
+                    (rec) => rec.student._id.toString() === studentId.toString()
                 );
 
                 if (recordIndex !== -1) {
                     // Update the specific student's status to 'present'
-                    const updated = [...state.activeSession.attendanceRecords];
-                    updated[recordIndex] = { ...updated[recordIndex], status: true };
-                    state.activeSession.attendanceRecords = updated;
+                    state.activeSession.attendanceRecords[recordIndex].status = true;
                 }
             }
-        }        
+        },
+        // Reducer for manual toggles
+        toggleManualAttendance: (state, action) => {
+            const studentIdToToggle = action.payload;
+            if (state.activeSession) {
+                const recordIndex = state.activeSession.attendanceRecords.findIndex(
+                    (rec) => rec.student._id.toString() === studentIdToToggle.toString()
+                );
+
+                if (recordIndex !== -1) {
+                    // Directly mutate the state thanks to Immer in Redux Toolkit
+                    const currentStatus = state.activeSession.attendanceRecords[recordIndex].status;
+                    state.activeSession.attendanceRecords[recordIndex].status = !currentStatus;
+                }
+            }        
+        
+        },        
     },
+
     extraReducers: (builder) => {
         builder
             // Get Class Creation Data
@@ -244,5 +260,9 @@ export const teacherSlice = createSlice({
     ;},
 });
 
-export const { reset, clearFeedbackSummary, endActiveSession, updateRosterOnSocketEvent } = teacherSlice.actions;
+export const { reset, 
+        clearFeedbackSummary, 
+        endActiveSession, 
+        updateRosterOnSocketEvent,
+        toggleManualAttendance } = teacherSlice.actions;
 export default teacherSlice.reducer;

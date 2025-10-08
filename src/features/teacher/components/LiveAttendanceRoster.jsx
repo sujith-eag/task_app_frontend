@@ -1,34 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Box, Typography, Chip, List, ListItem, ListItemText, Switch, Button, CircularProgress } from '@mui/material';
+import { Box, Typography, Chip, List, ListItem, ListItemText, Switch, Button } from '@mui/material';
 
 import { toast } from 'react-toastify';
 
 import { useSocket } from '../../../context/SocketContext.jsx';
-import { getSessionRoster, finalizeAttendance, updateRosterOnSocketEvent } from '../teacherSlice.js';
+import { finalizeAttendance, 
+        updateRosterOnSocketEvent,
+    toggleManualAttendance } from '../teacherSlice.js';
 
 
 const LiveAttendanceRoster = ({ session }) => {
     const dispatch = useDispatch();
     const socket = useSocket();
 
+    // activeSession from Redux is the single source of truth.
     const { activeSession, isRosterLoading } = useSelector((state) => state.teacher);
-    const [timeLeft, setTimeLeft] = useState(60);
-    const [isWindowOpen, setIsWindowOpen] = useState(true);
-    const [localRoster, setLocalRoster] = useState(session?.attendanceRecords || []);
 
-    // Runs only ONCE on mount to get the initial roster state.
-    useEffect(() => {
-        dispatch(getSessionRoster(session._id));
-    }, [dispatch, session._id]);
-
-    // Update local roster when Redux state changes
-    useEffect(() => {
-        // Ensure activeSession and its records exist before updating
-        if (activeSession && activeSession.attendanceRecords) {
-            setLocalRoster(activeSession.attendanceRecords);
-        }
-    }, [activeSession?.attendanceRecords]);
+    // Helper function to calculate time left based on the server's timestamp
+    const calculateTimeLeft = () => {
+        const expirationTime = new Date(session.attendanceWindowExpires).getTime();
+        const currentTime = new Date().getTime();
+        const difference = expirationTime - currentTime;
+        
+        // Return seconds, ensuring it doesn't go below 0
+        return Math.max(0, Math.floor(difference / 1000));
+    };    
+    
+    // State for UI elements only    
+    const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
+    const [isWindowOpen, setIsWindowOpen] = useState(timeLeft > 0);
 
 	// Handles all real-time communication
 	useEffect(() => {
@@ -54,28 +55,36 @@ const LiveAttendanceRoster = ({ session }) => {
             socket.emit('leave-session-room', session._id);
         };
 	}, [dispatch, session._id, socket, isRosterLoading]);
-    
-    // Countdown Timer
+
+
+    // Countdown Timer - Runs only once on mount
     useEffect(() => {
+        // If the window is already closed on mount, do nothing.
         if (!isWindowOpen) return;
+        
         const timer = setInterval(() => {
-            setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
+            const newTimeLeft = calculateTimeLeft();
+            setTimeLeft(newTimeLeft);
+            
+            if (newTimeLeft <= 0 ){
+                setIsWindowOpen(false);
+                clearInterval(timer);
+                toast.info("Attendance window is now closed. Manual changes enabled.");                
+            }
         }, 1000);
-        if (timeLeft === 0) {
-            setIsWindowOpen(false);
-            clearInterval(timer);
-            toast.info("Attendance window is now closed. Manual changes enabled.");
-        }
+        
+        // Cleanup interval on component unmount
         return () => clearInterval(timer);
-    }, [timeLeft, isWindowOpen]);
+
+    }, [session.attendanceWindowExpires, isWindowOpen]);
 
 
     const handleToggle = (studentId) => {
-        setLocalRoster(localRoster.map(r => r.student._id === studentId ? { ...r, status: !r.status } : r));
+        dispatch(toggleManualAttendance(studentId));
     };
 
     const handleFinalize = () => {
-        const updatedRoster = localRoster.map(({ student, status }) => ({ studentId: student._id, status }));
+        const updatedRoster = activeSession.attendanceRecords.map(({ student, status }) => ({ studentId: student._id, status }));
         dispatch(finalizeAttendance({ sessionId: session._id, updatedRoster }))
             .unwrap()
             .then(() => toast.success("Attendance has been finalized successfully."))
@@ -96,7 +105,7 @@ const LiveAttendanceRoster = ({ session }) => {
             </Typography>
 
             <List sx={{ maxHeight: 400, overflow: 'auto', mt: 2 }}>
-                {localRoster.map(({ student, status }) => (
+                {activeSession?.attendanceRecords?.map(({ student, status }) => (
                     <ListItem key={student._id} secondaryAction={
                         <Switch
                             edge="end"
@@ -105,7 +114,10 @@ const LiveAttendanceRoster = ({ session }) => {
                             disabled={isWindowOpen}
                         />
                     }>
-                        <ListItemText primary={student.name} secondary={`USN: ${student.studentDetails.usn.slice(-4)}`} />
+                        <ListItemText 
+                            primary={student.name} 
+                            secondary={`USN: ${student.studentDetails.usn.slice(-4)}`} 
+                        />
                     </ListItem>
                 ))}
             </List>

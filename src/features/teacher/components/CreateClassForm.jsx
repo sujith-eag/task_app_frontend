@@ -100,11 +100,11 @@ const CreateClassForm = () => {
                     disabled
                     ><em>Select an assignment...</em>
                 </MenuItem>,
-                ...assignments.map((assign) => (
-                    <MenuItem key={assign._id} value={assign._id}>
-                        {`${assign.subject.name} - Batch ${assign.batch} (Sem ${assign.semester})`}
-                    </MenuItem>
-                ))
+                    ...assignments.map((assign) => (
+                        <MenuItem key={assign._id} value={assign._id}>
+                            {`${assign.subject.name} - Batch ${assign.batch} (Sem ${assign.semester}, Sec ${assign.sections.join(', ')})`}
+                        </MenuItem>
+                    ))
             ]
         ) : (
                     <MenuItem disabled>
