@@ -11,12 +11,22 @@ import {
     ListItemIcon,
     Typography
 } from '@mui/material';
-import FolderIcon from '@mui/icons-material/Folder';
+
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import DownloadIcon from '@mui/icons-material/Download';
 import ShareIcon from '@mui/icons-material/Share';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import ImageIcon from '@mui/icons-material/Image';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import DescriptionIcon from '@mui/icons-material/Description'; // For Word
+import SlideshowIcon from '@mui/icons-material/Slideshow'; // For PowerPoint
+import GridOnIcon from '@mui/icons-material/GridOn'; // For Excel
+import FolderZipIcon from '@mui/icons-material/FolderZip'; // For Archives
+import CodeIcon from '@mui/icons-material/Code'; // For Code/Text
+import ArticleIcon from '@mui/icons-material/Article'; // The backup icon
+
+
 import { toast } from 'react-toastify';
 
 import fileService from '../fileService.js';
@@ -63,6 +73,37 @@ const FileItem = ({ file }) => {
         handleMenuClose();
     };
 
+    // Helper function to get the right icon based on the file's MIME type
+    const getFileIcon = (mimeType) => {
+        if (mimeType.startsWith('image/')) return <ImageIcon />;
+        
+        switch (mimeType) {
+            case 'application/pdf':
+                return <PictureAsPdfIcon />;
+            case 'application/msword':
+            case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+                return <DescriptionIcon />;
+            case 'application/vnd.ms-powerpoint':
+            case 'application/vnd.openxmlformats-officedocument.presentationml.presentation':
+                return <SlideshowIcon />;
+            case 'application/vnd.ms-excel':
+            case 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+                return <GridOnIcon />;
+            case 'application/zip':
+            case 'application/x-rar-compressed':
+                return <FolderZipIcon />;
+            case 'text/javascript':
+            case 'text/html':
+            case 'text/css':
+            case 'application/json':
+                return <CodeIcon />;
+            default:
+                // This is the backup for .txt, .csv, and any other type
+                return <ArticleIcon />; 
+        }
+    };
+    
+    
     return (
         <>
             <ListItem
@@ -74,12 +115,17 @@ const FileItem = ({ file }) => {
             >
                 <ListItemAvatar>
                     <Avatar>
-                        <FolderIcon />
+                        {getFileIcon(file.fileType)}                        
+                        {/* <FolderIcon /> */}
                     </Avatar>
                 </ListItemAvatar>
                 <ListItemText
                     primary={file.fileName}
-                    secondary={!isOwner ? `Shared by: ${file.user.name}` : null}
+                    secondary={
+                        isOwner 
+                        ? `Uploaded on: ${new Date(file.createdAt).toLocaleDateString()}`
+                        : `Shared by: ${file.user.name}`
+                    }
                 />
             </ListItem>
             <Menu

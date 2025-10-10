@@ -60,8 +60,15 @@ const ShareModal = ({ isOpen, onClose, file }) => {
             toast.error('Please select a user to share with.');
             return;
         }
-        dispatch(shareFile({ fileId: file._id, userIdToShareWith: selectedUserId }));
-        onClose(); // Close the modal after sharing
+        dispatch(shareFile({ fileId: file._id, userIdToShareWith: selectedUserId }))
+            .unwrap() // <--- Use unwrap
+            .then(() => {
+                toast.success(`File successfully shared!`);
+                onClose(); // Close the modal after sharing
+            })
+            .catch((error) => {
+                toast.error(error || 'Failed to share file.');
+            });
     };
 
     const filteredUsers = users.filter(u => 

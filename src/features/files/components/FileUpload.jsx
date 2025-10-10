@@ -4,6 +4,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Box, Typography, Button, CircularProgress, List, ListItem, ListItemIcon, ListItemText, IconButton } from '@mui/material';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import DeleteIcon from '@mui/icons-material/Delete';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+
 import { toast } from 'react-toastify';
 
 import { uploadFiles } from '../fileSlice.js';
@@ -23,9 +25,19 @@ const FileUpload = () => {
         maxFiles: 4,
         maxSize: 10 * 1024 * 1024, // 10MB
         accept: {
-            'image/*': ['.jpeg', '.png', '.gif'],
+            'image/*': ['.jpeg', 'jpg' ,'.png', '.gif'],
             'application/pdf': ['.pdf'],
-            'text/*': ['.txt', '.js', '.css', '.html', '.json'],
+            'application/msword': ['.doc'],
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
+            'application/vnd.ms-powerpoint': ['.ppt'],
+            'application/vnd.openxmlformats-officedocument.presentationml.presentation': ['.pptx'],
+            'application/vnd.ms-excel': ['.xls'],
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
+            // Archives
+            'application/zip': ['.zip'],
+            'application/vnd.rar': ['.rar'],
+            // Text & Code
+            'text/*': ['.txt', '.csv', '.js', '.css', '.html', '.json'],
         },
     });
 
@@ -44,22 +56,36 @@ const FileUpload = () => {
             formData.append('files', file); // 'files' must match the backend field name
         });
 
-        dispatch(uploadFiles(formData));
-        setAcceptedFiles([]); // Clear the list after dispatching
+        dispatch(uploadFiles(formData))
+            .unwrap()
+            .then(() => {
+                toast.success(`${acceptedFiles.length} file(s) uploaded successfully!`);
+            })
+            .catch((error) => {
+                // The error payload is the `message` from rejectWithValue
+                toast.error(error || 'Upload failed.');
+            })
+            .finally(() => {
+                setAcceptedFiles([]); // Clear the list after dispatching
+            });
     };
 
     const fileList = acceptedFiles.map(file => (
-        <ListItem
-            key={file.path}
-            secondaryAction={
-                <IconButton edge="end" aria-label="delete" onClick={() => removeFile(file.name)}>
-                    <DeleteIcon />
-                </IconButton>
-            }
-        >
-            <ListItemIcon><UploadFileIcon /></ListItemIcon>
-            <ListItemText primary={file.name} secondary={`${(file.size / 1024).toFixed(2)} KB`} />
-        </ListItem>
+    <ListItem
+        key={file.path}
+        secondaryAction={
+            <IconButton edge="end" aria-label="delete" onClick={() => removeFile(file.name)}>
+                <DeleteIcon />
+            </IconButton>
+        }
+    >
+        <ListItemIcon><UploadFileIcon /></ListItemIcon>
+        <ListItemText 
+            primary={file.name} 
+            secondary={`${(file.size / 1024).toFixed(2)} KB`} 
+        />
+        <CheckCircleIcon color="success" sx={{ ml: 2 }} />
+    </ListItem>
     ));
 
     return (

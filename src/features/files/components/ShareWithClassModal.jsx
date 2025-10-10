@@ -23,6 +23,8 @@ const ShareWithClassModal = ({ open, handleClose, fileId }) => {
     const { assignedSubjects } = useSelector((state) => state.teacher);
     const { isLoading } = useSelector((state) => state.files);
     const [selectedSubject, setSelectedSubject] = useState('');
+    const [batch, setBatch] = useState('');
+    const [section, setSection] = useState('');    
     
     useEffect(() => {
         // Fetch the teacher's subjects to populate the dropdown
@@ -37,9 +39,9 @@ const ShareWithClassModal = ({ open, handleClose, fileId }) => {
         const subjectDetails = assignedSubjects.find(s => s._id === selectedSubject);
         const classData = {
             subject: subjectDetails._id,
-            batch: 2025, // This should be dynamic
+            batch: parseInt(batch),
             semester: subjectDetails.semester,
-            section: 'A', // This should be dynamic
+            section: section,
         };
 
         dispatch(shareWithClass({ fileId, classData }))
@@ -69,7 +71,23 @@ const ShareWithClassModal = ({ open, handleClose, fileId }) => {
                         </MenuItem>
                     ))}
                 </TextField>
-                {/* Add more fields for Section/Batch if they need to be selected */}
+                
+                <TextField
+                    label="Batch (e.g., 2025)"
+                    type="number"
+                    value={batch}
+                    onChange={(e) => setBatch(e.target.value)}
+                    fullWidth
+                    margin="normal"
+                />
+                <TextField
+                    label="Section (e.g., A)"
+                    value={section}
+                    onChange={(e) => setSection(e.target.value)}
+                    fullWidth
+                    margin="normal"
+                />
+                                
                 <Button onClick={handleSubmit} variant="contained" sx={{ mt: 2 }} disabled={isLoading}>
                     {isLoading ? <CircularProgress size={24} /> : 'Share File'}
                 </Button>
