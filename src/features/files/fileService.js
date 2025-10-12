@@ -3,6 +3,7 @@ import axios from 'axios';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const API_URL = `${API_BASE_URL}/files/`;
 
+
 /**
  * Uploads one or more files to the server.
  * @route POST /api/files/
@@ -10,11 +11,19 @@ const API_URL = `${API_BASE_URL}/files/`;
  * @param {string} token - The user's JWT for authentication.
  * @returns {Promise<Array<object>>} A promise that resolves to an array of the newly created file objects.
  */
-const uploadFiles = async (filesFormData, token) => {
-    const config = { headers: { Authorization: `Bearer ${token}` } };
+const uploadFiles = async (filesFormData, token, onUploadProgress) => {
+    const config = { 
+        headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${token}`,
+        },
+        // Passing progress handler to the Axios config        
+        onUploadProgress,
+    };
     const response = await axios.post(API_URL, filesFormData, config);
     return response.data;
 };
+
 
 /**
  * Retrieves all files for the user, including owned files and files shared with them.
@@ -27,6 +36,7 @@ const getFiles = async (token) => {
     const response = await axios.get(API_URL, config);
     return response.data;
 };
+
 
 /**
  * Gets a temporary, secure pre-signed URL for downloading a file from S3.
@@ -41,6 +51,7 @@ const getDownloadLink = async (fileId, token) => {
     return response.data;
 };
 
+
 /**
  * Deletes a file owned by the authenticated user.
  * @route DELETE /api/files/:fileId
@@ -53,6 +64,25 @@ const deleteFile = async (fileId, token) => {
     await axios.delete(API_URL + fileId, config);
     return { fileId }; // Return the ID for easy state updates
 };
+
+
+/**
+ * Deletes multiple files by their IDs.
+ * @route DELETE /api/files/
+ * @param {string[]} fileIds - An array of file IDs to be deleted.
+ * @param {string} token - The user's JWT for authorization.
+ * @returns {Promise<object>} A promise that resolves to an object containing the server's success message and the array of deleted file IDs.
+ */
+const bulkDeleteFiles = async (fileIds, token) => {
+    const config = {
+        headers: { Authorization: `Bearer ${token}` },
+        data: { fileIds } // Pass IDs in the request body for a DELETE request
+    };
+    const response = await axios.delete( API_URL, config);
+    // Pass the original IDs back to the reducer for efficient state updates
+    return { ...response.data, ids: fileIds };
+};
+
 
 /**
  * Shares a file with another registered user.
@@ -67,6 +97,7 @@ const shareFile = async (fileId, userIdToShareWith, token) => {
     const response = await axios.post(API_URL + fileId + '/share', { userIdToShareWith }, config);
     return response.data;
 };
+
 
 /**
  * Manages share access to a file (e.g., owner revokes access or a user removes their own access).
@@ -85,6 +116,7 @@ const manageShareAccess = async (fileId, userIdToRemove, token) => {
     return response.data;
 };
 
+
 /**
  * Shares a file with an entire class based on subject, batch, and section.
  * @route POST /api/files/:fileId/share-class
@@ -100,11 +132,13 @@ const shareWithClass = async (data, token) => {
 };
 
 
+
 const fileService = {
     uploadFiles,
     getFiles,
     getDownloadLink,
     deleteFile,
+    bulkDeleteFiles,
     shareFile,
     manageShareAccess,
     shareWithClass,

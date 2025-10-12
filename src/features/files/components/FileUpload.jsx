@@ -12,7 +12,7 @@ import { uploadFiles } from '../fileSlice.js';
 
 const FileUpload = () => {
     const dispatch = useDispatch();
-    const { status } = useSelector((state) => state.files);
+    const { status, uploadProgress } = useSelector((state) => state.files);
     const [acceptedFiles, setAcceptedFiles] = useState([]);
 
     const onDrop = useCallback((newFiles) => {
@@ -25,7 +25,7 @@ const FileUpload = () => {
         maxFiles: 4,
         maxSize: 10 * 1024 * 1024, // 10MB
         accept: {
-            'image/*': ['.jpeg', 'jpg' ,'.png', '.gif'],
+            'image/*': ['.jpeg', '.jpg', '.png', '.gif'],
             'application/pdf': ['.pdf'],
             'application/msword': ['.doc'],
             'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
@@ -90,6 +90,7 @@ const FileUpload = () => {
 
     return (
         <Box>
+            {/* Dropzone box */}
             <Box
                 {...getRootProps()}
                 sx={{
@@ -109,15 +110,22 @@ const FileUpload = () => {
             
             {fileList.length > 0 && (
                 <>
+                    {/* file list */}
                     <Typography variant="h6">Files to Upload:</Typography>
                     <List dense>{fileList}</List>
+
                     <Button
                         variant="contained"
                         onClick={handleUpload}
                         disabled={status === 'loading'}
-                        startIcon={status === 'loading' ? <CircularProgress size={20} /> : null}
                     >
-                        Upload {fileList.length} File(s)
+                        {
+                            status === 'loading' && uploadProgress < 100 
+                            ? `Uploading... ${uploadProgress}%` 
+                            : status === 'loading' && uploadProgress === 100 
+                                ? 'Processing...' 
+                                : `Upload ${fileList.length} File(s)`                            
+                        }
                     </Button>
                 </>
             )}
