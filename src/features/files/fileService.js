@@ -2,7 +2,8 @@ import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const API_URL = `${API_BASE_URL}/files/`;
-
+const FOLDER_API_URL = `${API_BASE_URL}/folders/`;
+const USER_API_URL = `${API_BASE_URL}/users/`;
 
 /**
  * Uploads one or more files to the server.
@@ -132,10 +133,15 @@ const shareWithClass = async (data, token) => {
 };
 
 
+/**
+ * Fetches the current user's storage usage statistics from the API.
+ * @param {string} token - The user's JWT for authorization.
+ * @returns {Promise<object>} A promise that resolves to an object containing the user's storage data,
+ * including usageBytes, quotaBytes, fileCount, and fileLimit.
+ */
 const getStorageUsage = async (token) => {
     const config = { headers: { Authorization: `Bearer ${token}` } };
-    // This endpoint was created in Phase 1
-    const response = await api.get('/users/me/storage', config);
+    const response = await axios.get(`${USER_API_URL}me/storage`, config);
     return response.data;
 };
 

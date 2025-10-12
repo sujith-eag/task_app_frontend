@@ -15,8 +15,7 @@ const StorageQuota = () => {
     const { storageUsage } = useSelector((state) => state.files);
     const { usageBytes, quotaBytes } = storageUsage;
 
-    const percentUsed = quotaBytes > 0 ? (usageBytes / quotaBytes) * 100 : 0;
-
+    const percentUsed = quotaBytes !== null && quotaBytes > 0 ? (usageBytes / quotaBytes) * 100 : 0;
     return (
         <Paper variant="outlined" sx={{ p: 2, mb: 3 }}>
             <Typography variant="h6" gutterBottom>Storage</Typography>
@@ -29,7 +28,8 @@ const StorageQuota = () => {
                 </Box>
             </Box>
             <Typography variant="caption" color="text.secondary">
-                {`${formatBytes(usageBytes)} of ${formatBytes(quotaBytes)} used`}
+                {/* Conditionally render "Unlimited" if quotaBytes is null */}
+                {`${formatBytes(usageBytes)} of ${quotaBytes === null ? 'Unlimited' : formatBytes(quotaBytes)} used`}
             </Typography>
         </Paper>
     );

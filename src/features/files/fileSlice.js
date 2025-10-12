@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import fileService from './fileService.js';
+import { logout } from '../auth/authSlice.js';
 
 // --- Async Thunks ---
 
@@ -214,6 +215,12 @@ export const fileSlice = createSlice({
                 }
             })
 
+            
+            .addCase(logout.fulfilled, (state) => {
+                // Return the initial state to completely reset the slice
+                return initialState;
+            })
+                        
             // --- Universal Pending & Rejected Handlers ---
             .addMatcher(
                 (action) => action.type.endsWith('/pending'),
