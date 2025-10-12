@@ -11,22 +11,28 @@ import DownloadIcon from '@mui/icons-material/Download';
 import ShareIcon from '@mui/icons-material/Share';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import FolderIcon from '@mui/icons-material/Folder';
+import PublicIcon from '@mui/icons-material/Public';
+import LinkOffIcon from '@mui/icons-material/LinkOff';
 
 import { toast } from 'react-toastify';
 
 import fileService from '../fileService.js';
-import { manageShareAccess } from '../fileSlice.js';
+import { manageShareAccess, revokePublicShare } from '../fileSlice.js';
 import ShareModal from './ShareModal.jsx';
+import PublicShareModal from './PublicShareModal.jsx';
+
 import { getFileIcon } from '../../../utils/fileUtils.jsx';
 
 // Accepting props from the FileList
-const FileItem = ({ file, isSelected, onSelectFile, onDeleteClick }) => {
+const FileItem = ({ file, isSelected, onSelectFile, onDeleteClick, onNavigate, context }) => {
     // --- HOOKS & STATE ---
     const dispatch = useDispatch();
     const { user } = useSelector((state) => state.auth);
     const { status, pendingActionFileIds } = useSelector((state) => state.files);
     const [anchorEl, setAnchorEl] = useState(null);
     const [isShareModalOpen, setShareModalOpen] = useState(false);
+    const [isPublicShareModalOpen, setPublicShareModalOpen] = useState(false);
 
     // --- VARIABLES ---
     const isOwner = file.user._id === user._id;
@@ -34,7 +40,8 @@ const FileItem = ({ file, isSelected, onSelectFile, onDeleteClick }) => {
 
     // --- HANDLERS ---
     const handleMenuClick = (event) => {
-            setAnchorEl(event.currentTarget);
+        event.stopPropagation();
+        setAnchorEl(event.currentTarget);
     };
 
     const handleMenuClose = () => {
@@ -61,14 +68,42 @@ const FileItem = ({ file, isSelected, onSelectFile, onDeleteClick }) => {
         handleMenuClose();
     };
 
+    const handleRevokePublicShare = () => {
+        dispatch(revokePublicShare(file._id))
+            .unwrap()
+            .then(() => {
+                toast.success('Public link has been revoked!');
+            })
+            .catch((err) => {
+                toast.error(err || 'Failed to revoke link.');
+            });
+        handleMenuClose();
+    };
 
+    // --- Function to render the share status ---
+    const renderShareStatus = () => {
+        const shareCount = file.sharedWith.length;
+        const isPublic = file.publicShare?.isActive;
+
+        if (isPublic && shareCount > 0) {
+            return `Publicly & with ${shareCount} user(s)`;
+        }
+        if (isPublic) {
+            return 'Publicly Shared';
+        }
+        if (shareCount > 0) {
+            return `Shared with ${shareCount} user(s)`;
+        }
+        return ''; // Should not happen in this tab, but as a fallback
+    };
+    
     return (
         <>
-            <TableRow 
+            <TableRow
+                onClick={file.isFolder ? () => onNavigate(file._id) : undefined}
                 sx={{ 
-                    '&:hover': { 
-                        backgroundColor: 'action.hover' 
-                    },
+                    '&:hover': { backgroundColor: 'action.hover' },
+                    cursor: file.isFolder ? 'pointer' : 'default',
                     // Add a visual indicator when selected
                     backgroundColor: isSelected ? 'action.selected' : 'transparent',
                     // Dim the row when it's being processed
@@ -88,22 +123,38 @@ const FileItem = ({ file, isSelected, onSelectFile, onDeleteClick }) => {
                 <TableCell component="th" scope="row">
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         <Avatar variant="rounded" sx={{ bgcolor: 'transparent', mr: 2 }}>
-                            {getFileIcon(file.fileType)}
+                            {file.isFolder 
+                                ? <FolderIcon sx={{ color: 'text.primary' }} /> 
+                                : getFileIcon(file.fileType)}
                         </Avatar>
                         {/* Truncate long filenames */}
                         <Typography noWrap>{file.fileName}</Typography>
                     </Box>
                 </TableCell>
 
-                {/* --- INTEGRATE SENDER'S NAME --- */}
+                {/* --- INTEGRATE Data --- */}
                 <TableCell>
-                    {isOwner ? (
-                        new Date(file.createdAt).toLocaleDateString()
-                    ) : (
-                        <Typography variant="body2" color="text.secondary">
-                            {`Shared by: ${file.user.name}`}
-                        </Typography>
-                    )}
+                {/* Switch statement for clear, context-aware rendering */}
+                {(() => {
+                    switch (context) {
+                        case 'myFiles':
+                            return new Date(file.createdAt).toLocaleDateString();
+                        case 'sharedWithMe':
+                            return (
+                                <Typography variant="body2" color="text.secondary">
+                                    {`Shared by: ${file.user.name}`}
+                                </Typography>
+                            );
+                        case 'myShares':
+                            return (
+                                <Typography variant="body2" color="text.secondary">
+                                    {renderShareStatus()}
+                                </Typography>
+                            );
+                        default:
+                            return new Date(file.createdAt).toLocaleDateString();
+                    }
+                })()}
                 </TableCell>
 
                 <TableCell align="right">
@@ -135,22 +186,48 @@ const FileItem = ({ file, isSelected, onSelectFile, onDeleteClick }) => {
 
                 {/* --- Contextual Actions Based on Ownership --- */}
 
+        {/* --- menu item for sharing with specific users --- */}
                 {isOwner && (
                     // Share Button
                     <MenuItem 
                         onClick={() => { 
                             setShareModalOpen(true); 
                             handleMenuClose(); 
-                            }}>
+                        }}>
                         <ListItemIcon>
                             <ShareIcon fontSize="small" />
                         </ListItemIcon>
                         <ListItemText
-                            >Share
+                            >Share with Users
                         </ListItemText>
                     </MenuItem>
                 )}
 
+        {/* --- menu item for public sharing --- */}
+                {isOwner && (
+                    <MenuItem 
+                        onClick={() => { 
+                            setPublicShareModalOpen(true); 
+                            handleMenuClose(); 
+                        }}>
+                        <ListItemIcon>
+                            <PublicIcon fontSize="small" />
+                        </ListItemIcon>
+                        <ListItemText
+                            > {file.publicShare?.isActive 
+                                ? 'Manage Public Share' 
+                                : 'Share Publicly'}
+                        </ListItemText>
+                    </MenuItem>
+                )}
+
+                {isOwner && file.publicShare?.isActive && (
+                    <MenuItem onClick={handleRevokePublicShare}>
+                        <ListItemIcon><LinkOffIcon fontSize="small" /></ListItemIcon>
+                        <Typography color="error">Revoke Public Link</Typography>
+                    </MenuItem>
+                )}
+                
                 {isOwner && (
                     <MenuItem onClick={handleDelete}> 
                         <ListItemIcon>
@@ -174,6 +251,14 @@ const FileItem = ({ file, isSelected, onSelectFile, onDeleteClick }) => {
                 onClose={() => setShareModalOpen(false)}
                 file={file}
             />
+            
+            {isOwner && (
+                <PublicShareModal
+                    open={isPublicShareModalOpen}
+                    onClose={() => setPublicShareModalOpen(false)}
+                    file={file}
+                />
+            )}            
         </>
     );
 };

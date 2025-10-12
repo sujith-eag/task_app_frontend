@@ -10,6 +10,9 @@ const initialState = {
     uploadProgress: 0,
     pendingActionFileIds: [], // To Track the ID of the files being processed    
     message: '',
+    currentParentId: null,
+    currentFolder: null,
+    breadcrumbs: [],
     storageUsage: {
         usageBytes: 0,
         quotaBytes: 0,
@@ -17,6 +20,39 @@ const initialState = {
         fileLimit: 0,
     },    
 };
+
+
+export const createPublicShare = createAsyncThunk(
+    'files/createPublicShare',
+    async (shareData, thunkAPI) => {
+        try {
+            const token = thunkAPI.getState().auth.user.token;
+            return await fileService.createPublicShare(shareData, token);
+        } catch (error) {
+            const message = 
+                (error.response?.data?.message) || 
+                error.message || 
+                error.toString();
+            return thunkAPI.rejectWithValue(message);
+        }
+    }
+);
+
+export const revokePublicShare = createAsyncThunk(
+    'files/revokePublicShare',
+    async (fileId, thunkAPI) => {
+        try {
+            const token = thunkAPI.getState().auth.user.token;
+            return await fileService.revokePublicShare(fileId, token);
+        } catch (error) {
+            const message = 
+                (error.response?.data?.message) || 
+                error.message || 
+                error.toString();
+            return thunkAPI.rejectWithValue(message);
+        }
+    }
+);
 
 
 export const getStorageUsage = createAsyncThunk('files/getUsage', async (_, thunkAPI) => {
@@ -29,10 +65,10 @@ export const getStorageUsage = createAsyncThunk('files/getUsage', async (_, thun
     }
 });
 
-export const getFiles = createAsyncThunk('files/getAll', async (_, thunkAPI) => {
+export const getFiles = createAsyncThunk('files/getAll', async (parentId, thunkAPI) => {
     try {
         const token = thunkAPI.getState().auth.user.token;
-        return await fileService.getFiles(token);
+        return await fileService.getFiles(parentId, token);
     } catch (error) {
         const message = (error.response?.data?.message) || error.message || error.toString();
         return thunkAPI.rejectWithValue(message);
@@ -40,9 +76,12 @@ export const getFiles = createAsyncThunk('files/getAll', async (_, thunkAPI) => 
 });
 
 
-export const uploadFiles = createAsyncThunk('files/upload', async (filesFormData, thunkAPI) => {
+export const uploadFiles = createAsyncThunk('files/upload', async ({ filesFormData, parentId }, thunkAPI) => {
     try {
         const token = thunkAPI.getState().auth.user.token;
+
+        // Append parentId to the FormData before sending
+        filesFormData.append('parentId', parentId || 'null');
 
         // Progress handler
         const onUploadProgress = (progressEvent) => {
@@ -124,6 +163,17 @@ export const shareWithClass = createAsyncThunk('files/shareClass', async (data, 
 });
 
 
+export const createFolder = createAsyncThunk('files/createFolder', async (folderData, thunkAPI) => {
+    try {
+        const token = thunkAPI.getState().auth.user.token;
+        return await fileService.createFolder(folderData, token);
+    } catch (error) { 
+        const message = (error.response?.data?.message) || error.message || error.toString();
+        return thunkAPI.rejectWithValue(message);
+     }
+});
+
+
 export const fileSlice = createSlice({
     name: 'files',
     initialState,
@@ -135,7 +185,11 @@ export const fileSlice = createSlice({
         // Reducer for progress updates
         setUploadProgress: (state, action) => {
             state.uploadProgress = action.payload;
-        },        
+        },
+        // Reducer to set the current folder
+        setCurrentParentId: (state, action) => {
+            state.currentParentId = action.payload;
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -143,12 +197,36 @@ export const fileSlice = createSlice({
             .addCase(getStorageUsage.fulfilled, (state, action) => {
                 state.storageUsage = action.payload;
             })
-        
+
+            
+            // public share
+            .addCase(createPublicShare.fulfilled, (state, action) => {
+                // Find the file and update its publicShare property
+                const index = state.files.findIndex(f => f._id === action.meta.arg.fileId);
+                if (index !== -1) {
+                    state.files[index].publicShare = action.payload;
+                }
+            })
+                
+            .addCase(revokePublicShare.fulfilled, (state, action) => {
+                // Find the file by the ID passed to the thunk
+                const fileId = action.meta.arg;
+                const index = state.files.findIndex(f => f._id === fileId);
+                
+                // Update its publicShare status
+                if (index !== -1) {
+                    state.files[index].publicShare.isActive = false;
+                }
+            })                
             // Get Files
             .addCase(getFiles.fulfilled, (state, action) => {
                 state.status = 'succeeded';
-                state.files = Array.isArray(action.payload) ? action.payload : [];
-                // If the API returns a falsy value (null, undefined, etc.), default to an empty array.
+                state.files = action.payload.files || [];
+                state.currentFolder = action.payload.currentFolder || null;
+                state.breadcrumbs = action.payload.breadcrumbs || [];
+
+                // Set the parentId from the action metadata for consistency
+                state.currentParentId = action.meta.arg || null;
             })
             .addCase(getFiles.rejected, (state, action) => {
                 state.status = 'failed';
@@ -215,6 +293,10 @@ export const fileSlice = createSlice({
                 }
             })
 
+            .addCase(createFolder.fulfilled, (state, action) => {
+                // Add the new folder to the top of the file list
+                state.files.unshift(action.payload);
+            })
             
             .addCase(logout.fulfilled, (state) => {
                 // Return the initial state to completely reset the slice
@@ -251,5 +333,6 @@ export const fileSlice = createSlice({
     ;},
 });
 
-export const { resetFileStatus, setUploadProgress } = fileSlice.actions;
+export const { resetFileStatus, 
+    setUploadProgress, setCurrentParentId } = fileSlice.actions;
 export default fileSlice.reducer;

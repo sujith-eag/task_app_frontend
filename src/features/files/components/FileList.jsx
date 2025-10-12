@@ -10,8 +10,10 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 
 import FileItem from './FileItem.jsx';
-import { deleteFile, bulkDeleteFiles } from '../fileSlice.js';
+import { getFiles, deleteFile, bulkDeleteFiles } from '../fileSlice.js';
 import ConfirmationDialog from '../../../components/ConfirmationDialog.jsx';
+import FileBreadcrumbs from './FileBreadcrumbs.jsx';
+
 import { toast } from 'react-toastify';
 
 const FileList = ({ files }) => {
@@ -19,17 +21,29 @@ const FileList = ({ files }) => {
     
     const [tabValue, setTabValue] = useState('myFiles');
     const [selectedFiles, setSelectedFiles] = useState([]);
-    const [dialogOpen, setDialogOpen] = useState(false);
-    const [fileToDelete, setFileToDelete] = useState(null);
 
+    // Single state object to control the confirmation dialog
+    const [dialogConfig, setDialogConfig] = useState({
+        open: false,
+        title: '',
+        message: '',
+        onConfirm: () => {}
+    });
+    
     // Get current user's ID to filter the files
     const { user } = useSelector((state) => state.auth);
     const userId = user._id;
 
-    // Filter files into two separate arrays based on ownership
-    const myFiles = files.filter(file => file.user._id === userId);
-    const sharedFiles = files.filter(file => file.user._id !== userId);
-       
+    // Filter files into three separate arrays
+    const myFiles = files.filter(file => file.user && file.user._id === userId);
+    const sharedFiles = files.filter(file => file.user && file.user._id !== userId);
+
+    // A file is in "My Shares" if the user owns it AND it's shared with someone or publicly
+    const mySharedFiles = files.filter(f =>
+        f.user && f.user._id === userId &&
+        (f.sharedWith.length > 0 || (f.publicShare && f.publicShare.isActive))
+    );
+    
     // Clear selection when the tab changes
     useEffect(() => {
         setSelectedFiles([]);
@@ -40,21 +54,37 @@ const FileList = ({ files }) => {
     };
 
     // --- HANDLER: Opens the dialog for a single file deletion ---
-    const handleOpenDeleteDialog = (file) => {
-        setFileToDelete(file);
+    const handleOpenSingleDeleteDialog = (file) => {
+        setDialogConfig({
+            open: true,
+            title: 'Confirm Deletion',
+            message: `Are you sure you want to permanently delete "${file.fileName}"?`,
+            onConfirm: () => {
+                if (file) {
+                    dispatch(deleteFile(file._id))
+                        .unwrap()
+                        .then(() => toast.success(`"${file.fileName}" deleted.`))
+                        .catch((err) => toast.error(err || 'Failed to delete file.'));
+                }
+            }
+        });
     };
 
-    // --- HANDLER: The actual delete logic for a single file ---
-    const handleConfirmSingleDelete = () => {
-        if (fileToDelete) {
-            dispatch(deleteFile(fileToDelete._id))
-                .unwrap()
-                .then(() => toast.success(`"${fileToDelete.fileName}" deleted.`))
-                .catch((err) => toast.error(err || 'Failed to delete file.'));
-        }
-        setFileToDelete(null); // Close the dialog by resetting the state
+    const handleOpenBulkDeleteDialog = () => {
+        setDialogConfig({
+            open: true,
+            title: 'Confirm Bulk Deletion',
+            message: `Are you sure you want to permanently delete these ${selectedFiles.length} files?`,
+            onConfirm: () => {
+                dispatch(bulkDeleteFiles(selectedFiles))
+                    .unwrap()
+                    .then(() => toast.success(`${selectedFiles.length} files deleted.`))
+                    .catch((err) => toast.error(err || 'Failed to delete files.'))
+                    .finally(() => setSelectedFiles([]));
+            }
+        });
     };
-    
+
     // --- HANDLER: to toggle file selection
     const handleSelectFile = (fileId) => {
         setSelectedFiles(prev =>
@@ -64,8 +94,25 @@ const FileList = ({ files }) => {
         );
     };    
 
+    const handleNavigate = (folderId) => {
+        dispatch(getFiles(folderId));
+    };
+
     // Select all files currently visible in the active tab.
-    const currentList = tabValue === 'myFiles' ? myFiles : sharedFiles;
+    let currentList = [];
+    switch (tabValue) {
+        case 'myFiles':
+            currentList = myFiles;
+            break;
+        case 'sharedWithMe': // Use the new, consistent tab value
+            currentList = sharedFiles;
+            break;
+        case 'myShares':
+            currentList = mySharedFiles;
+            break;
+        default:
+            currentList = myFiles;
+    }
 
     const handleSelectAll = (event) => {
         if (event.target.checked) {
@@ -73,15 +120,6 @@ const FileList = ({ files }) => {
         } else {
             setSelectedFiles([]);
         }
-    };
-    
-    const handleBulkDelete = () => {
-        setDialogOpen(false); // Close the dialog
-        dispatch(bulkDeleteFiles(selectedFiles))
-            .unwrap()
-            .then(() => toast.success(`${selectedFiles.length} files deleted.`))
-            .catch((err) => toast.error(err || 'Failed to delete files.'))
-            .finally(() => setSelectedFiles([]));
     };
 
     // Removing multiple files shared with me
@@ -93,6 +131,10 @@ const FileList = ({ files }) => {
             // dispatch(bulkRemoveAccess(selectedFiles));
             setSelectedFiles([]);
         }
+    };
+
+    const closeDialog = () => {
+        setDialogConfig({ open: false, title: '', message: '', onConfirm: () => {} });
     };
 
     const renderFileTable = (fileArray) => (
@@ -119,8 +161,6 @@ const FileList = ({ files }) => {
                             sx={{ width: '55%' }}>Name
                         </TableCell>
 
-                        {/* <TableCell sx={{ width: '20%' }}>Uploaded On </TableCell> */}
-
                         <TableCell 
                             sx={{ width: '25%' }}>Date / Source
                         </TableCell>
@@ -141,7 +181,9 @@ const FileList = ({ files }) => {
                             // Pass down Props for selection
                             isSelected={selectedFiles.includes(file._id)}
                             onSelectFile={handleSelectFile}
-                            onDeleteClick={handleOpenDeleteDialog}
+                            onDeleteClick={handleOpenSingleDeleteDialog}
+                            onNavigate={handleNavigate}
+                            context={tabValue}
                         />
                     ))}
                 </TableBody>
@@ -163,12 +205,12 @@ const FileList = ({ files }) => {
                             variant="contained" 
                             color="error" 
                             startIcon={<DeleteIcon />} 
-                            onClick={() => setDialogOpen(true)}
+                            onClick={handleOpenBulkDeleteDialog}
                             >
                             Delete Selected
                         </Button>
                     )}
-                    {tabValue === 'shared' && (
+                    {tabValue === 'sharedWithMe' && (
                         <Button 
                             variant="contained" 
                             color="warning" 
@@ -177,16 +219,12 @@ const FileList = ({ files }) => {
                             Remove From My List
                         </Button>
                     )}
-                    
-                    <ConfirmationDialog
-                        open={dialogOpen}
-                        onClose={() => setDialogOpen(false)}
-                        onConfirm={handleBulkDelete}
-                        title="Confirm Deletion"
-                        message={`Are you sure you want to permanently delete these ${selectedFiles.length} files?`}
-                    />                    
                 </Paper>
             )}
+
+            <FileBreadcrumbs onNavigate={handleNavigate} />
+            {/* ... Tabs (consider disabling/hiding for sub-folders) ... */}
+
 
             {/* Tabs for User file and Shared Files */}
             <Tabs 
@@ -199,7 +237,12 @@ const FileList = ({ files }) => {
                     value="myFiles" />
                 <Tab
                     label={`Shared With Me (${sharedFiles.length})`} 
-                    value="shared" />
+                    value="sharedWithMe" />
+                    
+                <Tab
+                    label={`My Shares (${mySharedFiles.length})`}
+                    value="myShares"
+                />                    
             </Tabs>
 
 
@@ -209,20 +252,28 @@ const FileList = ({ files }) => {
                         ? renderFileTable(myFiles)
                         : <Typography>You haven't uploaded any files yet.</Typography>
                 )}
-                {tabValue === 'shared' && (
+                {tabValue === 'sharedWithMe' && (
                     sharedFiles.length > 0
                         ? renderFileTable(sharedFiles)
                         : <Typography>No files have been shared with you.</Typography>
                 )}
+                {tabValue === 'myShares' && (
+                    mySharedFiles.length > 0 
+                    ? renderFileTable(mySharedFiles)
+                    : <Typography>You have not shared any files yet.</Typography>
+                )}
             </Box>
             
-            {/* --- Delete Confirmation DIALOG --- */}
+            {/* --- Dynamic Confirmation DIALOG --- */}
             <ConfirmationDialog
-                open={!!fileToDelete} // Dialog is open if a file is set
-                onClose={() => setFileToDelete(null)}
-                onConfirm={handleConfirmSingleDelete}
-                title="Confirm Deletion"
-                message={`Are you sure you want to permanently delete "${fileToDelete?.fileName}"?`}
+                open={dialogConfig.open}
+                onClose={closeDialog}
+                onConfirm={() => {
+                    dialogConfig.onConfirm();
+                    closeDialog();
+                }}
+                title={dialogConfig.title}
+                message={dialogConfig.message}
             />
         </Box>
     );

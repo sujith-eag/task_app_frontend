@@ -12,7 +12,7 @@ import { uploadFiles } from '../fileSlice.js';
 
 const FileUpload = () => {
     const dispatch = useDispatch();
-    const { status, uploadProgress } = useSelector((state) => state.files);
+    const { status, uploadProgress, currentParentId } = useSelector((state) => state.files);
     const [acceptedFiles, setAcceptedFiles] = useState([]);
 
     const onDrop = useCallback((newFiles) => {
@@ -20,6 +20,7 @@ const FileUpload = () => {
         setAcceptedFiles(prev => [...prev, ...newFiles].slice(0, 4));
     }, []);
 
+    
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop,
         maxFiles: 4,
@@ -56,7 +57,7 @@ const FileUpload = () => {
             formData.append('files', file); // 'files' must match the backend field name
         });
 
-        dispatch(uploadFiles(formData))
+        dispatch(uploadFiles({ filesFormData: formData, parentId: currentParentId }))
             .unwrap()
             .then(() => {
                 toast.success(`${acceptedFiles.length} file(s) uploaded successfully!`);

@@ -17,6 +17,7 @@ import ForgotPasswordPage from './features/auth/pages/ForgotPasswordPage.jsx';
 import ResetPasswordPage from './features/auth/pages/ResetPasswordPage.jsx'; 
 import VerifyEmailPage from './features/auth/pages/VerifyEmailPage.jsx';
 import NotFoundPage from './NotFoundPage.jsx';
+import PublicDownloadPage from "./features/public/pages/PublicDownloadPage.jsx";
 
 // General Private Pages
 import TaskDashboard from './features/tasks/pages/TaskDashboard.jsx'
@@ -52,6 +53,7 @@ function App() {
             <Route path="/forgotpassword" element={<ForgotPasswordPage />} />
             <Route path="/resetpassword/:token" element={<ResetPasswordPage />} />
             <Route path='/verifyemail/:token' element={<VerifyEmailPage />} />
+            <Route path='/download' element={<PublicDownloadPage />} />
 
             {/* --- General Private Routes (Accessible to all logged-in users) --- */}
             <Route element={<PrivateRoute />}>

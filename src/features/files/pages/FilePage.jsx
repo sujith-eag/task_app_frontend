@@ -5,15 +5,17 @@ import {
 } from '@mui/material';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 
-import { getFiles, getStorageUsage } from '../fileSlice.js';
+import { getFiles, createFolder, getStorageUsage } from '../fileSlice.js';
 import FileUpload from '../components/FileUpload.jsx';
 import FileList from '../components/FileList.jsx';
 import StorageQuota from '../components/StorageQuota.jsx';
+import CreateFolderModal from '../components/CreateFolderModal.jsx'
 
 const FilesPage = () => {
     const dispatch = useDispatch();
-    const { files, status, message } = useSelector((state) => state.files);
-    
+    const { files, status, message, currentParentId } = useSelector((state) => state.files);
+    const [isCreateFolderModalOpen, setCreateFolderModalOpen] = useState(false);
+
     // State to manage the visibility of the uploader
     const [isUploaderOpen, setIsUploaderOpen] = useState(false);
 
@@ -24,6 +26,10 @@ const FilesPage = () => {
         }
     }, [status, dispatch]);
 
+    const handleCreateFolder = (folderName) => {
+        dispatch(createFolder({ folderName, parentId: currentParentId }));
+    };
+    
     let content;
     if (status === 'loading' && files.length === 0) {
         content = (
@@ -44,6 +50,17 @@ const FilesPage = () => {
                     <Typography variant="h4" component="h1">
                         File Manager
                     </Typography>
+
+                    {/* Folder Creation */}
+                <Box>
+                    {/* <Button
+                        variant="outlined"
+                        onClick={() => setCreateFolderModalOpen(true)}
+                        sx={{ mr: 2 }}
+                    > 
+                        New Folder
+                    </Button> */}
+
                     {/* --- Upload Button --- */}
                     <Button
                         variant="contained"
@@ -53,6 +70,8 @@ const FilesPage = () => {
                         Upload Files
                     </Button>
                 </Box>
+            </Box>
+
 
                 <StorageQuota />
 
@@ -64,6 +83,12 @@ const FilesPage = () => {
                 </Collapse>
                 
                 {content}
+                
+            <CreateFolderModal
+                open={isCreateFolderModalOpen}
+                onClose={() => setCreateFolderModalOpen(false)}
+                onCreate={handleCreateFolder}
+            />
             </Box>
         </Container>
     );

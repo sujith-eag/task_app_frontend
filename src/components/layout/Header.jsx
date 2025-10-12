@@ -11,7 +11,7 @@ import { toast } from 'react-toastify';
 
 import {
     AppBar, Toolbar, Typography, Button, Box, Stack, IconButton, Tooltip,
-    Menu, MenuItem, useMediaQuery, Avatar, ListItemIcon
+    Menu, MenuItem, useMediaQuery, Avatar, ListItemIcon, Divider
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import Brightness4Icon from '@mui/icons-material/Brightness4'; // Moon Icon
@@ -27,6 +27,7 @@ import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile' // file
 import LoginIcon from '@mui/icons-material/Login'; // login
 import LogoutIcon from '@mui/icons-material/Logout'; // logout
 import PersonAddIcon from '@mui/icons-material/PersonAdd'; // register
+import DownloadIcon from '@mui/icons-material/Download';
 
 const Header = () => {
     const theme = useTheme();
@@ -212,6 +213,25 @@ const Header = () => {
                         )}
 
 
+
+            {/* FOR LOGGED-IN USERS */}
+            <Divider sx={{ my: 1 }} />
+
+            <MenuItem 
+                component={Link} 
+                to='/download' 
+                onClick={handleMenuClose} 
+                sx={menuItemStyles}>
+                <ListItemIcon>
+                    <DownloadIcon fontSize="small" />
+                </ListItemIcon>
+                Download File
+            </MenuItem>
+
+            <Divider sx={{ my: 1 }} />
+
+
+
                         {/* --- Files Page Link --- */}
                         {location.pathname !== '/files' && (
                             <MenuItem component={Link} to='/files' onClick={handleMenuClose}
@@ -277,6 +297,18 @@ const Header = () => {
                     >
                         <ListItemIcon><PersonAddIcon fontSize="small" /></ListItemIcon>
                         Register
+                    </MenuItem>
+                    
+                    <MenuItem 
+                        component={Link} 
+                        to='/download' 
+                        onClick={handleMenuClose} 
+                        sx={menuItemStyles}
+                        >
+                            <ListItemIcon>
+                                <DownloadIcon fontSize="small" />
+                            </ListItemIcon>
+                        Download File
                     </MenuItem>
                 </div>
                 )}

@@ -5,6 +5,40 @@ const API_URL = `${API_BASE_URL}/files/`;
 const FOLDER_API_URL = `${API_BASE_URL}/folders/`;
 const USER_API_URL = `${API_BASE_URL}/users/`;
 
+
+
+/**
+ * Creates a temporary, code-based public share link for a file.
+ * @param {object} shareData - The data required for creating the share.
+ * @param {string} shareData.fileId - The ID of the file to share.
+ * @param {string} shareData.duration - The duration for which the link will be valid (e.g., '1-hour').
+ * @param {string} token - The user's JWT for authorization.
+ * @returns {Promise<object>} A promise that resolves to the public share data (code, expiresAt).
+ */
+const createPublicShare = async ({ fileId, duration }, token) => {
+    const config = {
+        headers: { Authorization: `Bearer ${token}` },
+    };
+    const response = await axios.post(`${API_URL}${fileId}/public-share`, { duration }, config);
+    return response.data;
+};
+
+
+/**
+ * Revokes an active public share link for a file.
+ * @param {string} fileId - The ID of the file to revoke the share for.
+ * @param {string} token - The user's JWT for authorization.
+ * @returns {Promise<object>} A promise that resolves to the server's success message.
+ */
+const revokePublicShare = async (fileId, token) => {
+    const config = {
+        headers: { Authorization: `Bearer ${token}` },
+    };
+    const response = await axios.delete(`${API_URL}${fileId}/public-share`, config);
+    return response.data;
+};
+
+
 /**
  * Uploads one or more files to the server.
  * @route POST /api/files/
@@ -25,16 +59,16 @@ const uploadFiles = async (filesFormData, token, onUploadProgress) => {
     return response.data;
 };
 
-
 /**
- * Retrieves all files for the user, including owned files and files shared with them.
+ * Retrieves all files and folders for the current user within a specific parent folder (owned and shared).
+ * @param {string | null} parentId - The ID of the parent folder, or null for the root directory.
  * @route GET /api/files/
- * @param {string} token - The user's JWT for authentication.
- * @returns {Promise<Array<object>>} A promise that resolves to an array of file objects.
+ * @param {string} token - The user's JWT for authorization.
+ * @returns {Promise<Array<object>>} A promise that resolves to an array of file/folder objects.
  */
-const getFiles = async (token) => {
+const getFiles = async (parentId, token) => {
     const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.get(API_URL, config);
+    const response = await axios.get(`${API_URL}?parentId=${parentId || 'null'}`, config);
     return response.data;
 };
 
@@ -146,6 +180,20 @@ const getStorageUsage = async (token) => {
 };
 
 
+/**
+ * Creates a new folder.
+ * @param {object} folderData - The folder data, including folderName and parentId.
+ * @route GET /api/folders/
+ * @param {string} token - The user's JWT for authorization.
+ * @returns {Promise<object>} A promise that resolves to the newly created folder object.
+ */
+const createFolder = async (folderData, token) => {
+    const config = { headers: { Authorization: `Bearer ${token}` } };
+    const response = await axios.post(FOLDER_API_URL, folderData, config);
+    return response.data;
+};
+
+
 const fileService = {
     uploadFiles,
     getFiles,
@@ -156,6 +204,9 @@ const fileService = {
     manageShareAccess,
     shareWithClass,
     getStorageUsage,
+    createFolder,
+    createPublicShare,
+    revokePublicShare
 };
 
 export default fileService;

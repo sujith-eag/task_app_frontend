@@ -18,7 +18,7 @@ const FeaturesSection = () => {
     const features = [
         {
             title: 'The Modern Campus',
-            description: 'A dedicated suite for educational institutions. Manage role-based access, track attendance in real-time, and gather anonymous feedback, all in one place.',
+            description: 'A dedicated suite for educational institutions. Manage role-based access, track attendance in real-time, and gather anonymous feedback, and full administrative control over academic structures all in one place.',
             icon: <AssuredWorkloadIcon fontSize="large" />,
         },
         {
@@ -29,7 +29,7 @@ const FeaturesSection = () => {
         },
         {
             title: 'Enterprise-Grade Security',
-            description: 'Built with security first: mandatory email verification, brute-force lockwouts, role-based access control, JWT authentication, and granular rate limiting on all sensitive endpoints.',
+            description: 'Built with security first: mandatory email verification, brute-force lockouts, role-based access control (RBAC), JWT authentication, and granular rate limiting on all sensitive endpoints.',
             icon: <SecurityIcon fontSize="large" />,
         },
         {
@@ -38,8 +38,8 @@ const FeaturesSection = () => {
             icon: <AutoAwesomeIcon fontSize="large" />,
         },
         {
-            title: 'Secure Cloud Storage',
-            description: 'Your personal file drive in the cloud. Upload, manage, and securely share files with other users with granular access controls.',
+            title: 'Advanced Cloud Drive',
+            description: 'A complete cloud storage solution with hierarchical folders, role-based storage quotas, and powerful sharing options, including private sharing with expiration and public sharing via secure, temporary codes.',
             icon: <CloudUploadIcon fontSize="large" />,
         },
         {
@@ -68,7 +68,6 @@ const FeaturesSection = () => {
             icon: <VpnKeyIcon fontSize="large" />,
         },
 
-        
     ];
 
     return (

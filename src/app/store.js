@@ -13,7 +13,7 @@ import profileReducer from '../features/profile/profileSlice.js';
 import studentReducer from '../features/student/studentSlice.js';
 import taskReducer from '../features/tasks/taskSlice.js';
 import teacherReducer from '../features/teacher/teacherSlice.js';
-
+import publicReducer from '../features/public/publicSlice.js';
 
 export const store = configureStore({
   reducer: {
@@ -30,5 +30,6 @@ export const store = configureStore({
     student: studentReducer,    
     tasks: taskReducer,
     teacher: teacherReducer,
+    public: publicReducer,
   },
 });
