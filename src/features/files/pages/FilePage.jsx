@@ -5,10 +5,10 @@ import {
 } from '@mui/material';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 
-import { getFiles } from '../fileSlice.js';
+import { getFiles, getStorageUsage } from '../fileSlice.js';
 import FileUpload from '../components/FileUpload.jsx';
 import FileList from '../components/FileList.jsx';
-
+import StorageQuota from '../components/StorageQuota.jsx';
 
 const FilesPage = () => {
     const dispatch = useDispatch();
@@ -20,6 +20,7 @@ const FilesPage = () => {
     useEffect(() => {
         if (status === 'idle') {
             dispatch(getFiles());
+            dispatch(getStorageUsage()); // Fetch Files and quota on page load
         }
     }, [status, dispatch]);
 
@@ -43,7 +44,7 @@ const FilesPage = () => {
                     <Typography variant="h4" component="h1">
                         File Manager
                     </Typography>
-                    {/* --- NEW: The Upload Button --- */}
+                    {/* --- Upload Button --- */}
                     <Button
                         variant="contained"
                         startIcon={<UploadFileIcon />}
@@ -53,7 +54,9 @@ const FilesPage = () => {
                     </Button>
                 </Box>
 
-                {/* --- NEW: The Collapsible Uploader --- */}
+                <StorageQuota />
+
+                {/* --- Collapsible Uploader --- */}
                 <Collapse in={isUploaderOpen}>
                     <Paper variant="outlined" sx={{ p: 2, mb: 4 }}>
                         <FileUpload />

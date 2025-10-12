@@ -132,6 +132,13 @@ const shareWithClass = async (data, token) => {
 };
 
 
+const getStorageUsage = async (token) => {
+    const config = { headers: { Authorization: `Bearer ${token}` } };
+    // This endpoint was created in Phase 1
+    const response = await api.get('/users/me/storage', config);
+    return response.data;
+};
+
 
 const fileService = {
     uploadFiles,
@@ -142,6 +149,7 @@ const fileService = {
     shareFile,
     manageShareAccess,
     shareWithClass,
+    getStorageUsage,
 };
 
 export default fileService;

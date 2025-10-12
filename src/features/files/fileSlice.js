@@ -9,8 +9,24 @@ const initialState = {
     uploadProgress: 0,
     pendingActionFileIds: [], // To Track the ID of the files being processed    
     message: '',
+    storageUsage: {
+        usageBytes: 0,
+        quotaBytes: 0,
+        fileCount: 0,
+        fileLimit: 0,
+    },    
 };
 
+
+export const getStorageUsage = createAsyncThunk('files/getUsage', async (_, thunkAPI) => {
+    try {
+        const token = thunkAPI.getState().auth.user.token;
+        return await fileService.getStorageUsage(token);
+    } catch (error) {
+        const message = (error.response?.data?.message) || error.message || error.toString();
+        return thunkAPI.rejectWithValue(message);
+    }
+});
 
 export const getFiles = createAsyncThunk('files/getAll', async (_, thunkAPI) => {
     try {
@@ -122,7 +138,11 @@ export const fileSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-
+            // Getting Storage Quota details
+            .addCase(getStorageUsage.fulfilled, (state, action) => {
+                state.storageUsage = action.payload;
+            })
+        
             // Get Files
             .addCase(getFiles.fulfilled, (state, action) => {
                 state.status = 'succeeded';

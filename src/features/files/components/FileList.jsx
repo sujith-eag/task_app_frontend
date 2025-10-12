@@ -114,7 +114,7 @@ const FileList = ({ files }) => {
                                 onChange={handleSelectAll}
                             />
                         </TableCell>
-                        
+
                         <TableCell 
                             sx={{ width: '55%' }}>Name
                         </TableCell>
