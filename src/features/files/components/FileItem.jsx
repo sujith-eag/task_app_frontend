@@ -53,7 +53,7 @@ const FileItem = ({ file, isSelected, onSelectFile, onDeleteClick, onNavigate, c
             const { url } = await fileService.getDownloadLink(file._id, user.token);
             window.open(url, '_blank'); // Open the secure link in a new tab to trigger download
         } catch (error) {
-            toast.error('Could not get download link.');
+            toast.error('Could not get download link for the file.');
         }
         handleMenuClose();
     };

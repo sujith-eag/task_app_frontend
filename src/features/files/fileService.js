@@ -87,6 +87,43 @@ const getDownloadLink = async (fileId, token) => {
 };
 
 
+
+/**
+ * Triggers a bulk download of files as a zip archive by submitting a hidden form.
+ * This function does not use axios and is intended to trigger a native browser download.
+ * @route POST /api/files/bulk-download
+ * @param {string[]} fileIds - An array of file IDs to download.
+ * @param {string} token - The user's JWT for authorization.
+ */
+const bulkDownloadFiles = (fileIds, token) => {
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = `${API_URL}bulk-download`; // backend endpoint
+    form.style.display = 'none'; // Makes it invisible
+
+    // Create an input for the file IDs
+    const fileIdsInput = document.createElement('input');
+    fileIdsInput.type = 'hidden';
+    fileIdsInput.name = 'fileIds';
+    fileIdsInput.value = JSON.stringify(fileIds); // IDs as JSON string
+
+    // Create an input for the auth token
+    const tokenInput = document.createElement('input');
+    tokenInput.type = 'hidden';
+    tokenInput.name = 'token'; // Your backend 'protect' middleware must be able to read this
+    tokenInput.value = token;
+
+    form.appendChild(fileIdsInput);
+    form.appendChild(tokenInput);
+    document.body.appendChild(form);
+
+    form.submit();
+    document.body.removeChild(form);
+};
+
+
+
+
 /**
  * Deletes a file owned by the authenticated user.
  * @route DELETE /api/files/:fileId
@@ -195,18 +232,18 @@ const createFolder = async (folderData, token) => {
 
 
 const fileService = {
-    uploadFiles,
-    getFiles,
-    getDownloadLink,
-    deleteFile,
-    bulkDeleteFiles,
-    shareFile,
-    manageShareAccess,
+    uploadFiles, getFiles,
+
+    deleteFile, bulkDeleteFiles,
+    getDownloadLink, bulkDownloadFiles,
+
+    shareFile, manageShareAccess,
     shareWithClass,
     getStorageUsage,
     createFolder,
     createPublicShare,
-    revokePublicShare
+    revokePublicShare,
+
 };
 
 export default fileService;

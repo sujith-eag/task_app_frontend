@@ -8,9 +8,12 @@ import {
     } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import DownloadIcon from '@mui/icons-material/Download'; 
+
+import fileService from '../fileService.js';
+import { getFiles, deleteFile, bulkDeleteFiles } from '../fileSlice.js';
 
 import FileItem from './FileItem.jsx';
-import { getFiles, deleteFile, bulkDeleteFiles } from '../fileSlice.js';
 import ConfirmationDialog from '../../../components/ConfirmationDialog.jsx';
 import FileBreadcrumbs from './FileBreadcrumbs.jsx';
 
@@ -137,6 +140,37 @@ const FileList = ({ files }) => {
         setDialogConfig({ open: false, title: '', message: '', onConfirm: () => {} });
     };
 
+    
+    // Bulk Download Section
+    //  Handles downloading a single file by getting a secure pre-signed URL.
+    const handleSingleDownload = async () => {
+        const fileId = selectedFiles[0];
+        try {
+            // Get the user's token from the auth state
+            const token = user.token; 
+            const { url } = await fileService.getDownloadLink(fileId, token);
+            window.open(url, '_blank'); // Trigger download in a new tab
+        } catch (error) {
+            toast.error('Could not get download link for the file.');
+        }
+    };
+
+    
+    //  Handles bulk downloading multiple files as a zip archive by creating and submitting a hidden form.     
+    const handleBulkDownload = () => {
+        const token = user.token;
+        fileService.bulkDownloadFiles(selectedFiles, token);
+    };
+    
+    // --- Main Click Handler for Bulk Download to dispatch different calls ---
+    const handleDownloadClick = () => {
+        if (selectedFiles.length === 1) {
+            handleSingleDownload();
+        } else if (selectedFiles.length > 1) {
+            handleBulkDownload();
+        }
+    };    
+    
     const renderFileTable = (fileArray) => (
         <TableContainer component={Paper} variant="outlined">
 
@@ -196,12 +230,31 @@ const FileList = ({ files }) => {
         <Box>
             {/* Conditionally render bulk action bar */}
             {selectedFiles.length > 0 && (
-                <Paper sx={{ p: 2, mb: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <Typography>{selectedFiles.length} selected</Typography>
+                <Paper
+                    sx={{ p: 2, mb: 2, display: 'flex', 
+                        alignItems: 'center', 
+                        justifyContent: 'space-between' }}>
+                    <Typography>
+                        {selectedFiles.length} selected
+                    </Typography>
 
-                    {/* Context-aware buttons */}
+                <Box>
+                    {/* --- Dynamic Download Button --- */}
+                    {/* This button is NOT shown on the 'My Shares' tab */}
+                    {tabValue !== 'myShares' && (
+                        <Button
+                            variant="contained"
+                            startIcon={<DownloadIcon />}
+                            onClick={handleDownloadClick}
+                            sx={{ mr: 2 }} // Margin to separate from other buttons
+                        >
+                            {selectedFiles.length > 1 ? 'Download as Zip' : 'Download'}
+                        </Button>
+                    )}
+                    
+                    {/* Context-aware buttons for Delete/Remove */}
                     {tabValue === 'myFiles' && (
-                        <Button 
+                        <Button
                             variant="contained" 
                             color="error" 
                             startIcon={<DeleteIcon />} 
@@ -219,7 +272,8 @@ const FileList = ({ files }) => {
                             Remove From My List
                         </Button>
                     )}
-                </Paper>
+                </Box>
+            </Paper>
             )}
 
             <FileBreadcrumbs onNavigate={handleNavigate} />
