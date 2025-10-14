@@ -2,13 +2,17 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import fileService from './fileService.js';
 import { logout } from '../auth/authSlice.js';
 
+import { createSelector } from '@reduxjs/toolkit';
+
 // --- Async Thunks ---
 
 const initialState = {
     files: [],
     status: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
+                    // This ONLY tracks list-level actions like getFiles
+    itemStatus: {}, // Tracks status of individual files, 
+                    // { 'fileId1': 'deleting', 'fileId2': 'sharing' }    
     uploadProgress: 0,
-    pendingActionFileIds: [], // To Track the ID of the files being processed    
     message: '',
     currentParentId: null,
     currentFolder: null,
@@ -20,6 +24,30 @@ const initialState = {
         fileLimit: 0,
     },    
 };
+
+
+// Input selectors
+const selectFiles = (state) => state.files.files;
+const selectUserId = (state) => state.auth.user._id;
+
+export const selectMyFiles = createSelector(
+  [selectFiles, selectUserId],
+  (files, userId) => files.filter(file => file.user && file.user._id === userId)
+);
+
+export const selectSharedFiles = createSelector(
+  [selectFiles, selectUserId],
+  (files, userId) => files.filter(file => file.user && file.user._id !== userId)
+);
+
+export const selectMySharedFiles = createSelector(
+  [selectFiles, selectUserId],
+  (files, userId) => files.filter(f =>
+    f.user && f.user._id === userId &&
+    (f.sharedWith.length > 0 || (f.publicShare && f.publicShare.isActive))
+  )
+);
+
 
 
 export const createPublicShare = createAsyncThunk(
@@ -209,15 +237,23 @@ export const fileSlice = createSlice({
             })
                 
             .addCase(revokePublicShare.fulfilled, (state, action) => {
-                // Find the file by the ID passed to the thunk
+                delete state.itemStatus[action.meta.arg]; // clear status on success
                 const fileId = action.meta.arg;
                 const index = state.files.findIndex(f => f._id === fileId);
-                
-                // Update its publicShare status
                 if (index !== -1) {
                     state.files[index].publicShare.isActive = false;
+                    // clear the whole object for cleanliness
+                    state.files[index].publicShare.code = null;
+                    state.files[index].publicShare.expiresAt = null;
                 }
-            })                
+            })
+            .addCase(revokePublicShare.pending, (state, action) => {
+                state.itemStatus[action.meta.arg] = 'revoking';
+            })
+            .addCase(revokePublicShare.rejected, (state, action) => {
+                state.itemStatus[action.meta.arg] = 'error';
+            })
+
             // Get Files
             .addCase(getFiles.fulfilled, (state, action) => {
                 state.status = 'succeeded';
@@ -242,17 +278,25 @@ export const fileSlice = createSlice({
             
             // Delete File
             .addCase(deleteFile.fulfilled, (state, action) => {
-                state.status = 'succeeded';
-                // Remove the deleted file from the state
+                // Remove the status and the file
+                delete state.itemStatus[action.payload.fileId];
                 state.files = state.files.filter((file) => file._id !== action.payload.fileId);
+                // Remove the deleted file from the state
             })
             .addCase(deleteFile.pending, (state, action) => {
-                state.status = 'loading';
-                state.pendingActionFileIds = [action.meta.arg]; 
-                // action.meta.arg is the fileId, wrap it in an array
-                // The fileId passed to the thunk
-            })
+                // action.meta.arg is the fileId passed to the thunk
+                state.itemStatus[action.meta.arg] = 'deleting'; 
 
+                // state.status = 'loading';
+                // state.pendingActionFileIds = [action.meta.arg]; 
+            })
+            .addCase(deleteFile.rejected, (state, action) => {
+                delete state.itemStatus[action.meta.arg];
+                // Optionally set a specific error message for this item
+                state.itemStatus[action.meta.arg] = 'error'; 
+            })
+            
+            
             // Deleting multiple files
             .addCase(bulkDeleteFiles.fulfilled, (state, action) => {
                 state.status = 'succeeded';
@@ -261,27 +305,46 @@ export const fileSlice = createSlice({
             })
             .addCase(bulkDeleteFiles.pending, (state, action) => {
                 state.status = 'loading';
-                state.pendingActionFileIds = action.meta.arg; 
-                // action.meta.arg is already the array of fileIds
             })
             
             // Share File & Manage Share Access (they both return the updated file)
+            .addCase(shareFile.pending, (state, action) => {
+                state.itemStatus[action.meta.arg.fileId] = 'sharing';
+            })
             .addCase(shareFile.fulfilled, (state, action) => {
-                state.status = 'succeeded';
+                delete state.itemStatus[action.meta.arg.fileId];
                 // Find and update the specific file in the array
                 const index = state.files.findIndex((file) => file._id === action.payload._id);
                 if (index !== -1) {
                     state.files[index] = action.payload;
                 }
             })
+            .addCase(shareFile.rejected, (state, action) => {
+                delete state.itemStatus[action.meta.arg.fileId];
+                state.itemStatus[action.meta.arg.fileId] = 'error';
+            })
+
                         
+            // --- Manage Share Access (Remove) ---
+            .addCase(manageShareAccess.pending, (state, action) => {
+                state.itemStatus[action.meta.arg.fileId] = 'removing';
+            })
             .addCase(manageShareAccess.fulfilled, (state, action) => {
-                state.status = 'succeeded';
-                // Same logic as sharing: find and update the file
-                const index = state.files.findIndex((file) => file._id === action.payload._id);
-                if (index !== -1) {
-                    state.files[index] = action.payload;
+                delete state.itemStatus[action.meta.arg.fileId];
+                // For a user removing their own access, the file disappears from their list
+                if (action.meta.arg.userIdToRemove === null) {
+                    state.files = state.files.filter((file) => file._id !== action.payload._id);
+                } else {
+                    // If an owner is managing access, the file is just updated
+                    const index = state.files.findIndex((file) => file._id === action.payload._id);
+                    if (index !== -1) {
+                        state.files[index] = action.payload;
+                    }
                 }
+            })
+            .addCase(manageShareAccess.rejected, (state, action) => {
+                delete state.itemStatus[action.meta.arg.fileId];
+                state.itemStatus[action.meta.arg.fileId] = 'error';
             })
             
             .addCase(shareWithClass.fulfilled, (state, action) => {
@@ -303,31 +366,24 @@ export const fileSlice = createSlice({
                 return initialState;
             })
                         
-            // --- Universal Pending & Rejected Handlers ---
             .addMatcher(
-                (action) => action.type.endsWith('/pending'),
-                // Add the 'action' parameter for correctness, even if unused here
-                (state, action) => {
+                // Match only actions that affect the entire list
+                (action) => ['files/getAll/pending', 'files/bulkDelete/pending'].includes(action.type),
+                (state) => {
                     state.status = 'loading';
                     state.message = ''; // Clear previous errors
                 }
             )
             .addMatcher(
-                (action) => action.type.endsWith('/fulfilled') || action.type.endsWith('/rejected'),
-                // Add the 'action' parameter to the function signature
+                (action) => ['files/getAll/fulfilled', 'files/getAll/rejected', 'files/bulkDelete/fulfilled', 'files/bulkDelete/rejected'].includes(action.type),
                 (state, action) => {
-                    // Conditionally handle success and failure
                     if (action.type.endsWith('/fulfilled')) {
                         state.status = 'succeeded';
-                        // It's good practice to clear any error messages on success
                         state.message = '';
-                    } else { // This handles the '/rejected' case
+                    } else { // This handles '/rejected'
                         state.status = 'failed';
-                        // Only set the message from the payload on rejected actions
                         state.message = action.payload;
                     }
-                    // Clear the pending IDs on completion for both cases
-                    state.pendingActionFileIds = [];
                 }
             )
     ;},

@@ -8,7 +8,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 import { toast } from 'react-toastify';
 
-import { uploadFiles } from '../fileSlice.js';
+import { uploadFiles } from '../../fileSlice.js';
 
 const FileUpload = () => {
     const dispatch = useDispatch();

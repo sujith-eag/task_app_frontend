@@ -1,18 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-    Modal,
-    Box,
-    Typography,
-    List,
-    ListItem,
-    ListItemButton,
-    ListItemAvatar,
-    Avatar,
-    ListItemText,
-    Button,
-    CircularProgress,
-    TextField
+    Modal, Box, Typography,List, ListItem, ListItemButton, ListItemAvatar,
+Avatar, ListItemText,Button, CircularProgress, TextField
 } from '@mui/material';
 import profileService from '../../../profile/profileService.js';
 import { shareFile } from '../../fileSlice.js';

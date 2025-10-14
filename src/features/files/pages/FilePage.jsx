@@ -6,10 +6,9 @@ import {
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 
 import { getFiles, createFolder, getStorageUsage } from '../fileSlice.js';
-import FileUpload from '../components/FileUpload.jsx';
-import FileTable from '../components/FileTable.jsx';
-import StorageQuota from '../components/StorageQuota.jsx';
-
+import FileTable from '../features/FileList/FileTable.jsx';
+import FileUpload from '../components/ui/FileUpload.jsx';
+import StorageQuota from '../components/ui/StorageQuota.jsx';
 import CreateFolderModal from '../components/modals/CreateFolderModal.jsx'
 
 const FilesPage = () => {
@@ -21,12 +20,15 @@ const FilesPage = () => {
     const [isUploaderOpen, setIsUploaderOpen] = useState(false);
 
     useEffect(() => {
-        if (status === 'idle') {
-            dispatch(getFiles());
-            dispatch(getStorageUsage()); // Fetch Files and quota on page load
-        }
-    }, [status, dispatch]);
+        dispatch(getFiles(currentParentId));
+        // dispatch(getStorageUsage()); // Fetch Files and quota on page load
+    }, [currentParentId, dispatch]);
 
+    useEffect(() => {
+        dispatch(getStorageUsage()); // Fetch Files and quota on page load
+    }, [dispatch]);
+
+    
     const handleCreateFolder = (folderName) => {
         dispatch(createFolder({ folderName, parentId: currentParentId }));
     };
