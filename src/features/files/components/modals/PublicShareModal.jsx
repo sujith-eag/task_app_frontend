@@ -7,7 +7,7 @@ import {
 } from '@mui/material';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { toast } from 'react-toastify';
-import { createPublicShare } from '../fileSlice.js';
+import { createPublicShare } from '../../fileSlice.js';
 
 const PublicShareModal = ({ open, onClose, file }) => {
     const dispatch = useDispatch();

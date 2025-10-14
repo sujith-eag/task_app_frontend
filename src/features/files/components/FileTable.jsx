@@ -13,13 +13,13 @@ import DownloadIcon from '@mui/icons-material/Download';
 import fileService from '../fileService.js';
 import { getFiles, deleteFile, bulkDeleteFiles } from '../fileSlice.js';
 
-import FileItem from './FileItem.jsx';
+import FileTableRow from './FileTableRow.jsx';
 import ConfirmationDialog from '../../../components/ConfirmationDialog.jsx';
 import FileBreadcrumbs from './FileBreadcrumbs.jsx';
 
 import { toast } from 'react-toastify';
 
-const FileList = ({ files }) => {
+const FileTable = ({ files }) => {
     const dispatch = useDispatch();
     
     const [tabValue, setTabValue] = useState('myFiles');
@@ -209,7 +209,7 @@ const FileList = ({ files }) => {
                 
                 <TableBody>
                     {fileArray.map(file => (
-                        <FileItem 
+                        <FileTableRow 
                             key={file._id}
                             file={file}
                             // Pass down Props for selection
@@ -333,4 +333,4 @@ const FileList = ({ files }) => {
     );
 };
 
-export default FileList;
+export default FileTable;

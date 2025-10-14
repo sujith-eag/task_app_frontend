@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Modal, Box, Typography, Button, TextField, MenuItem, CircularProgress } from '@mui/material';
 import { toast } from 'react-toastify';
-import { shareWithClass } from '../fileSlice.js';
+import { shareWithClass } from '../../fileSlice.js';
 
-import { getClassCreationData } from '../../teacher/teacherSlice.js';
+import { getClassCreationData } from '../../../teacher/teacherSlice.js';
 
 const style = {
     position: 'absolute',

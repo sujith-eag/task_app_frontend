@@ -19,13 +19,13 @@ import { toast } from 'react-toastify';
 
 import fileService from '../fileService.js';
 import { manageShareAccess, revokePublicShare } from '../fileSlice.js';
-import ShareModal from './ShareModal.jsx';
-import PublicShareModal from './PublicShareModal.jsx';
+import ShareModal from './modals/ShareModal.jsx';
+import PublicShareModal from '../components/modals/PublicShareModal.jsx'
 
-import { getFileIcon } from '../../../utils/fileUtils.jsx';
+import { getFileIcon } from '../../../utils/fileUtils.jsx'; // ALL ICONS for File Types
 
 // Accepting props from the FileList
-const FileItem = ({ file, isSelected, onSelectFile, onDeleteClick, onNavigate, context }) => {
+const FileTableRow = ({ file, isSelected, onSelectFile, onDeleteClick, onNavigate, context }) => {
     // --- HOOKS & STATE ---
     const dispatch = useDispatch();
     const { user } = useSelector((state) => state.auth);
@@ -263,4 +263,4 @@ const FileItem = ({ file, isSelected, onSelectFile, onDeleteClick, onNavigate, c
     );
 };
 
-export default FileItem;
+export default FileTableRow;

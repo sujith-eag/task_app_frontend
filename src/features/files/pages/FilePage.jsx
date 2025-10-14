@@ -7,9 +7,10 @@ import UploadFileIcon from '@mui/icons-material/UploadFile';
 
 import { getFiles, createFolder, getStorageUsage } from '../fileSlice.js';
 import FileUpload from '../components/FileUpload.jsx';
-import FileList from '../components/FileList.jsx';
+import FileTable from '../components/FileTable.jsx';
 import StorageQuota from '../components/StorageQuota.jsx';
-import CreateFolderModal from '../components/CreateFolderModal.jsx'
+
+import CreateFolderModal from '../components/modals/CreateFolderModal.jsx'
 
 const FilesPage = () => {
     const dispatch = useDispatch();
@@ -40,7 +41,7 @@ const FilesPage = () => {
     } else if (status === 'failed') {
         content = <Alert severity="error">{message}</Alert>;
     } else {
-        content = <FileList files={files} />;
+        content = <FileTable files={files} />;
     }
 
     return (
