@@ -1,23 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-    Modal, Box, Typography,List, ListItem, ListItemButton, ListItemAvatar,
-Avatar, ListItemText,Button, CircularProgress, TextField
+    Dialog, DialogTitle, DialogContent, DialogActions, Box, 
+    Typography, List, ListItemButton, ListItemAvatar, Avatar, 
+    ListItemText, Button, CircularProgress, TextField
 } from '@mui/material';
+
 import profileService from '../../../profile/profileService.js';
 import { shareFile } from '../../fileSlice.js';
 import { toast } from 'react-toastify';
-
-const style = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    bgcolor: 'background.paper',
-    boxShadow: 24,
-    p: 4,
-};
 
 const ShareModal = ({ isOpen, onClose, file }) => {
     const dispatch = useDispatch();
@@ -34,14 +25,19 @@ const ShareModal = ({ isOpen, onClose, file }) => {
             const fetchUsers = async () => {
                 setIsLoading(true);
                 try {
-                    const discoverableUsers = await profileService.getDiscoverableUsers(user.token);
-                    setUsers(discoverableUsers);
+                    const allUsers = await profileService.getDiscoverableUsers(user.token);
+                    setUsers(allUsers);
                 } catch (error) {
                     toast.error('Could not fetch users to share with.');
                 }
                 setIsLoading(false);
             };
             fetchUsers();
+        } else {
+            // Reset state when modal closes
+            setUsers([]);
+            setSearchTerm('');
+            setSelectedUserId(null);
         }
     }, [isOpen, user.token]);
 
@@ -51,36 +47,54 @@ const ShareModal = ({ isOpen, onClose, file }) => {
             return;
         }
         dispatch(shareFile({ fileId: file._id, userIdToShareWith: selectedUserId }))
-            .unwrap() // <--- Use unwrap
+            .unwrap()
             .then(() => {
-                toast.success(`File successfully shared!`);
-                onClose(); // Close the modal after sharing
+                toast.success('File successfully shared!');
+                onClose();
             })
             .catch((error) => {
                 toast.error(error || 'Failed to share file.');
             });
     };
 
-    const filteredUsers = users.filter(u => 
+    // Filter out users the file is already shared with
+    const sharedUserIds = new Set(file?.sharedWith.map(share => share.user._id));
+    const discoverableUsers = users.filter(u => !sharedUserIds.has(u._id));
+    
+    // Filter based on the search term
+    const filteredUsers = discoverableUsers.filter(u => 
         u.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     return (
-        <Modal open={isOpen} onClose={onClose}>
-            <Box sx={style}>
-                <Typography variant="h6" component="h2">
-                    Share "{file?.fileName}"
-                </Typography>
+        <Dialog 
+            open={isOpen} 
+            onClose={onClose} 
+            fullWidth
+            maxWidth="xs"
+        >
+            <DialogTitle>Share "{file?.fileName}"</DialogTitle>
+            <DialogContent>
                 <TextField
+                    autoFocus
                     label="Search users..."
                     variant="outlined"
                     fullWidth
                     margin="normal"
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
-                <Box sx={{ maxHeight: 300, overflow: 'auto', my: 2 }}>
+
+                <Box sx={{ height: 300, overflow: 'auto', my: 1 }}>
                     {isLoading ? (
-                        <Box sx={{ display: 'flex', justifyContent: 'center' }}><CircularProgress /></Box>
+                        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                            <CircularProgress />
+                        </Box>
+                    ) : filteredUsers.length === 0 ? (
+                        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                            <Typography color="text.secondary">
+                                No new users to share with.
+                            </Typography>
+                        </Box>
                     ) : (
                         <List>
                             {filteredUsers.map((u) => (
@@ -96,6 +110,10 @@ const ShareModal = ({ isOpen, onClose, file }) => {
                         </List>
                     )}
                 </Box>
+            </DialogContent>
+            
+            <DialogActions>
+                <Button onClick={onClose}>Cancel</Button>
                 <Button
                     variant="contained"
                     onClick={handleShare}
@@ -103,8 +121,8 @@ const ShareModal = ({ isOpen, onClose, file }) => {
                 >
                     Share File
                 </Button>
-            </Box>
-        </Modal>
+            </DialogActions>
+        </Dialog>
     );
 };
 

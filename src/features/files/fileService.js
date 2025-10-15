@@ -191,6 +191,23 @@ const manageShareAccess = async (fileId, userIdToRemove, token) => {
 
 
 /**
+ * Removes the current user's access from multiple shared files.
+ * @route DELETE /api/files/shares/bulk-remove
+ * @param {string[]} fileIds - An array of file IDs to remove access from.
+ * @param {string} token - The user's JWT for authorization.
+ * @returns {Promise<object>} A promise that resolves to the server's success message.
+ */
+const bulkRemoveAccess = async (fileIds, token) => {
+    const config = {
+        headers: { Authorization: `Bearer ${token}` },
+        data: { fileIds } // Pass IDs in the request body for a DELETE request
+    };
+    const response = await axios.delete(`${API_URL}shares/bulk-remove`, config);
+    return response.data;
+};
+
+
+/**
  * Shares a file with an entire class based on subject, batch, and section.
  * @route POST /api/college/files/:fileId/share-class
  * @param {object} data - The data payload, including { fileId, classData }.
@@ -239,7 +256,7 @@ const fileService = {
     getDownloadLink, bulkDownloadFiles,
 
     shareFile, manageShareAccess,
-    shareWithClass,
+    shareWithClass, bulkRemoveAccess,
     getStorageUsage,
     createFolder,
     createPublicShare,

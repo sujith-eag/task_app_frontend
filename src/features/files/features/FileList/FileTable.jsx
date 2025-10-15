@@ -37,7 +37,8 @@ const FileTable = () => {
     const currentList = useSelector(fileSelectors[tabValue]);
 
     // Hook for actions
-    const { navigateToFolder, deleteSingleFile, deleteBulkFiles, downloadFiles } = useFileActions();
+    const { navigateToFolder, deleteSingleFile, 
+        deleteBulkFiles, downloadFiles, removeBulkSharedAccess } = useFileActions();
     
     // Clear selection when the tab or the data list changes
     useEffect(() => {
@@ -83,6 +84,20 @@ const FileTable = () => {
         });
     };
     
+    const openBulkRemoveDialog = () => {
+        setDialogConfig({
+            open: true,
+            title: 'Confirm Removal',
+            message: `Are you sure you want to remove these ${selectedFiles.length} files from your list?`,
+            onConfirm: () => {
+                // Calling action from the hook
+                removeBulkSharedAccess(selectedFiles)
+                // The component handles UI state changes
+                .finally(() => setSelectedFiles([])); 
+            }
+        });
+    };
+
     const closeDialog = () => setDialogConfig({ ...dialogConfig, open: false });
 
     return (
@@ -93,7 +108,7 @@ const FileTable = () => {
                 currentTab={tabValue}
                 onDownload={() => downloadFiles(selectedFiles, user.token)}
                 onDelete={openBulkDeleteDialog}
-                onRemove={() => console.log("Bulk Remove clicked")} // Placeholder
+                onRemove={openBulkRemoveDialog}
             />
 
             <FileBreadcrumbs onNavigate={navigateToFolder} />

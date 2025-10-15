@@ -180,6 +180,17 @@ export const manageShareAccess = createAsyncThunk('files/manageShare', async (sh
 });
 
 
+export const bulkRemoveAccess = createAsyncThunk('files/bulkRemove', async (fileIds, thunkAPI) => {
+    try {
+        const token = thunkAPI.getState().auth.user.token;
+        return await fileService.bulkRemoveAccess(fileIds, token);
+    } catch (error) {
+        const message = (error.response?.data?.message) || error.message || error.toString();
+        return thunkAPI.rejectWithValue(message);
+    }
+});
+
+
 export const shareWithClass = createAsyncThunk('files/shareClass', async (data, thunkAPI) => {
     try {
         const token = thunkAPI.getState().auth.user.token;
@@ -365,7 +376,13 @@ export const fileSlice = createSlice({
                 // Return the initial state to completely reset the slice
                 return initialState;
             })
-                        
+
+            
+            .addCase(bulkRemoveAccess.fulfilled, (state, action) => {
+                // Filter out the files that were just removed from the user's view
+                state.files = state.files.filter(file => !action.payload.ids.includes(file._id));
+            })
+
             .addMatcher(
                 // Match only actions that affect the entire list
                 (action) => ['files/getAll/pending', 'files/bulkDelete/pending'].includes(action.type),
@@ -386,6 +403,7 @@ export const fileSlice = createSlice({
                     }
                 }
             )
+            
     ;},
 });
 

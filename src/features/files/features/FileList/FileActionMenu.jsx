@@ -58,11 +58,15 @@ const FileActionMenu = ({ file, onDelete, onShare, onManageShare, onPublicShare,
                         <ListItemText>Share with Users</ListItemText>
                     </MenuItem>
                 )}
-                {/* item to remove shared people */}
+                {/* menu item to remove shared people */}
                 {isOwner && file.sharedWith.length > 0 && (
                     <MenuItem onClick={handleAction(onManageShare)}>
-                        <ListItemIcon><PeopleIcon fontSize="small" /></ListItemIcon>
-                        <ListItemText>Manage Sharing</ListItemText>
+                        <ListItemIcon>
+                            <PeopleIcon fontSize="small" />
+                        </ListItemIcon>
+                        <ListItemText>
+                            Manage Sharing
+                        </ListItemText>
                     </MenuItem>
                 )}
 
@@ -76,7 +80,8 @@ const FileActionMenu = ({ file, onDelete, onShare, onManageShare, onPublicShare,
                         <ListItemText>
                             {file.publicShare?.isActive 
                                 ? 'Manage Public Share' 
-                                : 'Share Publicly'}</ListItemText>
+                                : 'Share Publicly'}
+                        </ListItemText>
                     </MenuItem>
                 )}
                 
@@ -93,15 +98,23 @@ const FileActionMenu = ({ file, onDelete, onShare, onManageShare, onPublicShare,
                 
                 {isOwner && (
                     <MenuItem onClick={handleAction(onDelete)}>
-                        <ListItemIcon><DeleteIcon fontSize="small" /></ListItemIcon>
-                        <Typography color="error">Delete</Typography>
+                        <ListItemIcon>
+                            <DeleteIcon fontSize="small" />
+                        </ListItemIcon>
+                        <Typography color="error">
+                            Delete
+                        </Typography>
                     </MenuItem>
                 )}
 
                 {!isOwner && (
                     <MenuItem onClick={handleAction(onRemove)}>
-                        <ListItemIcon><ExitToAppIcon fontSize="small" /></ListItemIcon>
-                        <ListItemText>Remove From My List</ListItemText>
+                        <ListItemIcon>
+                            <ExitToAppIcon fontSize="small" />
+                        </ListItemIcon>
+                        <ListItemText>
+                            Remove From My List
+                        </ListItemText>
                     </MenuItem>
                 )}
             </Menu>

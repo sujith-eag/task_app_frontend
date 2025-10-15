@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { deleteFile, bulkDeleteFiles, getFiles,
-    manageShareAccess, revokePublicShare
+    manageShareAccess, revokePublicShare, bulkRemoveAccess
  } from '../fileSlice.js';
 import fileService from '../fileService.js';
 
@@ -45,14 +45,6 @@ export const useFileActions = () => {
             .catch(() => toast.error('Could not get download link.'));
     };
 
-    const removeSharedAccess = (fileId) => {
-        // Assuming removing self, so userIdToRemove is null
-        dispatch(manageShareAccess({ fileId, userIdToRemove: null }))
-            .unwrap()
-            .then(() => toast.success('File removed from your list.'))
-            .catch((err) => toast.error(err || 'Failed to remove access.'));
-    };
-
     const revokePublicLink = (fileId) => {
         dispatch(revokePublicShare(fileId))
             .unwrap()
@@ -60,9 +52,29 @@ export const useFileActions = () => {
             .catch((err) => toast.error(err || 'Failed to revoke link.'));
     };
     
+
+    const removeSharedAccess = (fileId) => {
+        // Assuming removing self, so userIdToRemove is null
+        dispatch(manageShareAccess({ fileId, userIdToRemove: null }))
+            .unwrap()
+            .then(() => toast.success('File removed from your list.'))
+            .catch((err) => toast.error(err || 'Failed to remove access.'));
+    };
+        
+    const removeBulkSharedAccess = (fileIds) => {
+        return dispatch(bulkRemoveAccess(fileIds))
+            .unwrap()
+            .then(() => {
+                toast.info(`${fileIds.length} file(s) removed from your list.`);
+            })
+            .catch((err) => {
+                toast.error(err || 'Failed to remove files.');
+            });
+    };
     
     return { navigateToFolder, deleteSingleFile, deleteBulkFiles, 
-        downloadFiles,
-        downloadSingleFile, removeSharedAccess, revokePublicLink
+        downloadFiles, downloadSingleFile, 
+        removeSharedAccess, removeBulkSharedAccess, 
+        revokePublicLink
      };
 };
