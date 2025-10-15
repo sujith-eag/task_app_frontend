@@ -33,6 +33,8 @@ import ReportingPage from './features/admin/pages/ReportingPage.jsx';
 import TeacherReportPage from './features/admin/pages/TeacherReportPage.jsx'
 import StudentReportPage from "./features/admin/pages/StudentReportPage.jsx";
 
+import TimetablePage from "./features/timetable/pages/TimetablePage.jsx";
+
 function App() {
   return (
     <>
@@ -60,7 +62,9 @@ function App() {
                 <Route path="/dashboard" element={<TaskDashboard />} />
                 <Route path='/profile' element={<ProfilePage />} />
                 <Route path='/files' element={<FilesPage />} />
-              <Route path='/chat' element={<ChatPage />} />
+                <Route path='/chat' element={<ChatPage />} />
+  
+                <Route path='/timetable' element={<TimetablePage />} /> 
             </Route>
 
               {/* --- Student-Specific Routes --- */}

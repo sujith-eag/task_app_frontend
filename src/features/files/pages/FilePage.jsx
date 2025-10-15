@@ -7,7 +7,7 @@ import UploadFileIcon from '@mui/icons-material/UploadFile';
 
 import { getFiles, createFolder, getStorageUsage } from '../fileSlice.js';
 import FileTable from '../features/FileList/FileTable.jsx';
-import FileUpload from '../components/ui/FileUpload.jsx';
+import FileUpload from '../features/FileUpload/FileUpload.jsx'
 import StorageQuota from '../components/ui/StorageQuota.jsx';
 import CreateFolderModal from '../components/modals/CreateFolderModal.jsx'
 

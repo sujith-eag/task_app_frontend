@@ -1,61 +1,47 @@
-// TimetableGrid.jsx
-import React from 'react';
+// src/features/timetable/components/TimetableGrid.jsx
 
-// --- Component Constants & Styles ---
+import React from 'react';
+import {
+    Table, TableBody, TableCell, TableContainer,
+    TableHead, TableRow, Paper, Typography, Box
+} from '@mui/material';
+
+// --- Component Constants ---
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const TIME_SLOTS = [
   '09:00-09:55', '09:55-10:50', '11:05-12:00', '12:00-12:55', 
   '13:45-14:40', '14:40-15:35', '15:35-16:30'
 ];
 
-// A map to quickly find a slot's index
-const slotIndexMap = new Map(TIME_SLOTS.map((slot, i) => [slot.split('-')[0], i]));
-
-const styles = {
-    gridContainer: { fontFamily: `-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif` },
-    table: { width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' },
-    th: { backgroundColor: '#34495e', color: 'white', fontWeight: 'bold', padding: '10px', border: '1px solid #ddd', textAlign: 'center' },
-    dayHeader: { fontWeight: 'bold', backgroundColor: '#ecf0f1', padding: '10px', border: '1px solid #ddd', textAlign: 'center', verticalAlign: 'middle' },
-    emptyCell: { backgroundColor: '#fdfdfd', border: '1px solid #ddd' },
-    sessionCell: {
-        color: 'white',
-        borderRadius: '4px',
-        boxShadow: 'inset 0 0 5px rgba(0,0,0,0.2)',
-        transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-        cursor: 'pointer',
-        padding: '10px',
-        border: '1px solid #ddd',
-        textAlign: 'center',
-        verticalAlign: 'middle',
-        fontSize: '12px'
-    },
-    // Component type colors
-    theory: { backgroundColor: '#2980b9' },
-    practical: { backgroundColor: '#c0392b' },
-    tutorial: { backgroundColor: '#27ae60' },
+// Map component types to MUI theme colors for dynamic styling
+const componentColors = {
+    theory: { bgcolor: 'primary.main', color: 'primary.contrastText' },
+    practical: { bgcolor: 'error.dark', color: 'error.contrastText' },
+    tutorial: { bgcolor: 'success.dark', color: 'success.contrastText' },
 };
 
+// A map to quickly find a slot's index for colSpan calculation
+const slotIndexMap = new Map(TIME_SLOTS.map((slot, i) => [slot.split('-')[0], i]));
+
 const TimetableGrid = ({ sessions, viewType, onCellClick }) => {
-  // Pre-process sessions to make grid rendering easier
+  
+  // This core logic is excellent and remains unchanged.
+  // It efficiently processes session data into a grid structure.
   const gridData = React.useMemo(() => {
     const grid = {};
-    const occupiedSlots = new Set(); // To track slots covered by a colSpan
+    const occupiedSlots = new Set();
 
     sessions.forEach(session => {
       const day = session.day;
       if (!grid[day]) grid[day] = {};
 
-      // Calculate duration in minutes to determine column span
       const start = new Date(`1970-01-01T${session.startTime}:00`);
       const end = new Date(`1970-01-01T${session.endTime}:00`);
       const duration = (end - start) / (1000 * 60);
-
       const colSpan = duration > 60 ? 2 : 1;
 	
-      // Add the session to the grid with its colSpan
       grid[day][session.startTime] = { ...session, colSpan };
       
-      // If it spans 2 columns, mark the next slot as occupied
       if (colSpan === 2) {
         const slotIndex = slotIndexMap.get(session.startTime);
         if (slotIndex !== undefined && slotIndex + 1 < TIME_SLOTS.length) {
@@ -70,47 +56,72 @@ const TimetableGrid = ({ sessions, viewType, onCellClick }) => {
   const { grid, occupiedSlots } = gridData;
 
   return (
-    <div style={styles.gridContainer}>
-      <table style={styles.table}>
-        <thead>
-          <tr>
-            <th style={styles.th}>Day</th>
-            {TIME_SLOTS.map(time => <th key={time} style={styles.th}>{time}</th>)}
-          </tr>
-        </thead>
-        <tbody>
+    <TableContainer component={Paper} variant="outlined">
+      <Table sx={{ tableLayout: 'fixed' }}>
+        <TableHead>
+          <TableRow>
+            <TableCell align="center" sx={{ fontWeight: 'bold', width: '8%' }}>Day</TableCell>
+            {TIME_SLOTS.map(time => (
+              <TableCell key={time} align="center" sx={{ fontWeight: 'bold' }}>
+                {time}
+              </TableCell>
+            ))}
+          </TableRow>
+        </TableHead>
+        <TableBody>
           {DAYS.map(day => (
-            <tr key={day}>
-              <td style={styles.dayHeader}>{day}</td>
+            <TableRow key={day}>
+              <TableCell align="center" sx={{ fontWeight: 'bold', backgroundColor: 'action.hover' }}>
+                {day}
+              </TableCell>
               {TIME_SLOTS.map(slot => {
                 const startTime = slot.split('-')[0];
                 if (occupiedSlots.has(`${day}-${startTime}`)) return null;
                 const session = grid[day]?.[startTime];
+                
                 if (session) {
                   return (
-                    <td 
+                    <TableCell 
                       key={slot} 
-                      style={{ ...styles.sessionCell, ...styles[session.componentType] }}
                       colSpan={session.colSpan}
                       onClick={() => onCellClick(session)}
-                      onMouseOver={(e) => e.currentTarget.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)'}
-                      onMouseOut={(e) => e.currentTarget.style.boxShadow = 'inset 0 0 5px rgba(0,0,0,0.2)'}
+                      sx={{
+                        p: 1,
+                        textAlign: 'center',
+                        verticalAlign: 'middle',
+                        cursor: 'pointer',
+                        transition: 'transform 0.2s, box-shadow 0.2s',
+                        border: 1,
+                        borderColor: 'divider',
+                        ...componentColors[session.componentType.toLowerCase()],
+                        '&:hover': {
+                            boxShadow: 3,
+                            transform: 'scale(1.03)',
+                            zIndex: 1
+                        },
+                      }}
                     >
-                      <strong style={{fontSize: '14px', display: 'block'}}>{session.subjectCode}</strong> ({session.componentType})
-                      <br />
-                      <small style={{opacity: 0.9}}>{session.roomId}</small>
-                      <br />
-                      <small style={{opacity: 0.9}}>{viewType === 'section' ? session.facultyName : session.studentGroupId}</small>
-                    </td>
+                      <Box>
+                        <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
+                          {session.subjectCode}
+                        </Typography>
+                        <Typography variant="caption" display="block">
+                          {session.roomId}
+                        </Typography>
+                        <Typography variant="caption" display="block" sx={{ opacity: 0.9 }}>
+                          {viewType === 'section' ? session.facultyName : session.studentGroupId}
+                        </Typography>
+                      </Box>
+                    </TableCell>
                   );
                 }
-                return <td key={slot} style={styles.emptyCell}></td>;
+                return <TableCell key={slot} sx={{ border: 1, borderColor: 'divider' }} />;
               })}
-            </tr>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
-    </div>
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 };
 
