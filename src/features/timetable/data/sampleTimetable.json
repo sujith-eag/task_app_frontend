@@ -1,1850 +1,1749 @@
-{
-  "timetable_A": [
-    {
-      "sessionId": "ASG_24MCAP1_PRACT_SEM3A_Tue_S5",
-      "day": "Tue",
-      "startTime": "13:45",
-      "endTime": "15:35",
-      "slotId": "S5+S6",
-      "subjectCode": "24MCAP1",
-      "subjectTitle": "Project - Phase 1",
-      "componentType": "practical",
-      "roomId": "LAB-1",
-      "facultyId": "All Faculty",
-      "facultyName": null,
-      "studentGroupId": "MCA_SEM3_A",
-      "semester": 3,
-      "section": "A",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_24MCAP1_PRACT_SEM3B_Tue_S5",
-      "day": "Tue",
-      "startTime": "13:45",
-      "endTime": "15:35",
-      "slotId": "S5+S6",
-      "subjectCode": "24MCAP1",
-      "subjectTitle": "Project - Phase 1",
-      "componentType": "practical",
-      "roomId": "LAB-2",
-      "facultyId": "All Faculty",
-      "facultyName": null,
-      "studentGroupId": "MCA_SEM3_B",
-      "semester": 3,
-      "section": "B",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_24MCA31_THEORY_SEM3A_Mon_S1",
-      "day": "Mon",
-      "startTime": "09:00",
-      "endTime": "09:55",
-      "slotId": "S1",
-      "subjectCode": "24MCA31",
-      "subjectTitle": "Software Engineering and Agile Methodologies",
-      "componentType": "theory",
-      "roomId": "AB-402",
-      "facultyId": "KR",
-      "facultyName": "Mrs Komala R",
-      "studentGroupId": "MCA_SEM3_A",
-      "semester": 3,
-      "section": "A",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_24MCA31_THEORY_SEM3A_Wed_S1",
-      "day": "Wed",
-      "startTime": "09:00",
-      "endTime": "09:55",
-      "slotId": "S1",
-      "subjectCode": "24MCA31",
-      "subjectTitle": "Software Engineering and Agile Methodologies",
-      "componentType": "theory",
-      "roomId": "AB-402",
-      "facultyId": "KR",
-      "facultyName": "Mrs Komala R",
-      "studentGroupId": "MCA_SEM3_A",
-      "semester": 3,
-      "section": "A",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_24MCA31_THEORY_SEM3A_Thu_S1",
-      "day": "Thu",
-      "startTime": "09:00",
-      "endTime": "09:55",
-      "slotId": "S1",
-      "subjectCode": "24MCA31",
-      "subjectTitle": "Software Engineering and Agile Methodologies",
-      "componentType": "theory",
-      "roomId": "AB-402",
-      "facultyId": "KR",
-      "facultyName": "Mrs Komala R",
-      "studentGroupId": "MCA_SEM3_A",
-      "semester": 3,
-      "section": "A",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_24MCA31_THEORY_SEM3B_Mon_S1",
-      "day": "Mon",
-      "startTime": "09:00",
-      "endTime": "09:55",
-      "slotId": "S1",
-      "subjectCode": "24MCA31",
-      "subjectTitle": "Software Engineering and Agile Methodologies",
-      "componentType": "theory",
-      "roomId": "AB-411",
-      "facultyId": "SA",
-      "facultyName": "Dr S. Ajitha",
-      "studentGroupId": "MCA_SEM3_B",
-      "semester": 3,
-      "section": "B",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_24MCA31_THEORY_SEM3B_Wed_S1",
-      "day": "Wed",
-      "startTime": "09:00",
-      "endTime": "09:55",
-      "slotId": "S1",
-      "subjectCode": "24MCA31",
-      "subjectTitle": "Software Engineering and Agile Methodologies",
-      "componentType": "theory",
-      "roomId": "AB-411",
-      "facultyId": "SA",
-      "facultyName": "Dr S. Ajitha",
-      "studentGroupId": "MCA_SEM3_B",
-      "semester": 3,
-      "section": "B",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_24MCA31_THEORY_SEM3B_Thu_S1",
-      "day": "Thu",
-      "startTime": "09:00",
-      "endTime": "09:55",
-      "slotId": "S1",
-      "subjectCode": "24MCA31",
-      "subjectTitle": "Software Engineering and Agile Methodologies",
-      "componentType": "theory",
-      "roomId": "AB-411",
-      "facultyId": "SA",
-      "facultyName": "Dr S. Ajitha",
-      "studentGroupId": "MCA_SEM3_B",
-      "semester": 3,
-      "section": "B",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_24MCA32_THEORY_SEM3A_Fri_S1",
-      "day": "Fri",
-      "startTime": "09:00",
-      "endTime": "09:55",
-      "slotId": "S1",
-      "subjectCode": "24MCA32",
-      "subjectTitle": "Machine Learning",
-      "componentType": "theory",
-      "roomId": "AB-402",
-      "facultyId": "RG",
-      "facultyName": "Ms Geethanjali R",
-      "studentGroupId": "MCA_SEM3_A",
-      "semester": 3,
-      "section": "A",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_24MCA32_THEORY_SEM3A_Sat_S1",
-      "day": "Sat",
-      "startTime": "09:00",
-      "endTime": "09:55",
-      "slotId": "S1",
-      "subjectCode": "24MCA32",
-      "subjectTitle": "Machine Learning",
-      "componentType": "theory",
-      "roomId": "AB-402",
-      "facultyId": "RG",
-      "facultyName": "Ms Geethanjali R",
-      "studentGroupId": "MCA_SEM3_A",
-      "semester": 3,
-      "section": "A",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_24MCA32_THEORY_SEM3A_Mon_S2",
-      "day": "Mon",
-      "startTime": "09:55",
-      "endTime": "10:50",
-      "slotId": "S2",
-      "subjectCode": "24MCA32",
-      "subjectTitle": "Machine Learning",
-      "componentType": "theory",
-      "roomId": "AB-402",
-      "facultyId": "RG",
-      "facultyName": "Ms Geethanjali R",
-      "studentGroupId": "MCA_SEM3_A",
-      "semester": 3,
-      "section": "A",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_24MCA32_THEORY_SEM3B_Fri_S2",
-      "day": "Fri",
-      "startTime": "09:55",
-      "endTime": "10:50",
-      "slotId": "S2",
-      "subjectCode": "24MCA32",
-      "subjectTitle": "Machine Learning",
-      "componentType": "theory",
-      "roomId": "AB-402",
-      "facultyId": "RG",
-      "facultyName": "Ms Geethanjali R",
-      "studentGroupId": "MCA_SEM3_B",
-      "semester": 3,
-      "section": "B",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_24MCA32_THEORY_SEM3B_Sat_S2",
-      "day": "Sat",
-      "startTime": "09:55",
-      "endTime": "10:50",
-      "slotId": "S2",
-      "subjectCode": "24MCA32",
-      "subjectTitle": "Machine Learning",
-      "componentType": "theory",
-      "roomId": "AB-402",
-      "facultyId": "RG",
-      "facultyName": "Ms Geethanjali R",
-      "studentGroupId": "MCA_SEM3_B",
-      "semester": 3,
-      "section": "B",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_24MCA32_THEORY_SEM3B_Mon_S3",
-      "day": "Mon",
-      "startTime": "11:05",
-      "endTime": "12:00",
-      "slotId": "S3",
-      "subjectCode": "24MCA32",
-      "subjectTitle": "Machine Learning",
-      "componentType": "theory",
-      "roomId": "AB-402",
-      "facultyId": "RG",
-      "facultyName": "Ms Geethanjali R",
-      "studentGroupId": "MCA_SEM3_B",
-      "semester": 3,
-      "section": "B",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_24MCAAD4_THEORY_AD_A1_Mon_S1",
-      "day": "Mon",
-      "startTime": "09:00",
-      "endTime": "09:55",
-      "slotId": "S1",
-      "subjectCode": "24MCAAD4",
-      "subjectTitle": "Natural Language Processing",
-      "componentType": "theory",
-      "roomId": "AB-412",
-      "facultyId": "DEG",
-      "facultyName": "Dr D. Evangelin Geetha",
-      "studentGroupId": "ELEC_AD_A1",
-      "semester": 3,
-      "section": "A1",
-      "supportingStaff": [
-        {
-          "staffId": "DU",
-          "staffName": "Ms Deepali U"
-        },
-        {
-          "staffId": "SK",
-          "staffName": "Mrs Savitha K"
-        }
-      ]
-    },
-    {
-      "sessionId": "ASG_24MCAAD4_THEORY_AD_A1_Tue_S1",
-      "day": "Tue",
-      "startTime": "09:00",
-      "endTime": "09:55",
-      "slotId": "S1",
-      "subjectCode": "24MCAAD4",
-      "subjectTitle": "Natural Language Processing",
-      "componentType": "theory",
-      "roomId": "AB-402",
-      "facultyId": "DEG",
-      "facultyName": "Dr D. Evangelin Geetha",
-      "studentGroupId": "ELEC_AD_A1",
-      "semester": 3,
-      "section": "A1",
-      "supportingStaff": [
-        {
-          "staffId": "DU",
-          "staffName": "Ms Deepali U"
-        },
-        {
-          "staffId": "SK",
-          "staffName": "Mrs Savitha K"
-        },
-        {
-          "staffId": "KR",
-          "staffName": "Mrs Komala R"
-        }
-      ]
-    },
-    {
-      "sessionId": "ASG_24MCAAD4_THEORY_AD_B1_Mon_S2",
-      "day": "Mon",
-      "startTime": "09:55",
-      "endTime": "10:50",
-      "slotId": "S2",
-      "subjectCode": "24MCAAD4",
-      "subjectTitle": "Natural Language Processing",
-      "componentType": "theory",
-      "roomId": "AB-411",
-      "facultyId": "DEG",
-      "facultyName": "Dr D. Evangelin Geetha",
-      "studentGroupId": "ELEC_AD_B1",
-      "semester": 3,
-      "section": "B1",
-      "supportingStaff": [
-        {
-          "staffId": "DU",
-          "staffName": "Ms Deepali U"
-        },
-        {
-          "staffId": "SK",
-          "staffName": "Mrs Savitha K"
-        },
-        {
-          "staffId": "KR",
-          "staffName": "Mrs Komala R"
-        }
-      ]
-    },
-    {
-      "sessionId": "ASG_24MCAAD4_THEORY_AD_B1_Tue_S2",
-      "day": "Tue",
-      "startTime": "09:55",
-      "endTime": "10:50",
-      "slotId": "S2",
-      "subjectCode": "24MCAAD4",
-      "subjectTitle": "Natural Language Processing",
-      "componentType": "theory",
-      "roomId": "AB-402",
-      "facultyId": "DEG",
-      "facultyName": "Dr D. Evangelin Geetha",
-      "studentGroupId": "ELEC_AD_B1",
-      "semester": 3,
-      "section": "B1",
-      "supportingStaff": [
-        {
-          "staffId": "DU",
-          "staffName": "Ms Deepali U"
-        },
-        {
-          "staffId": "SK",
-          "staffName": "Mrs Savitha K"
-        },
-        {
-          "staffId": "KR",
-          "staffName": "Mrs Komala R"
-        }
-      ]
-    },
-    {
-      "sessionId": "ASG_24MCASS5_THEORY_SS_G1_Mon_S2",
-      "day": "Mon",
-      "startTime": "09:55",
-      "endTime": "10:50",
-      "slotId": "S2",
-      "subjectCode": "24MCASS5",
-      "subjectTitle": "Ethical Hacking",
-      "componentType": "theory",
-      "roomId": "AB-412",
-      "facultyId": "KR",
-      "facultyName": "Mrs Komala R",
-      "studentGroupId": "ELEC_SS_G1",
-      "semester": 3,
-      "section": "G1",
-      "supportingStaff": [
-        {
-          "staffId": "SA",
-          "staffName": "Dr S. Ajitha"
-        },
-        {
-          "staffId": "MM",
-          "staffName": "Dr M. Manjunath"
-        }
-      ]
-    },
-    {
-      "sessionId": "ASG_24MCASS5_THEORY_SS_G1_Tue_S1",
-      "day": "Tue",
-      "startTime": "09:00",
-      "endTime": "09:55",
-      "slotId": "S1",
-      "subjectCode": "24MCASS5",
-      "subjectTitle": "Ethical Hacking",
-      "componentType": "theory",
-      "roomId": "AB-411",
-      "facultyId": "KR",
-      "facultyName": "Mrs Komala R",
-      "studentGroupId": "ELEC_SS_G1",
-      "semester": 3,
-      "section": "G1",
-      "supportingStaff": [
-        {
-          "staffId": "SA",
-          "staffName": "Dr S. Ajitha"
-        },
-        {
-          "staffId": "MM",
-          "staffName": "Dr M. Manjunath"
-        }
-      ]
-    },
-    {
-      "sessionId": "ASG_MCA11_THEORY_SEM1A_Mon_S3",
-      "day": "Mon",
-      "startTime": "11:05",
-      "endTime": "12:00",
-      "slotId": "S3",
-      "subjectCode": "MCA11",
-      "subjectTitle": "Programming with Python",
-      "componentType": "theory",
-      "roomId": "AB-411",
-      "facultyId": "SH",
-      "facultyName": "Ms Sahana",
-      "studentGroupId": "MCA_SEM1_A",
-      "semester": 1,
-      "section": "A",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_MCA11_THEORY_SEM1A_Tue_S1",
-      "day": "Tue",
-      "startTime": "09:00",
-      "endTime": "09:55",
-      "slotId": "S1",
-      "subjectCode": "MCA11",
-      "subjectTitle": "Programming with Python",
-      "componentType": "theory",
-      "roomId": "AB-412",
-      "facultyId": "SH",
-      "facultyName": "Ms Sahana",
-      "studentGroupId": "MCA_SEM1_A",
-      "semester": 1,
-      "section": "A",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_MCA11_THEORY_SEM1A_Wed_S1",
-      "day": "Wed",
-      "startTime": "09:00",
-      "endTime": "09:55",
-      "slotId": "S1",
-      "subjectCode": "MCA11",
-      "subjectTitle": "Programming with Python",
-      "componentType": "theory",
-      "roomId": "AB-412",
-      "facultyId": "SH",
-      "facultyName": "Ms Sahana",
-      "studentGroupId": "MCA_SEM1_A",
-      "semester": 1,
-      "section": "A",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_MCA11_THEORY_SEM1B_Mon_S4",
-      "day": "Mon",
-      "startTime": "12:00",
-      "endTime": "12:55",
-      "slotId": "S4",
-      "subjectCode": "MCA11",
-      "subjectTitle": "Programming with Python",
-      "componentType": "theory",
-      "roomId": "AB-402",
-      "facultyId": "SH",
-      "facultyName": "Ms Sahana",
-      "studentGroupId": "MCA_SEM1_B",
-      "semester": 1,
-      "section": "B",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_MCA11_THEORY_SEM1B_Tue_S2",
-      "day": "Tue",
-      "startTime": "09:55",
-      "endTime": "10:50",
-      "slotId": "S2",
-      "subjectCode": "MCA11",
-      "subjectTitle": "Programming with Python",
-      "componentType": "theory",
-      "roomId": "AB-411",
-      "facultyId": "SH",
-      "facultyName": "Ms Sahana",
-      "studentGroupId": "MCA_SEM1_B",
-      "semester": 1,
-      "section": "B",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_MCA11_THEORY_SEM1B_Wed_S2",
-      "day": "Wed",
-      "startTime": "09:55",
-      "endTime": "10:50",
-      "slotId": "S2",
-      "subjectCode": "MCA11",
-      "subjectTitle": "Programming with Python",
-      "componentType": "theory",
-      "roomId": "AB-402",
-      "facultyId": "SH",
-      "facultyName": "Ms Sahana",
-      "studentGroupId": "MCA_SEM1_B",
-      "semester": 1,
-      "section": "B",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_MCA12_THEORY_SEM1A_Thu_S1",
-      "day": "Thu",
-      "startTime": "09:00",
-      "endTime": "09:55",
-      "slotId": "S1",
-      "subjectCode": "MCA12",
-      "subjectTitle": "Computational Mathematics",
-      "componentType": "theory",
-      "roomId": "AB-412",
-      "facultyId": "MATHS_Staff",
-      "facultyName": "Mathematics Department",
-      "studentGroupId": "MCA_SEM1_A",
-      "semester": 1,
-      "section": "A",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_MCA12_THEORY_SEM1A_Fri_S1",
-      "day": "Fri",
-      "startTime": "09:00",
-      "endTime": "09:55",
-      "slotId": "S1",
-      "subjectCode": "MCA12",
-      "subjectTitle": "Computational Mathematics",
-      "componentType": "theory",
-      "roomId": "AB-411",
-      "facultyId": "MATHS_Staff",
-      "facultyName": "Mathematics Department",
-      "studentGroupId": "MCA_SEM1_A",
-      "semester": 1,
-      "section": "A",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_MCA12_THEORY_SEM1B_Thu_S2",
-      "day": "Thu",
-      "startTime": "09:55",
-      "endTime": "10:50",
-      "slotId": "S2",
-      "subjectCode": "MCA12",
-      "subjectTitle": "Computational Mathematics",
-      "componentType": "theory",
-      "roomId": "AB-402",
-      "facultyId": "MATHS_Staff",
-      "facultyName": "Mathematics Department",
-      "studentGroupId": "MCA_SEM1_B",
-      "semester": 1,
-      "section": "B",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_MCA12_THEORY_SEM1B_Fri_S2",
-      "day": "Fri",
-      "startTime": "09:55",
-      "endTime": "10:50",
-      "slotId": "S2",
-      "subjectCode": "MCA12",
-      "subjectTitle": "Computational Mathematics",
-      "componentType": "theory",
-      "roomId": "AB-411",
-      "facultyId": "MATHS_Staff",
-      "facultyName": "Mathematics Department",
-      "studentGroupId": "MCA_SEM1_B",
-      "semester": 1,
-      "section": "B",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_MCA13_THEORY_SEM1A_Sat_S1",
-      "day": "Sat",
-      "startTime": "09:00",
-      "endTime": "09:55",
-      "slotId": "S1",
-      "subjectCode": "MCA13",
-      "subjectTitle": "Operating Systems and Shell Programming",
-      "componentType": "theory",
-      "roomId": "AB-411",
-      "facultyId": "KS",
-      "facultyName": "Ms Komal S",
-      "studentGroupId": "MCA_SEM1_A",
-      "semester": 1,
-      "section": "A",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_MCA13_THEORY_SEM1A_Mon_S4",
-      "day": "Mon",
-      "startTime": "12:00",
-      "endTime": "12:55",
-      "slotId": "S4",
-      "subjectCode": "MCA13",
-      "subjectTitle": "Operating Systems and Shell Programming",
-      "componentType": "theory",
-      "roomId": "AB-411",
-      "facultyId": "KS",
-      "facultyName": "Ms Komal S",
-      "studentGroupId": "MCA_SEM1_A",
-      "semester": 1,
-      "section": "A",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_MCA13_THEORY_SEM1A_Tue_S2",
-      "day": "Tue",
-      "startTime": "09:55",
-      "endTime": "10:50",
-      "slotId": "S2",
-      "subjectCode": "MCA13",
-      "subjectTitle": "Operating Systems and Shell Programming",
-      "componentType": "theory",
-      "roomId": "AB-412",
-      "facultyId": "KS",
-      "facultyName": "Ms Komal S",
-      "studentGroupId": "MCA_SEM1_A",
-      "semester": 1,
-      "section": "A",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_MCA13_THEORY_SEM1B_Sat_S1",
-      "day": "Sat",
-      "startTime": "09:00",
-      "endTime": "09:55",
-      "slotId": "S1",
-      "subjectCode": "MCA13",
-      "subjectTitle": "Operating Systems and Shell Programming",
-      "componentType": "theory",
-      "roomId": "AB-412",
-      "facultyId": "MM",
-      "facultyName": "Dr M. Manjunath",
-      "studentGroupId": "MCA_SEM1_B",
-      "semester": 1,
-      "section": "B",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_MCA13_THEORY_SEM1B_Mon_S3",
-      "day": "Mon",
-      "startTime": "11:05",
-      "endTime": "12:00",
-      "slotId": "S3",
-      "subjectCode": "MCA13",
-      "subjectTitle": "Operating Systems and Shell Programming",
-      "componentType": "theory",
-      "roomId": "AB-412",
-      "facultyId": "MM",
-      "facultyName": "Dr M. Manjunath",
-      "studentGroupId": "MCA_SEM1_B",
-      "semester": 1,
-      "section": "B",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_MCA13_THEORY_SEM1B_Tue_S3",
-      "day": "Tue",
-      "startTime": "11:05",
-      "endTime": "12:00",
-      "slotId": "S3",
-      "subjectCode": "MCA13",
-      "subjectTitle": "Operating Systems and Shell Programming",
-      "componentType": "theory",
-      "roomId": "AB-402",
-      "facultyId": "MM",
-      "facultyName": "Dr M. Manjunath",
-      "studentGroupId": "MCA_SEM1_B",
-      "semester": 1,
-      "section": "B",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_MCA14_THEORY_SEM1A_Wed_S2",
-      "day": "Wed",
-      "startTime": "09:55",
-      "endTime": "10:50",
-      "slotId": "S2",
-      "subjectCode": "MCA14",
-      "subjectTitle": "Database Systems",
-      "componentType": "theory",
-      "roomId": "AB-411",
-      "facultyId": "SK",
-      "facultyName": "Mrs Savitha K",
-      "studentGroupId": "MCA_SEM1_A",
-      "semester": 1,
-      "section": "A",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_MCA14_THEORY_SEM1A_Thu_S2",
-      "day": "Thu",
-      "startTime": "09:55",
-      "endTime": "10:50",
-      "slotId": "S2",
-      "subjectCode": "MCA14",
-      "subjectTitle": "Database Systems",
-      "componentType": "theory",
-      "roomId": "AB-411",
-      "facultyId": "SK",
-      "facultyName": "Mrs Savitha K",
-      "studentGroupId": "MCA_SEM1_A",
-      "semester": 1,
-      "section": "A",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_MCA14_THEORY_SEM1A_Fri_S2",
-      "day": "Fri",
-      "startTime": "09:55",
-      "endTime": "10:50",
-      "slotId": "S2",
-      "subjectCode": "MCA14",
-      "subjectTitle": "Database Systems",
-      "componentType": "theory",
-      "roomId": "AB-412",
-      "facultyId": "SK",
-      "facultyName": "Mrs Savitha K",
-      "studentGroupId": "MCA_SEM1_A",
-      "semester": 1,
-      "section": "A",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_MCA14_THEORY_SEM1B_Wed_S3",
-      "day": "Wed",
-      "startTime": "11:05",
-      "endTime": "12:00",
-      "slotId": "S3",
-      "subjectCode": "MCA14",
-      "subjectTitle": "Database Systems",
-      "componentType": "theory",
-      "roomId": "AB-402",
-      "facultyId": "DU",
-      "facultyName": "Ms Deepali U",
-      "studentGroupId": "MCA_SEM1_B",
-      "semester": 1,
-      "section": "B",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_MCA14_THEORY_SEM1B_Thu_S3",
-      "day": "Thu",
-      "startTime": "11:05",
-      "endTime": "12:00",
-      "slotId": "S3",
-      "subjectCode": "MCA14",
-      "subjectTitle": "Database Systems",
-      "componentType": "theory",
-      "roomId": "AB-402",
-      "facultyId": "DU",
-      "facultyName": "Ms Deepali U",
-      "studentGroupId": "MCA_SEM1_B",
-      "semester": 1,
-      "section": "B",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_MCA14_THEORY_SEM1B_Fri_S1",
-      "day": "Fri",
-      "startTime": "09:00",
-      "endTime": "09:55",
-      "slotId": "S1",
-      "subjectCode": "MCA14",
-      "subjectTitle": "Database Systems",
-      "componentType": "theory",
-      "roomId": "AB-412",
-      "facultyId": "DU",
-      "facultyName": "Ms Deepali U",
-      "studentGroupId": "MCA_SEM1_B",
-      "semester": 1,
-      "section": "B",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_MCA15_THEORY_SEM1A_Sat_S2",
-      "day": "Sat",
-      "startTime": "09:55",
-      "endTime": "10:50",
-      "slotId": "S2",
-      "subjectCode": "MCA15",
-      "subjectTitle": "Data Structures",
-      "componentType": "theory",
-      "roomId": "AB-411",
-      "facultyId": "SM",
-      "facultyName": "Ms Swathi M",
-      "studentGroupId": "MCA_SEM1_A",
-      "semester": 1,
-      "section": "A",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_MCA15_THEORY_SEM1A_Mon_S5",
-      "day": "Mon",
-      "startTime": "13:45",
-      "endTime": "14:40",
-      "slotId": "S5",
-      "subjectCode": "MCA15",
-      "subjectTitle": "Data Structures",
-      "componentType": "theory",
-      "roomId": "AB-402",
-      "facultyId": "SM",
-      "facultyName": "Ms Swathi M",
-      "studentGroupId": "MCA_SEM1_A",
-      "semester": 1,
-      "section": "A",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_MCA15_THEORY_SEM1A_Tue_S3",
-      "day": "Tue",
-      "startTime": "11:05",
-      "endTime": "12:00",
-      "slotId": "S3",
-      "subjectCode": "MCA15",
-      "subjectTitle": "Data Structures",
-      "componentType": "theory",
-      "roomId": "AB-411",
-      "facultyId": "SM",
-      "facultyName": "Ms Swathi M",
-      "studentGroupId": "MCA_SEM1_A",
-      "semester": 1,
-      "section": "A",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_MCA15_THEORY_SEM1B_Sat_S3",
-      "day": "Sat",
-      "startTime": "11:05",
-      "endTime": "12:00",
-      "slotId": "S3",
-      "subjectCode": "MCA15",
-      "subjectTitle": "Data Structures",
-      "componentType": "theory",
-      "roomId": "AB-402",
-      "facultyId": "SM",
-      "facultyName": "Ms Swathi M",
-      "studentGroupId": "MCA_SEM1_B",
-      "semester": 1,
-      "section": "B",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_MCA15_THEORY_SEM1B_Mon_S6",
-      "day": "Mon",
-      "startTime": "14:40",
-      "endTime": "15:35",
-      "slotId": "S6",
-      "subjectCode": "MCA15",
-      "subjectTitle": "Data Structures",
-      "componentType": "theory",
-      "roomId": "AB-402",
-      "facultyId": "SM",
-      "facultyName": "Ms Swathi M",
-      "studentGroupId": "MCA_SEM1_B",
-      "semester": 1,
-      "section": "B",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_MCA15_THEORY_SEM1B_Tue_S4",
-      "day": "Tue",
-      "startTime": "12:00",
-      "endTime": "12:55",
-      "slotId": "S4",
-      "subjectCode": "MCA15",
-      "subjectTitle": "Data Structures",
-      "componentType": "theory",
-      "roomId": "AB-402",
-      "facultyId": "SM",
-      "facultyName": "Ms Swathi M",
-      "studentGroupId": "MCA_SEM1_B",
-      "semester": 1,
-      "section": "B",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_24MCA32_PRACT_SEM3A_Tue_S1",
-      "day": "Tue",
-      "startTime": "09:00",
-      "endTime": "10:50",
-      "slotId": "S1+S2",
-      "subjectCode": "24MCA32",
-      "subjectTitle": "Machine Learning",
-      "componentType": "practical",
-      "roomId": "LAB-1",
-      "facultyId": "RG",
-      "facultyName": "Ms Geethanjali R",
-      "studentGroupId": "MCA_SEM3_A",
-      "semester": 3,
-      "section": "A",
-      "supportingStaff": [
-        {
-          "staffId": "PNP",
-          "staffName": "Mrs Preethi P"
-        },
-        {
-          "staffId": "SM",
-          "staffName": "Ms Swathi M"
-        },
-        {
-          "staffId": "MM",
-          "staffName": "Dr M. Manjunath"
-        }
-      ]
-    },
-    {
-      "sessionId": "ASG_24MCA32_PRACT_SEM3B_Tue_S3",
-      "day": "Tue",
-      "startTime": "11:05",
-      "endTime": "12:55",
-      "slotId": "S3+S4",
-      "subjectCode": "24MCA32",
-      "subjectTitle": "Machine Learning",
-      "componentType": "practical",
-      "roomId": "LAB-1",
-      "facultyId": "RG",
-      "facultyName": "Ms Geethanjali R",
-      "studentGroupId": "MCA_SEM3_B",
-      "semester": 3,
-      "section": "B",
-      "supportingStaff": [
-        {
-          "staffId": "PNP",
-          "staffName": "Mrs Preethi P"
-        }
-      ]
-    },
-    {
-      "sessionId": "ASG_24MCAAD1_PRACT_AD_A1_Wed_S1",
-      "day": "Wed",
-      "startTime": "09:00",
-      "endTime": "10:50",
-      "slotId": "S1+S2",
-      "subjectCode": "24MCAAD1",
-      "subjectTitle": "Artificial Intelligence of Things",
-      "componentType": "practical",
-      "roomId": "LAB-1",
-      "facultyId": "MM",
-      "facultyName": "Dr M. Manjunath",
-      "studentGroupId": "ELEC_AD_A1",
-      "semester": 3,
-      "section": "A1",
-      "supportingStaff": [
-        {
-          "staffId": "KS",
-          "staffName": "Ms Komal S"
-        },
-        {
-          "staffId": "RG",
-          "staffName": "Ms Geethanjali R"
-        }
-      ]
-    },
-    {
-      "sessionId": "ASG_24MCAAD1_PRACT_AD_A1_Thu_S1",
-      "day": "Thu",
-      "startTime": "09:00",
-      "endTime": "10:50",
-      "slotId": "S1+S2",
-      "subjectCode": "24MCAAD1",
-      "subjectTitle": "Artificial Intelligence of Things",
-      "componentType": "practical",
-      "roomId": "LAB-1",
-      "facultyId": "MM",
-      "facultyName": "Dr M. Manjunath",
-      "studentGroupId": "ELEC_AD_A1",
-      "semester": 3,
-      "section": "A1",
-      "supportingStaff": [
-        {
-          "staffId": "KS",
-          "staffName": "Ms Komal S"
-        },
-        {
-          "staffId": "RG",
-          "staffName": "Ms Geethanjali R"
-        }
-      ]
-    },
-    {
-      "sessionId": "ASG_24MCAAD1_PRACT_AD_B1_Wed_S3",
-      "day": "Wed",
-      "startTime": "11:05",
-      "endTime": "12:55",
-      "slotId": "S3+S4",
-      "subjectCode": "24MCAAD1",
-      "subjectTitle": "Artificial Intelligence of Things",
-      "componentType": "practical",
-      "roomId": "LAB-1",
-      "facultyId": "MM",
-      "facultyName": "Dr M. Manjunath",
-      "studentGroupId": "ELEC_AD_B1",
-      "semester": 3,
-      "section": "B1",
-      "supportingStaff": [
-        {
-          "staffId": "KS",
-          "staffName": "Ms Komal S"
-        },
-        {
-          "staffId": "KR",
-          "staffName": "Mrs Komala R"
-        },
-        {
-          "staffId": "RG",
-          "staffName": "Ms Geethanjali R"
-        }
-      ]
-    },
-    {
-      "sessionId": "ASG_24MCAAD1_PRACT_AD_B1_Thu_S3",
-      "day": "Thu",
-      "startTime": "11:05",
-      "endTime": "12:55",
-      "slotId": "S3+S4",
-      "subjectCode": "24MCAAD1",
-      "subjectTitle": "Artificial Intelligence of Things",
-      "componentType": "practical",
-      "roomId": "LAB-1",
-      "facultyId": "MM",
-      "facultyName": "Dr M. Manjunath",
-      "studentGroupId": "ELEC_AD_B1",
-      "semester": 3,
-      "section": "B1",
-      "supportingStaff": [
-        {
-          "staffId": "KS",
-          "staffName": "Ms Komal S"
-        },
-        {
-          "staffId": "KR",
-          "staffName": "Mrs Komala R"
-        },
-        {
-          "staffId": "RG",
-          "staffName": "Ms Geethanjali R"
-        }
-      ]
-    },
-    {
-      "sessionId": "ASG_24MCAAD4_PRACT_AD_A1_Fri_S1",
-      "day": "Fri",
-      "startTime": "09:00",
-      "endTime": "10:50",
-      "slotId": "S1+S2",
-      "subjectCode": "24MCAAD4",
-      "subjectTitle": "Natural Language Processing",
-      "componentType": "practical",
-      "roomId": "LAB-1",
-      "facultyId": "DEG",
-      "facultyName": "Dr D. Evangelin Geetha",
-      "studentGroupId": "ELEC_AD_A1",
-      "semester": 3,
-      "section": "A1",
-      "supportingStaff": [
-        {
-          "staffId": "KR",
-          "staffName": "Mrs Komala R"
-        }
-      ]
-    },
-    {
-      "sessionId": "ASG_24MCAAD4_PRACT_AD_B1_Fri_S3",
-      "day": "Fri",
-      "startTime": "11:05",
-      "endTime": "12:55",
-      "slotId": "S3+S4",
-      "subjectCode": "24MCAAD4",
-      "subjectTitle": "Natural Language Processing",
-      "componentType": "practical",
-      "roomId": "LAB-1",
-      "facultyId": "DEG",
-      "facultyName": "Dr D. Evangelin Geetha",
-      "studentGroupId": "ELEC_AD_B1",
-      "semester": 3,
-      "section": "B1",
-      "supportingStaff": [
-        {
-          "staffId": "DU",
-          "staffName": "Ms Deepali U"
-        },
-        {
-          "staffId": "SK",
-          "staffName": "Mrs Savitha K"
-        },
-        {
-          "staffId": "KR",
-          "staffName": "Mrs Komala R"
-        }
-      ]
-    },
-    {
-      "sessionId": "ASG_24MCAAD5_PRACT_AD_A1_Sat_S1",
-      "day": "Sat",
-      "startTime": "09:00",
-      "endTime": "10:50",
-      "slotId": "S1+S2",
-      "subjectCode": "24MCAAD5",
-      "subjectTitle": "Generative AI and Prompt Engineering",
-      "componentType": "practical",
-      "roomId": "LAB-1",
-      "facultyId": "DU",
-      "facultyName": "Ms Deepali U",
-      "studentGroupId": "ELEC_AD_A1",
-      "semester": 3,
-      "section": "A1",
-      "supportingStaff": [
-        {
-          "staffId": "SH",
-          "staffName": "Ms Sahana"
-        },
-        {
-          "staffId": "DEG",
-          "staffName": "Dr D. Evangelin Geetha"
-        }
-      ]
-    },
-    {
-      "sessionId": "ASG_24MCAAD5_PRACT_AD_A1_Mon_S3",
-      "day": "Mon",
-      "startTime": "11:05",
-      "endTime": "12:55",
-      "slotId": "S3+S4",
-      "subjectCode": "24MCAAD5",
-      "subjectTitle": "Generative AI and Prompt Engineering",
-      "componentType": "practical",
-      "roomId": "LAB-1",
-      "facultyId": "DU",
-      "facultyName": "Ms Deepali U",
-      "studentGroupId": "ELEC_AD_A1",
-      "semester": 3,
-      "section": "A1",
-      "supportingStaff": [
-        {
-          "staffId": "SM",
-          "staffName": "Ms Swathi M"
-        },
-        {
-          "staffId": "DEG",
-          "staffName": "Dr D. Evangelin Geetha"
-        }
-      ]
-    },
-    {
-      "sessionId": "ASG_24MCAAD5_PRACT_AD_B1_Sat_S3",
-      "day": "Sat",
-      "startTime": "11:05",
-      "endTime": "12:55",
-      "slotId": "S3+S4",
-      "subjectCode": "24MCAAD5",
-      "subjectTitle": "Generative AI and Prompt Engineering",
-      "componentType": "practical",
-      "roomId": "LAB-1",
-      "facultyId": "DU",
-      "facultyName": "Ms Deepali U",
-      "studentGroupId": "ELEC_AD_B1",
-      "semester": 3,
-      "section": "B1",
-      "supportingStaff": [
-        {
-          "staffId": "SH",
-          "staffName": "Ms Sahana"
-        },
-        {
-          "staffId": "DEG",
-          "staffName": "Dr D. Evangelin Geetha"
-        }
-      ]
-    },
-    {
-      "sessionId": "ASG_24MCAAD5_PRACT_AD_B1_Mon_S5",
-      "day": "Mon",
-      "startTime": "13:45",
-      "endTime": "15:35",
-      "slotId": "S5+S6",
-      "subjectCode": "24MCAAD5",
-      "subjectTitle": "Generative AI and Prompt Engineering",
-      "componentType": "practical",
-      "roomId": "LAB-1",
-      "facultyId": "DU",
-      "facultyName": "Ms Deepali U",
-      "studentGroupId": "ELEC_AD_B1",
-      "semester": 3,
-      "section": "B1",
-      "supportingStaff": [
-        {
-          "staffId": "SH",
-          "staffName": "Ms Sahana"
-        },
-        {
-          "staffId": "DEG",
-          "staffName": "Dr D. Evangelin Geetha"
-        }
-      ]
-    },
-    {
-      "sessionId": "ASG_24MCASS2_PRACT_SS_G1_Wed_S1",
-      "day": "Wed",
-      "startTime": "09:00",
-      "endTime": "10:50",
-      "slotId": "S1+S2",
-      "subjectCode": "24MCASS2",
-      "subjectTitle": "DevOps",
-      "componentType": "practical",
-      "roomId": "LAB-2",
-      "facultyId": "PNP",
-      "facultyName": "Mrs Preethi P",
-      "studentGroupId": "ELEC_SS_G1",
-      "semester": 3,
-      "section": "G1",
-      "supportingStaff": [
-        {
-          "staffId": "SM",
-          "staffName": "Ms Swathi M"
-        }
-      ]
-    },
-    {
-      "sessionId": "ASG_24MCASS2_PRACT_SS_G1_Thu_S1",
-      "day": "Thu",
-      "startTime": "09:00",
-      "endTime": "10:50",
-      "slotId": "S1+S2",
-      "subjectCode": "24MCASS2",
-      "subjectTitle": "DevOps",
-      "componentType": "practical",
-      "roomId": "LAB-2",
-      "facultyId": "PNP",
-      "facultyName": "Mrs Preethi P",
-      "studentGroupId": "ELEC_SS_G1",
-      "semester": 3,
-      "section": "G1",
-      "supportingStaff": [
-        {
-          "staffId": "SM",
-          "staffName": "Ms Swathi M"
-        }
-      ]
-    },
-    {
-      "sessionId": "ASG_24MCASS3_PRACT_SS_G1_Fri_S3",
-      "day": "Fri",
-      "startTime": "11:05",
-      "endTime": "12:55",
-      "slotId": "S3+S4",
-      "subjectCode": "24MCASS3",
-      "subjectTitle": "Cloud Computing",
-      "componentType": "practical",
-      "roomId": "LAB-2",
-      "facultyId": "SK",
-      "facultyName": "Mrs Savitha K",
-      "studentGroupId": "ELEC_SS_G1",
-      "semester": 3,
-      "section": "G1",
-      "supportingStaff": [
-        {
-          "staffId": "SH",
-          "staffName": "Ms Sahana"
-        },
-        {
-          "staffId": "SM",
-          "staffName": "Ms Swathi M"
-        }
-      ]
-    },
-    {
-      "sessionId": "ASG_24MCASS3_PRACT_SS_G1_Sat_S1",
-      "day": "Sat",
-      "startTime": "09:00",
-      "endTime": "10:50",
-      "slotId": "S1+S2",
-      "subjectCode": "24MCASS3",
-      "subjectTitle": "Cloud Computing",
-      "componentType": "practical",
-      "roomId": "LAB-2",
-      "facultyId": "SK",
-      "facultyName": "Mrs Savitha K",
-      "studentGroupId": "ELEC_SS_G1",
-      "semester": 3,
-      "section": "G1",
-      "supportingStaff": [
-        {
-          "staffId": "SH",
-          "staffName": "Ms Sahana"
-        }
-      ]
-    },
-    {
-      "sessionId": "ASG_24MCASS5_PRACT_SS_G1_Wed_S3",
-      "day": "Wed",
-      "startTime": "11:05",
-      "endTime": "12:55",
-      "slotId": "S3+S4",
-      "subjectCode": "24MCASS5",
-      "subjectTitle": "Ethical Hacking",
-      "componentType": "practical",
-      "roomId": "LAB-2",
-      "facultyId": "KR",
-      "facultyName": "Mrs Komala R",
-      "studentGroupId": "ELEC_SS_G1",
-      "semester": 3,
-      "section": "G1",
-      "supportingStaff": [
-        {
-          "staffId": "SA",
-          "staffName": "Dr S. Ajitha"
-        }
-      ]
-    },
-    {
-      "sessionId": "ASG_MCA11_PRACT_SEM1A_Thu_S3",
-      "day": "Thu",
-      "startTime": "11:05",
-      "endTime": "12:55",
-      "slotId": "S3+S4",
-      "subjectCode": "MCA11",
-      "subjectTitle": "Programming with Python",
-      "componentType": "practical",
-      "roomId": "LAB-2",
-      "facultyId": "SH",
-      "facultyName": "Ms Sahana",
-      "studentGroupId": "MCA_SEM1_A",
-      "semester": 1,
-      "section": "A",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_MCA11_PRACT_SEM1B_Thu_S5",
-      "day": "Thu",
-      "startTime": "13:45",
-      "endTime": "15:35",
-      "slotId": "S5+S6",
-      "subjectCode": "MCA11",
-      "subjectTitle": "Programming with Python",
-      "componentType": "practical",
-      "roomId": "LAB-1",
-      "facultyId": "SH",
-      "facultyName": "Ms Sahana",
-      "studentGroupId": "MCA_SEM1_B",
-      "semester": 1,
-      "section": "B",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_MCA13_PRACT_SEM1A_Wed_S5",
-      "day": "Wed",
-      "startTime": "13:45",
-      "endTime": "15:35",
-      "slotId": "S5+S6",
-      "subjectCode": "MCA13",
-      "subjectTitle": "Operating Systems and Shell Programming",
-      "componentType": "practical",
-      "roomId": "LAB-1",
-      "facultyId": "KS",
-      "facultyName": "Ms Komal S",
-      "studentGroupId": "MCA_SEM1_A",
-      "semester": 1,
-      "section": "A",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_MCA13_PRACT_SEM1B_Wed_S5",
-      "day": "Wed",
-      "startTime": "13:45",
-      "endTime": "15:35",
-      "slotId": "S5+S6",
-      "subjectCode": "MCA13",
-      "subjectTitle": "Operating Systems and Shell Programming",
-      "componentType": "practical",
-      "roomId": "LAB-2",
-      "facultyId": "MM",
-      "facultyName": "Dr M. Manjunath",
-      "studentGroupId": "MCA_SEM1_B",
-      "semester": 1,
-      "section": "B",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_MCA14_PRACT_SEM1A_Sat_S3",
-      "day": "Sat",
-      "startTime": "11:05",
-      "endTime": "12:55",
-      "slotId": "S3+S4",
-      "subjectCode": "MCA14",
-      "subjectTitle": "Database Systems",
-      "componentType": "practical",
-      "roomId": "LAB-2",
-      "facultyId": "SK",
-      "facultyName": "Mrs Savitha K",
-      "studentGroupId": "MCA_SEM1_A",
-      "semester": 1,
-      "section": "A",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_MCA14_PRACT_SEM1B_Sat_S5",
-      "day": "Sat",
-      "startTime": "13:45",
-      "endTime": "15:35",
-      "slotId": "S5+S6",
-      "subjectCode": "MCA14",
-      "subjectTitle": "Database Systems",
-      "componentType": "practical",
-      "roomId": "LAB-1",
-      "facultyId": "DU",
-      "facultyName": "Ms Deepali U",
-      "studentGroupId": "MCA_SEM1_B",
-      "semester": 1,
-      "section": "B",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_MCA16_PRACT_SEM1A_Fri_S5",
-      "day": "Fri",
-      "startTime": "13:45",
-      "endTime": "15:35",
-      "slotId": "S5+S6",
-      "subjectCode": "MCA16",
-      "subjectTitle": "Data Structures Using C Laboratory",
-      "componentType": "practical",
-      "roomId": "LAB-1",
-      "facultyId": "SM",
-      "facultyName": "Ms Swathi M",
-      "studentGroupId": "MCA_SEM1_A",
-      "semester": 1,
-      "section": "A",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_MCA17_PRACT_SEM1A_Mon_S1",
-      "day": "Mon",
-      "startTime": "09:00",
-      "endTime": "10:50",
-      "slotId": "S1+S2",
-      "subjectCode": "MCA17",
-      "subjectTitle": "Web Programming Laboratory",
-      "componentType": "practical",
-      "roomId": "LAB-1",
-      "facultyId": "PNP",
-      "facultyName": "Mrs Preethi P",
-      "studentGroupId": "MCA_SEM1_A",
-      "semester": 1,
-      "section": "A",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_MCA17_PRACT_SEM1A_Thu_S5",
-      "day": "Thu",
-      "startTime": "13:45",
-      "endTime": "15:35",
-      "slotId": "S5+S6",
-      "subjectCode": "MCA17",
-      "subjectTitle": "Web Programming Laboratory",
-      "componentType": "practical",
-      "roomId": "LAB-2",
-      "facultyId": "PNP",
-      "facultyName": "Mrs Preethi P",
-      "studentGroupId": "MCA_SEM1_A",
-      "semester": 1,
-      "section": "A",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_MCA17_PRACT_SEM1B_Fri_S5",
-      "day": "Fri",
-      "startTime": "13:45",
-      "endTime": "15:35",
-      "slotId": "S5+S6",
-      "subjectCode": "MCA17",
-      "subjectTitle": "Web Programming Laboratory",
-      "componentType": "practical",
-      "roomId": "LAB-2",
-      "facultyId": "KS",
-      "facultyName": "Ms Komal S",
-      "studentGroupId": "MCA_SEM1_B",
-      "semester": 1,
-      "section": "B",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_MCA17_PRACT_SEM1B_Mon_S1",
-      "day": "Mon",
-      "startTime": "09:00",
-      "endTime": "10:50",
-      "slotId": "S1+S2",
-      "subjectCode": "MCA17",
-      "subjectTitle": "Web Programming Laboratory",
-      "componentType": "practical",
-      "roomId": "LAB-2",
-      "facultyId": "KS",
-      "facultyName": "Ms Komal S",
-      "studentGroupId": "MCA_SEM1_B",
-      "semester": 1,
-      "section": "B",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_24MCAAD1_TUT_AD_A1_Tue_S2",
-      "day": "Tue",
-      "startTime": "09:55",
-      "endTime": "10:50",
-      "slotId": "S2",
-      "subjectCode": "24MCAAD1",
-      "subjectTitle": "Artificial Intelligence of Things",
-      "componentType": "tutorial",
-      "roomId": "LAB-2",
-      "facultyId": "MM",
-      "facultyName": "Dr M. Manjunath",
-      "studentGroupId": "ELEC_AD_A1",
-      "semester": 3,
-      "section": "A1",
-      "supportingStaff": [
-        {
-          "staffId": "KR",
-          "staffName": "Mrs Komala R"
-        }
-      ]
-    },
-    {
-      "sessionId": "ASG_24MCAAD1_TUT_AD_B1_Tue_S1",
-      "day": "Tue",
-      "startTime": "09:00",
-      "endTime": "09:55",
-      "slotId": "S1",
-      "subjectCode": "24MCAAD1",
-      "subjectTitle": "Artificial Intelligence of Things",
-      "componentType": "tutorial",
-      "roomId": "LAB-2",
-      "facultyId": "MM",
-      "facultyName": "Dr M. Manjunath",
-      "studentGroupId": "ELEC_AD_B1",
-      "semester": 3,
-      "section": "B1",
-      "supportingStaff": [
-        {
-          "staffId": "KS",
-          "staffName": "Ms Komal S"
-        }
-      ]
-    },
-    {
-      "sessionId": "ASG_24MCAAD5_TUT_AD_A1_Wed_S7",
-      "day": "Wed",
-      "startTime": "15:35",
-      "endTime": "16:30",
-      "slotId": "S7",
-      "subjectCode": "24MCAAD5",
-      "subjectTitle": "Generative AI and Prompt Engineering",
-      "componentType": "tutorial",
-      "roomId": "LAB-1",
-      "facultyId": "DU",
-      "facultyName": "Ms Deepali U",
-      "studentGroupId": "ELEC_AD_A1",
-      "semester": 3,
-      "section": "A1",
-      "supportingStaff": [
-        {
-          "staffId": "SM",
-          "staffName": "Ms Swathi M"
-        },
-        {
-          "staffId": "SH",
-          "staffName": "Ms Sahana"
-        },
-        {
-          "staffId": "DEG",
-          "staffName": "Dr D. Evangelin Geetha"
-        }
-      ]
-    },
-    {
-      "sessionId": "ASG_24MCAAD5_TUT_AD_B1_Thu_S7",
-      "day": "Thu",
-      "startTime": "15:35",
-      "endTime": "16:30",
-      "slotId": "S7",
-      "subjectCode": "24MCAAD5",
-      "subjectTitle": "Generative AI and Prompt Engineering",
-      "componentType": "tutorial",
-      "roomId": "LAB-1",
-      "facultyId": "DU",
-      "facultyName": "Ms Deepali U",
-      "studentGroupId": "ELEC_AD_B1",
-      "semester": 3,
-      "section": "B1",
-      "supportingStaff": [
-        {
-          "staffId": "SM",
-          "staffName": "Ms Swathi M"
-        },
-        {
-          "staffId": "SH",
-          "staffName": "Ms Sahana"
-        },
-        {
-          "staffId": "DEG",
-          "staffName": "Dr D. Evangelin Geetha"
-        }
-      ]
-    },
-    {
-      "sessionId": "ASG_24MCASS2_TUT_SS_G1_Mon_S3",
-      "day": "Mon",
-      "startTime": "11:05",
-      "endTime": "12:00",
-      "slotId": "S3",
-      "subjectCode": "24MCASS2",
-      "subjectTitle": "DevOps",
-      "componentType": "tutorial",
-      "roomId": "LAB-2",
-      "facultyId": "PNP",
-      "facultyName": "Mrs Preethi P",
-      "studentGroupId": "ELEC_SS_G1",
-      "semester": 3,
-      "section": "G1",
-      "supportingStaff": [
-        {
-          "staffId": "SM",
-          "staffName": "Ms Swathi M"
-        },
-        {
-          "staffId": "SK",
-          "staffName": "Mrs Savitha K"
-        }
-      ]
-    },
-    {
-      "sessionId": "ASG_24MCASS3_TUT_SS_G1_Tue_S3",
-      "day": "Tue",
-      "startTime": "11:05",
-      "endTime": "12:00",
-      "slotId": "S3",
-      "subjectCode": "24MCASS3",
-      "subjectTitle": "Cloud Computing",
-      "componentType": "tutorial",
-      "roomId": "AB-412",
-      "facultyId": "SK",
-      "facultyName": "Mrs Savitha K",
-      "studentGroupId": "ELEC_SS_G1",
-      "semester": 3,
-      "section": "G1",
-      "supportingStaff": [
-        {
-          "staffId": "SH",
-          "staffName": "Ms Sahana"
-        }
-      ]
-    },
-    {
-      "sessionId": "ASG_MCA12_TUTORIAL_SEM1A_Tue_S5",
-      "day": "Tue",
-      "startTime": "13:45",
-      "endTime": "15:35",
-      "slotId": "S5+S6",
-      "subjectCode": "MCA12",
-      "subjectTitle": "Computational Mathematics",
-      "componentType": "tutorial",
-      "roomId": "AB-402",
-      "facultyId": "MATHS_Staff",
-      "facultyName": "Mathematics Department",
-      "studentGroupId": "MCA_SEM1_A",
-      "semester": 1,
-      "section": "A",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_MCA17_TUTORIAL_SEM1A_Sat_S5",
-      "day": "Sat",
-      "startTime": "13:45",
-      "endTime": "15:35",
-      "slotId": "S5+S6",
-      "subjectCode": "MCA17",
-      "subjectTitle": "Web Programming Laboratory",
-      "componentType": "tutorial",
-      "roomId": "LAB-2",
-      "facultyId": "PNP",
-      "facultyName": "Mrs Preethi P",
-      "studentGroupId": "MCA_SEM1_A",
-      "semester": 1,
-      "section": "A",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_MCAAEC1_TUTORIAL_SEM1A_Wed_S3",
-      "day": "Wed",
-      "startTime": "11:05",
-      "endTime": "12:00",
-      "slotId": "S3",
-      "subjectCode": "MCAAEC1",
-      "subjectTitle": "Professional Communication and Skill Development",
-      "componentType": "tutorial",
-      "roomId": "AB-411",
-      "facultyId": null,
-      "facultyName": null,
-      "studentGroupId": "MCA_SEM1_A",
-      "semester": 1,
-      "section": "A",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_MCAAEC1_TUTORIAL_SEM1B_Tue_S5",
-      "day": "Tue",
-      "startTime": "13:45",
-      "endTime": "14:40",
-      "slotId": "S5",
-      "subjectCode": "MCAAEC1",
-      "subjectTitle": "Professional Communication and Skill Development",
-      "componentType": "tutorial",
-      "roomId": "AB-411",
-      "facultyId": null,
-      "facultyName": null,
-      "studentGroupId": "MCA_SEM1_B",
-      "semester": 1,
-      "section": "B",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_MCABC_TUTORIAL_SEM1A_Fri_S3",
-      "day": "Fri",
-      "startTime": "11:05",
-      "endTime": "12:00",
-      "slotId": "S3",
-      "subjectCode": "MCABC",
-      "subjectTitle": "Mathematical Foundation",
-      "componentType": "tutorial",
-      "roomId": "AB-402",
-      "facultyId": null,
-      "facultyName": null,
-      "studentGroupId": "MCA_SEM1_A",
-      "semester": 1,
-      "section": "A",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_MCABC_TUTORIAL_SEM1A_Mon_S6",
-      "day": "Mon",
-      "startTime": "14:40",
-      "endTime": "15:35",
-      "slotId": "S6",
-      "subjectCode": "MCABC",
-      "subjectTitle": "Mathematical Foundation",
-      "componentType": "tutorial",
-      "roomId": "AB-411",
-      "facultyId": null,
-      "facultyName": null,
-      "studentGroupId": "MCA_SEM1_A",
-      "semester": 1,
-      "section": "A",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_MCABC_TUTORIAL_SEM1A_Tue_S4",
-      "day": "Tue",
-      "startTime": "12:00",
-      "endTime": "12:55",
-      "slotId": "S4",
-      "subjectCode": "MCABC",
-      "subjectTitle": "Mathematical Foundation",
-      "componentType": "tutorial",
-      "roomId": "AB-411",
-      "facultyId": null,
-      "facultyName": null,
-      "studentGroupId": "MCA_SEM1_A",
-      "semester": 1,
-      "section": "A",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_MCABC_TUTORIAL_SEM1B_Wed_S4",
-      "day": "Wed",
-      "startTime": "12:00",
-      "endTime": "12:55",
-      "slotId": "S4",
-      "subjectCode": "MCABC",
-      "subjectTitle": "Mathematical Foundation",
-      "componentType": "tutorial",
-      "roomId": "AB-402",
-      "facultyId": null,
-      "facultyName": null,
-      "studentGroupId": "MCA_SEM1_B",
-      "semester": 1,
-      "section": "B",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_MCABC_TUTORIAL_SEM1B_Thu_S4",
-      "day": "Thu",
-      "startTime": "12:00",
-      "endTime": "12:55",
-      "slotId": "S4",
-      "subjectCode": "MCABC",
-      "subjectTitle": "Mathematical Foundation",
-      "componentType": "tutorial",
-      "roomId": "AB-402",
-      "facultyId": null,
-      "facultyName": null,
-      "studentGroupId": "MCA_SEM1_B",
-      "semester": 1,
-      "section": "B",
-      "supportingStaff": []
-    },
-    {
-      "sessionId": "ASG_MCABC_TUTORIAL_SEM1B_Fri_S3",
-      "day": "Fri",
-      "startTime": "11:05",
-      "endTime": "12:00",
-      "slotId": "S3",
-      "subjectCode": "MCABC",
-      "subjectTitle": "Mathematical Foundation",
-      "componentType": "tutorial",
-      "roomId": "AB-411",
-      "facultyId": null,
-      "facultyName": null,
-      "studentGroupId": "MCA_SEM1_B",
-      "semester": 1,
-      "section": "B",
-      "supportingStaff": []
-    }
-  ],
-  "conflicts": [
-    {
-      "assignmentId": "ASG_MCA16_PRACT_SEM1B",
-      "reason": "Could not find available lab slots"
-    },
-    {
-      "assignmentId": "ASG_MCA12_TUTORIAL_SEM1B",
-      "reason": "Could not find available tutorial slots"
-    },
-    {
-      "assignmentId": "ASG_MCA17_TUTORIAL_SEM1B",
-      "reason": "Could not find available tutorial slots"
-    }
-  ],
-  "statistics": {
-    "totalAssignments": 54,
-    "totalSessions": 95,
-    "scheduledSessions": 92,
-    "conflictedAssignments": 3,
-    "successRate": "96.8%"
+[
+  {
+    "sessionId": "ASG_24MCAP1_PRACT_SEM3A_Tue_S5S6",
+    "day": "Tue",
+    "startTime": "13:45",
+    "endTime": "15:35",
+    "slotId": "S5+S6",
+    "subjectCode": "24MCAP1",
+    "subjectTitle": "Project - Phase 1",
+    "componentType": "practical",
+    "roomId": "LAB-1",
+    "facultyId": "PROJECT",
+    "facultyName": "Project Mentoring",
+    "studentGroupId": "MCA_SEM3_A",
+    "semester": 3,
+    "section": "A",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_24MCAP1_PRACT_SEM3B_Tue_S5S6",
+    "day": "Tue",
+    "startTime": "13:45",
+    "endTime": "15:35",
+    "slotId": "S5+S6",
+    "subjectCode": "24MCAP1",
+    "subjectTitle": "Project - Phase 1",
+    "componentType": "practical",
+    "roomId": "LAB-2",
+    "facultyId": "PROJECT",
+    "facultyName": "Project Mentoring",
+    "studentGroupId": "MCA_SEM3_B",
+    "semester": 3,
+    "section": "B",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_24MCA31_THEORY_SEM3A_Mon_S1",
+    "day": "Mon",
+    "startTime": "09:00",
+    "endTime": "09:55",
+    "slotId": "S1",
+    "subjectCode": "24MCA31",
+    "subjectTitle": "Software Engineering and Agile Methodologies",
+    "componentType": "theory",
+    "roomId": "AB-402",
+    "facultyId": "KR",
+    "facultyName": "Mrs Komala R",
+    "studentGroupId": "MCA_SEM3_A",
+    "semester": 3,
+    "section": "A",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_24MCA31_THEORY_SEM3A_Mon_S2",
+    "day": "Mon",
+    "startTime": "09:55",
+    "endTime": "10:50",
+    "slotId": "S2",
+    "subjectCode": "24MCA31",
+    "subjectTitle": "Software Engineering and Agile Methodologies",
+    "componentType": "theory",
+    "roomId": "AB-402",
+    "facultyId": "KR",
+    "facultyName": "Mrs Komala R",
+    "studentGroupId": "MCA_SEM3_A",
+    "semester": 3,
+    "section": "A",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_24MCA31_THEORY_SEM3A_Mon_S3",
+    "day": "Mon",
+    "startTime": "11:05",
+    "endTime": "12:00",
+    "slotId": "S3",
+    "subjectCode": "24MCA31",
+    "subjectTitle": "Software Engineering and Agile Methodologies",
+    "componentType": "theory",
+    "roomId": "AB-402",
+    "facultyId": "KR",
+    "facultyName": "Mrs Komala R",
+    "studentGroupId": "MCA_SEM3_A",
+    "semester": 3,
+    "section": "A",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_24MCA31_THEORY_SEM3B_Mon_S1",
+    "day": "Mon",
+    "startTime": "09:00",
+    "endTime": "09:55",
+    "slotId": "S1",
+    "subjectCode": "24MCA31",
+    "subjectTitle": "Software Engineering and Agile Methodologies",
+    "componentType": "theory",
+    "roomId": "AB-411",
+    "facultyId": "SA",
+    "facultyName": "Dr S. Ajitha",
+    "studentGroupId": "MCA_SEM3_B",
+    "semester": 3,
+    "section": "B",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_24MCA31_THEORY_SEM3B_Mon_S2",
+    "day": "Mon",
+    "startTime": "09:55",
+    "endTime": "10:50",
+    "slotId": "S2",
+    "subjectCode": "24MCA31",
+    "subjectTitle": "Software Engineering and Agile Methodologies",
+    "componentType": "theory",
+    "roomId": "AB-411",
+    "facultyId": "SA",
+    "facultyName": "Dr S. Ajitha",
+    "studentGroupId": "MCA_SEM3_B",
+    "semester": 3,
+    "section": "B",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_24MCA31_THEORY_SEM3B_Mon_S3",
+    "day": "Mon",
+    "startTime": "11:05",
+    "endTime": "12:00",
+    "slotId": "S3",
+    "subjectCode": "24MCA31",
+    "subjectTitle": "Software Engineering and Agile Methodologies",
+    "componentType": "theory",
+    "roomId": "AB-411",
+    "facultyId": "SA",
+    "facultyName": "Dr S. Ajitha",
+    "studentGroupId": "MCA_SEM3_B",
+    "semester": 3,
+    "section": "B",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_24MCA32_THEORY_SEM3A_Mon_S4",
+    "day": "Mon",
+    "startTime": "12:00",
+    "endTime": "12:55",
+    "slotId": "S4",
+    "subjectCode": "24MCA32",
+    "subjectTitle": "Machine Learning",
+    "componentType": "theory",
+    "roomId": "AB-402",
+    "facultyId": "RG",
+    "facultyName": "Ms Geethanjali R",
+    "studentGroupId": "MCA_SEM3_A",
+    "semester": 3,
+    "section": "A",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_24MCA32_THEORY_SEM3A_Mon_S5",
+    "day": "Mon",
+    "startTime": "13:45",
+    "endTime": "14:40",
+    "slotId": "S5",
+    "subjectCode": "24MCA32",
+    "subjectTitle": "Machine Learning",
+    "componentType": "theory",
+    "roomId": "AB-402",
+    "facultyId": "RG",
+    "facultyName": "Ms Geethanjali R",
+    "studentGroupId": "MCA_SEM3_A",
+    "semester": 3,
+    "section": "A",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_24MCA32_THEORY_SEM3A_Mon_S6",
+    "day": "Mon",
+    "startTime": "14:40",
+    "endTime": "15:35",
+    "slotId": "S6",
+    "subjectCode": "24MCA32",
+    "subjectTitle": "Machine Learning",
+    "componentType": "theory",
+    "roomId": "AB-402",
+    "facultyId": "RG",
+    "facultyName": "Ms Geethanjali R",
+    "studentGroupId": "MCA_SEM3_A",
+    "semester": 3,
+    "section": "A",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_24MCA32_THEORY_SEM3B_Mon_S7",
+    "day": "Mon",
+    "startTime": "15:35",
+    "endTime": "16:30",
+    "slotId": "S7",
+    "subjectCode": "24MCA32",
+    "subjectTitle": "Machine Learning",
+    "componentType": "theory",
+    "roomId": "AB-402",
+    "facultyId": "RG",
+    "facultyName": "Ms Geethanjali R",
+    "studentGroupId": "MCA_SEM3_B",
+    "semester": 3,
+    "section": "B",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_24MCA32_THEORY_SEM3B_Tue_S1",
+    "day": "Tue",
+    "startTime": "09:00",
+    "endTime": "09:55",
+    "slotId": "S1",
+    "subjectCode": "24MCA32",
+    "subjectTitle": "Machine Learning",
+    "componentType": "theory",
+    "roomId": "AB-402",
+    "facultyId": "RG",
+    "facultyName": "Ms Geethanjali R",
+    "studentGroupId": "MCA_SEM3_B",
+    "semester": 3,
+    "section": "B",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_24MCA32_THEORY_SEM3B_Tue_S2",
+    "day": "Tue",
+    "startTime": "09:55",
+    "endTime": "10:50",
+    "slotId": "S2",
+    "subjectCode": "24MCA32",
+    "subjectTitle": "Machine Learning",
+    "componentType": "theory",
+    "roomId": "AB-402",
+    "facultyId": "RG",
+    "facultyName": "Ms Geethanjali R",
+    "studentGroupId": "MCA_SEM3_B",
+    "semester": 3,
+    "section": "B",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_24MCA32_PRACT_SEM3A_Wed_S1S2",
+    "day": "Wed",
+    "startTime": "09:00",
+    "endTime": "10:50",
+    "slotId": "S1+S2",
+    "subjectCode": "24MCA32",
+    "subjectTitle": "Machine Learning",
+    "componentType": "practical",
+    "roomId": "LAB-1",
+    "facultyId": "RG",
+    "facultyName": "Ms Geethanjali R",
+    "studentGroupId": "MCA_SEM3_A",
+    "semester": 3,
+    "section": "A",
+    "supportingStaff": [
+      {
+        "staffId": "PNP",
+        "staffName": "Mrs Preethi P"
+      },
+      {
+        "staffId": "SM",
+        "staffName": "Ms Swathi M"
+      },
+      {
+        "staffId": "MM",
+        "staffName": "Dr M. Manjunath"
+      }
+    ]
+  },
+  {
+    "sessionId": "ASG_24MCA32_PRACT_SEM3B_Wed_S3S4",
+    "day": "Wed",
+    "startTime": "11:05",
+    "endTime": "12:55",
+    "slotId": "S3+S4",
+    "subjectCode": "24MCA32",
+    "subjectTitle": "Machine Learning",
+    "componentType": "practical",
+    "roomId": "LAB-1",
+    "facultyId": "RG",
+    "facultyName": "Ms Geethanjali R",
+    "studentGroupId": "MCA_SEM3_B",
+    "semester": 3,
+    "section": "B",
+    "supportingStaff": [
+      {
+        "staffId": "PNP",
+        "staffName": "Mrs Preethi P"
+      },
+      {
+        "staffId": "SM",
+        "staffName": "Ms Swathi M"
+      },
+      {
+        "staffId": "MM",
+        "staffName": "Dr M. Manjunath"
+      }
+    ]
+  },
+  {
+    "sessionId": "ASG_24MCAAD1_TUT_AD_A1_Mon_S7",
+    "day": "Mon",
+    "startTime": "15:35",
+    "endTime": "16:30",
+    "slotId": "S7",
+    "subjectCode": "24MCAAD1",
+    "subjectTitle": "Artificial Intelligence of Things",
+    "componentType": "tutorial",
+    "roomId": "LAB-1",
+    "facultyId": "MM",
+    "facultyName": "Dr M. Manjunath",
+    "studentGroupId": "ELEC_AD_A1",
+    "semester": 3,
+    "section": "ELEC_AD_A1",
+    "supportingStaff": [
+      {
+        "staffId": "KS",
+        "staffName": "Ms Komal S"
+      },
+      {
+        "staffId": "KR",
+        "staffName": "Mrs Komala R"
+      }
+    ]
+  },
+  {
+    "sessionId": "ASG_24MCAAD1_TUT_AD_B1_Mon_S4",
+    "day": "Mon",
+    "startTime": "12:00",
+    "endTime": "12:55",
+    "slotId": "S4",
+    "subjectCode": "24MCAAD1",
+    "subjectTitle": "Artificial Intelligence of Things",
+    "componentType": "tutorial",
+    "roomId": "LAB-1",
+    "facultyId": "MM",
+    "facultyName": "Dr M. Manjunath",
+    "studentGroupId": "ELEC_AD_B1",
+    "semester": 3,
+    "section": "ELEC_AD_B1",
+    "supportingStaff": [
+      {
+        "staffId": "KS",
+        "staffName": "Ms Komal S"
+      },
+      {
+        "staffId": "KR",
+        "staffName": "Mrs Komala R"
+      }
+    ]
+  },
+  {
+    "sessionId": "ASG_24MCAAD1_PRACT_AD_A1_Wed_S5S6",
+    "day": "Wed",
+    "startTime": "13:45",
+    "endTime": "15:35",
+    "slotId": "S5+S6",
+    "subjectCode": "24MCAAD1",
+    "subjectTitle": "Artificial Intelligence of Things",
+    "componentType": "practical",
+    "roomId": "LAB-1",
+    "facultyId": "MM",
+    "facultyName": "Dr M. Manjunath",
+    "studentGroupId": "ELEC_AD_A1",
+    "semester": 3,
+    "section": "ELEC_AD_A1",
+    "supportingStaff": [
+      {
+        "staffId": "KS",
+        "staffName": "Ms Komal S"
+      },
+      {
+        "staffId": "KR",
+        "staffName": "Mrs Komala R"
+      },
+      {
+        "staffId": "RG",
+        "staffName": "Ms Geethanjali R"
+      }
+    ]
+  },
+  {
+    "sessionId": "ASG_24MCAAD1_PRACT_AD_A1_Thu_S1S2",
+    "day": "Thu",
+    "startTime": "09:00",
+    "endTime": "10:50",
+    "slotId": "S1+S2",
+    "subjectCode": "24MCAAD1",
+    "subjectTitle": "Artificial Intelligence of Things",
+    "componentType": "practical",
+    "roomId": "LAB-1",
+    "facultyId": "MM",
+    "facultyName": "Dr M. Manjunath",
+    "studentGroupId": "ELEC_AD_A1",
+    "semester": 3,
+    "section": "ELEC_AD_A1",
+    "supportingStaff": [
+      {
+        "staffId": "KS",
+        "staffName": "Ms Komal S"
+      },
+      {
+        "staffId": "KR",
+        "staffName": "Mrs Komala R"
+      },
+      {
+        "staffId": "RG",
+        "staffName": "Ms Geethanjali R"
+      }
+    ]
+  },
+  {
+    "sessionId": "ASG_24MCAAD1_PRACT_AD_B1_Mon_S5S6",
+    "day": "Mon",
+    "startTime": "13:45",
+    "endTime": "15:35",
+    "slotId": "S5+S6",
+    "subjectCode": "24MCAAD1",
+    "subjectTitle": "Artificial Intelligence of Things",
+    "componentType": "practical",
+    "roomId": "LAB-1",
+    "facultyId": "MM",
+    "facultyName": "Dr M. Manjunath",
+    "studentGroupId": "ELEC_AD_B1",
+    "semester": 3,
+    "section": "ELEC_AD_B1",
+    "supportingStaff": [
+      {
+        "staffId": "KS",
+        "staffName": "Ms Komal S"
+      },
+      {
+        "staffId": "KR",
+        "staffName": "Mrs Komala R"
+      }
+    ]
+  },
+  {
+    "sessionId": "ASG_24MCAAD1_PRACT_AD_B1_Thu_S3S4",
+    "day": "Thu",
+    "startTime": "11:05",
+    "endTime": "12:55",
+    "slotId": "S3+S4",
+    "subjectCode": "24MCAAD1",
+    "subjectTitle": "Artificial Intelligence of Things",
+    "componentType": "practical",
+    "roomId": "LAB-1",
+    "facultyId": "MM",
+    "facultyName": "Dr M. Manjunath",
+    "studentGroupId": "ELEC_AD_B1",
+    "semester": 3,
+    "section": "ELEC_AD_B1",
+    "supportingStaff": [
+      {
+        "staffId": "KS",
+        "staffName": "Ms Komal S"
+      },
+      {
+        "staffId": "KR",
+        "staffName": "Mrs Komala R"
+      },
+      {
+        "staffId": "RG",
+        "staffName": "Ms Geethanjali R"
+      }
+    ]
+  },
+  {
+    "sessionId": "ASG_24MCAAD4_THEORY_AD_A1_Wed_S3",
+    "day": "Wed",
+    "startTime": "11:05",
+    "endTime": "12:00",
+    "slotId": "S3",
+    "subjectCode": "24MCAAD4",
+    "subjectTitle": "Natural Language Processing",
+    "componentType": "theory",
+    "roomId": "AB-402",
+    "facultyId": "DEG",
+    "facultyName": "Dr D. Evangelin Geetha",
+    "studentGroupId": "ELEC_AD_A1",
+    "semester": 3,
+    "section": "ELEC_AD_A1",
+    "supportingStaff": [
+      {
+        "staffId": "DU",
+        "staffName": "Ms Deepali U"
+      },
+      {
+        "staffId": "SK",
+        "staffName": "Mrs Savitha K"
+      },
+      {
+        "staffId": "KR",
+        "staffName": "Mrs Komala R"
+      }
+    ]
+  },
+  {
+    "sessionId": "ASG_24MCAAD4_THEORY_AD_A1_Wed_S4",
+    "day": "Wed",
+    "startTime": "12:00",
+    "endTime": "12:55",
+    "slotId": "S4",
+    "subjectCode": "24MCAAD4",
+    "subjectTitle": "Natural Language Processing",
+    "componentType": "theory",
+    "roomId": "AB-402",
+    "facultyId": "DEG",
+    "facultyName": "Dr D. Evangelin Geetha",
+    "studentGroupId": "ELEC_AD_A1",
+    "semester": 3,
+    "section": "ELEC_AD_A1",
+    "supportingStaff": [
+      {
+        "staffId": "DU",
+        "staffName": "Ms Deepali U"
+      },
+      {
+        "staffId": "SK",
+        "staffName": "Mrs Savitha K"
+      },
+      {
+        "staffId": "KR",
+        "staffName": "Mrs Komala R"
+      }
+    ]
+  },
+  {
+    "sessionId": "ASG_24MCAAD4_THEORY_AD_B1_Wed_S1",
+    "day": "Wed",
+    "startTime": "09:00",
+    "endTime": "09:55",
+    "slotId": "S1",
+    "subjectCode": "24MCAAD4",
+    "subjectTitle": "Natural Language Processing",
+    "componentType": "theory",
+    "roomId": "AB-402",
+    "facultyId": "DEG",
+    "facultyName": "Dr D. Evangelin Geetha",
+    "studentGroupId": "ELEC_AD_B1",
+    "semester": 3,
+    "section": "ELEC_AD_B1",
+    "supportingStaff": [
+      {
+        "staffId": "DU",
+        "staffName": "Ms Deepali U"
+      },
+      {
+        "staffId": "SK",
+        "staffName": "Mrs Savitha K"
+      },
+      {
+        "staffId": "KR",
+        "staffName": "Mrs Komala R"
+      }
+    ]
+  },
+  {
+    "sessionId": "ASG_24MCAAD4_THEORY_AD_B1_Wed_S2",
+    "day": "Wed",
+    "startTime": "09:55",
+    "endTime": "10:50",
+    "slotId": "S2",
+    "subjectCode": "24MCAAD4",
+    "subjectTitle": "Natural Language Processing",
+    "componentType": "theory",
+    "roomId": "AB-402",
+    "facultyId": "DEG",
+    "facultyName": "Dr D. Evangelin Geetha",
+    "studentGroupId": "ELEC_AD_B1",
+    "semester": 3,
+    "section": "ELEC_AD_B1",
+    "supportingStaff": [
+      {
+        "staffId": "DU",
+        "staffName": "Ms Deepali U"
+      },
+      {
+        "staffId": "SK",
+        "staffName": "Mrs Savitha K"
+      },
+      {
+        "staffId": "KR",
+        "staffName": "Mrs Komala R"
+      }
+    ]
+  },
+  {
+    "sessionId": "ASG_24MCAAD4_PRACT_AD_A1_Thu_S3S4",
+    "day": "Thu",
+    "startTime": "11:05",
+    "endTime": "12:55",
+    "slotId": "S3+S4",
+    "subjectCode": "24MCAAD4",
+    "subjectTitle": "Natural Language Processing",
+    "componentType": "practical",
+    "roomId": "LAB-2",
+    "facultyId": "DEG",
+    "facultyName": "Dr D. Evangelin Geetha",
+    "studentGroupId": "ELEC_AD_A1",
+    "semester": 3,
+    "section": "ELEC_AD_A1",
+    "supportingStaff": [
+      {
+        "staffId": "DU",
+        "staffName": "Ms Deepali U"
+      },
+      {
+        "staffId": "SK",
+        "staffName": "Mrs Savitha K"
+      }
+    ]
+  },
+  {
+    "sessionId": "ASG_24MCAAD4_PRACT_AD_B1_Wed_S5S6",
+    "day": "Wed",
+    "startTime": "13:45",
+    "endTime": "15:35",
+    "slotId": "S5+S6",
+    "subjectCode": "24MCAAD4",
+    "subjectTitle": "Natural Language Processing",
+    "componentType": "practical",
+    "roomId": "LAB-2",
+    "facultyId": "DEG",
+    "facultyName": "Dr D. Evangelin Geetha",
+    "studentGroupId": "ELEC_AD_B1",
+    "semester": 3,
+    "section": "ELEC_AD_B1",
+    "supportingStaff": [
+      {
+        "staffId": "DU",
+        "staffName": "Ms Deepali U"
+      },
+      {
+        "staffId": "SK",
+        "staffName": "Mrs Savitha K"
+      }
+    ]
+  },
+  {
+    "sessionId": "ASG_24MCAAD5_TUT_AD_A1_Wed_S7",
+    "day": "Wed",
+    "startTime": "15:35",
+    "endTime": "16:30",
+    "slotId": "S7",
+    "subjectCode": "24MCAAD5",
+    "subjectTitle": "Generative AI and Prompt Engineering",
+    "componentType": "tutorial",
+    "roomId": "LAB-1",
+    "facultyId": "DU",
+    "facultyName": "Ms Deepali U",
+    "studentGroupId": "ELEC_AD_A1",
+    "semester": 3,
+    "section": "ELEC_AD_A1",
+    "supportingStaff": [
+      {
+        "staffId": "SM",
+        "staffName": "Ms Swathi M"
+      },
+      {
+        "staffId": "SH",
+        "staffName": "Ms Sahana"
+      },
+      {
+        "staffId": "DEG",
+        "staffName": "Dr D. Evangelin Geetha"
+      }
+    ]
+  },
+  {
+    "sessionId": "ASG_24MCAAD5_TUT_AD_B1_Thu_S1",
+    "day": "Thu",
+    "startTime": "09:00",
+    "endTime": "09:55",
+    "slotId": "S1",
+    "subjectCode": "24MCAAD5",
+    "subjectTitle": "Generative AI and Prompt Engineering",
+    "componentType": "tutorial",
+    "roomId": "LAB-2",
+    "facultyId": "DU",
+    "facultyName": "Ms Deepali U",
+    "studentGroupId": "ELEC_AD_B1",
+    "semester": 3,
+    "section": "ELEC_AD_B1",
+    "supportingStaff": [
+      {
+        "staffId": "SM",
+        "staffName": "Ms Swathi M"
+      },
+      {
+        "staffId": "SH",
+        "staffName": "Ms Sahana"
+      },
+      {
+        "staffId": "DEG",
+        "staffName": "Dr D. Evangelin Geetha"
+      }
+    ]
+  },
+  {
+    "sessionId": "ASG_24MCAAD5_PRACT_AD_A1_Thu_S5S6",
+    "day": "Thu",
+    "startTime": "13:45",
+    "endTime": "15:35",
+    "slotId": "S5+S6",
+    "subjectCode": "24MCAAD5",
+    "subjectTitle": "Generative AI and Prompt Engineering",
+    "componentType": "practical",
+    "roomId": "LAB-1",
+    "facultyId": "DU",
+    "facultyName": "Ms Deepali U",
+    "studentGroupId": "ELEC_AD_A1",
+    "semester": 3,
+    "section": "ELEC_AD_A1",
+    "supportingStaff": [
+      {
+        "staffId": "SM",
+        "staffName": "Ms Swathi M"
+      },
+      {
+        "staffId": "SH",
+        "staffName": "Ms Sahana"
+      },
+      {
+        "staffId": "DEG",
+        "staffName": "Dr D. Evangelin Geetha"
+      }
+    ]
+  },
+  {
+    "sessionId": "ASG_24MCAAD5_PRACT_AD_A1_Fri_S1S2",
+    "day": "Fri",
+    "startTime": "09:00",
+    "endTime": "10:50",
+    "slotId": "S1+S2",
+    "subjectCode": "24MCAAD5",
+    "subjectTitle": "Generative AI and Prompt Engineering",
+    "componentType": "practical",
+    "roomId": "LAB-1",
+    "facultyId": "DU",
+    "facultyName": "Ms Deepali U",
+    "studentGroupId": "ELEC_AD_A1",
+    "semester": 3,
+    "section": "ELEC_AD_A1",
+    "supportingStaff": [
+      {
+        "staffId": "SM",
+        "staffName": "Ms Swathi M"
+      },
+      {
+        "staffId": "SH",
+        "staffName": "Ms Sahana"
+      },
+      {
+        "staffId": "DEG",
+        "staffName": "Dr D. Evangelin Geetha"
+      }
+    ]
+  },
+  {
+    "sessionId": "ASG_24MCAAD5_PRACT_AD_B1_Fri_S3S4",
+    "day": "Fri",
+    "startTime": "11:05",
+    "endTime": "12:55",
+    "slotId": "S3+S4",
+    "subjectCode": "24MCAAD5",
+    "subjectTitle": "Generative AI and Prompt Engineering",
+    "componentType": "practical",
+    "roomId": "LAB-1",
+    "facultyId": "DU",
+    "facultyName": "Ms Deepali U",
+    "studentGroupId": "ELEC_AD_B1",
+    "semester": 3,
+    "section": "ELEC_AD_B1",
+    "supportingStaff": [
+      {
+        "staffId": "SM",
+        "staffName": "Ms Swathi M"
+      },
+      {
+        "staffId": "SH",
+        "staffName": "Ms Sahana"
+      },
+      {
+        "staffId": "DEG",
+        "staffName": "Dr D. Evangelin Geetha"
+      }
+    ]
+  },
+  {
+    "sessionId": "ASG_24MCAAD5_PRACT_AD_B1_Fri_S5S6",
+    "day": "Fri",
+    "startTime": "13:45",
+    "endTime": "15:35",
+    "slotId": "S5+S6",
+    "subjectCode": "24MCAAD5",
+    "subjectTitle": "Generative AI and Prompt Engineering",
+    "componentType": "practical",
+    "roomId": "LAB-1",
+    "facultyId": "DU",
+    "facultyName": "Ms Deepali U",
+    "studentGroupId": "ELEC_AD_B1",
+    "semester": 3,
+    "section": "ELEC_AD_B1",
+    "supportingStaff": [
+      {
+        "staffId": "SM",
+        "staffName": "Ms Swathi M"
+      },
+      {
+        "staffId": "SH",
+        "staffName": "Ms Sahana"
+      },
+      {
+        "staffId": "DEG",
+        "staffName": "Dr D. Evangelin Geetha"
+      }
+    ]
+  },
+  {
+    "sessionId": "ASG_24MCASS2_TUT_SS_G1_Tue_S3",
+    "day": "Tue",
+    "startTime": "11:05",
+    "endTime": "12:00",
+    "slotId": "S3",
+    "subjectCode": "24MCASS2",
+    "subjectTitle": "DevOps",
+    "componentType": "tutorial",
+    "roomId": "LAB-1",
+    "facultyId": "PNP",
+    "facultyName": "Mrs Preethi P",
+    "studentGroupId": "ELEC_SS_G1",
+    "semester": 3,
+    "section": "ELEC_SS_G1",
+    "supportingStaff": [
+      {
+        "staffId": "SM",
+        "staffName": "Ms Swathi M"
+      },
+      {
+        "staffId": "SK",
+        "staffName": "Mrs Savitha K"
+      }
+    ]
+  },
+  {
+    "sessionId": "ASG_24MCASS2_PRACT_SS_G1_Sat_S1S2",
+    "day": "Sat",
+    "startTime": "09:00",
+    "endTime": "10:50",
+    "slotId": "S1+S2",
+    "subjectCode": "24MCASS2",
+    "subjectTitle": "DevOps",
+    "componentType": "practical",
+    "roomId": "LAB-1",
+    "facultyId": "PNP",
+    "facultyName": "Mrs Preethi P",
+    "studentGroupId": "ELEC_SS_G1",
+    "semester": 3,
+    "section": "ELEC_SS_G1",
+    "supportingStaff": [
+      {
+        "staffId": "SM",
+        "staffName": "Ms Swathi M"
+      },
+      {
+        "staffId": "SK",
+        "staffName": "Mrs Savitha K"
+      }
+    ]
+  },
+  {
+    "sessionId": "ASG_24MCASS3_TUT_SS_G1_Tue_S4",
+    "day": "Tue",
+    "startTime": "12:00",
+    "endTime": "12:55",
+    "slotId": "S4",
+    "subjectCode": "24MCASS3",
+    "subjectTitle": "Cloud Computing",
+    "componentType": "tutorial",
+    "roomId": "AB-402",
+    "facultyId": "SK",
+    "facultyName": "Mrs Savitha K",
+    "studentGroupId": "ELEC_SS_G1",
+    "semester": 3,
+    "section": "ELEC_SS_G1",
+    "supportingStaff": [
+      {
+        "staffId": "SH",
+        "staffName": "Ms Sahana"
+      },
+      {
+        "staffId": "SM",
+        "staffName": "Ms Swathi M"
+      }
+    ]
+  },
+  {
+    "sessionId": "ASG_24MCASS5_THEORY_SS_G1_Tue_S7",
+    "day": "Tue",
+    "startTime": "15:35",
+    "endTime": "16:30",
+    "slotId": "S7",
+    "subjectCode": "24MCASS5",
+    "subjectTitle": "Ethical Hacking",
+    "componentType": "theory",
+    "roomId": "AB-402",
+    "facultyId": "KR",
+    "facultyName": "Mrs Komala R",
+    "studentGroupId": "ELEC_SS_G1",
+    "semester": 3,
+    "section": "ELEC_SS_G1",
+    "supportingStaff": [
+      {
+        "staffId": "SA",
+        "staffName": "Dr S. Ajitha"
+      },
+      {
+        "staffId": "MM",
+        "staffName": "Dr M. Manjunath"
+      }
+    ]
+  },
+  {
+    "sessionId": "ASG_24MCASS5_THEORY_SS_G1_Thu_S7",
+    "day": "Thu",
+    "startTime": "15:35",
+    "endTime": "16:30",
+    "slotId": "S7",
+    "subjectCode": "24MCASS5",
+    "subjectTitle": "Ethical Hacking",
+    "componentType": "theory",
+    "roomId": "AB-402",
+    "facultyId": "KR",
+    "facultyName": "Mrs Komala R",
+    "studentGroupId": "ELEC_SS_G1",
+    "semester": 3,
+    "section": "ELEC_SS_G1",
+    "supportingStaff": [
+      {
+        "staffId": "SA",
+        "staffName": "Dr S. Ajitha"
+      },
+      {
+        "staffId": "MM",
+        "staffName": "Dr M. Manjunath"
+      }
+    ]
+  },
+  {
+    "sessionId": "ASG_MCA11_THEORY_SEM1A_Mon_S1",
+    "day": "Mon",
+    "startTime": "09:00",
+    "endTime": "09:55",
+    "slotId": "S1",
+    "subjectCode": "MCA11",
+    "subjectTitle": "Programming with Python",
+    "componentType": "theory",
+    "roomId": "AB-412",
+    "facultyId": "SH",
+    "facultyName": "Ms Sahana",
+    "studentGroupId": "MCA_SEM1_A",
+    "semester": 1,
+    "section": "A",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_MCA11_THEORY_SEM1A_Mon_S2",
+    "day": "Mon",
+    "startTime": "09:55",
+    "endTime": "10:50",
+    "slotId": "S2",
+    "subjectCode": "MCA11",
+    "subjectTitle": "Programming with Python",
+    "componentType": "theory",
+    "roomId": "AB-412",
+    "facultyId": "SH",
+    "facultyName": "Ms Sahana",
+    "studentGroupId": "MCA_SEM1_A",
+    "semester": 1,
+    "section": "A",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_MCA11_THEORY_SEM1A_Mon_S3",
+    "day": "Mon",
+    "startTime": "11:05",
+    "endTime": "12:00",
+    "slotId": "S3",
+    "subjectCode": "MCA11",
+    "subjectTitle": "Programming with Python",
+    "componentType": "theory",
+    "roomId": "AB-412",
+    "facultyId": "SH",
+    "facultyName": "Ms Sahana",
+    "studentGroupId": "MCA_SEM1_A",
+    "semester": 1,
+    "section": "A",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_MCA11_PRACT_SEM1A_Mon_S5S6",
+    "day": "Mon",
+    "startTime": "13:45",
+    "endTime": "15:35",
+    "slotId": "S5+S6",
+    "subjectCode": "MCA11",
+    "subjectTitle": "Programming with Python",
+    "componentType": "practical",
+    "roomId": "LAB-2",
+    "facultyId": "SH",
+    "facultyName": "Ms Sahana",
+    "studentGroupId": "MCA_SEM1_A",
+    "semester": 1,
+    "section": "A",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_MCA11_THEORY_SEM1B_Mon_S4",
+    "day": "Mon",
+    "startTime": "12:00",
+    "endTime": "12:55",
+    "slotId": "S4",
+    "subjectCode": "MCA11",
+    "subjectTitle": "Programming with Python",
+    "componentType": "theory",
+    "roomId": "AB-411",
+    "facultyId": "SH",
+    "facultyName": "Ms Sahana",
+    "studentGroupId": "MCA_SEM1_B",
+    "semester": 1,
+    "section": "B",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_MCA11_THEORY_SEM1B_Mon_S7",
+    "day": "Mon",
+    "startTime": "15:35",
+    "endTime": "16:30",
+    "slotId": "S7",
+    "subjectCode": "MCA11",
+    "subjectTitle": "Programming with Python",
+    "componentType": "theory",
+    "roomId": "AB-411",
+    "facultyId": "SH",
+    "facultyName": "Ms Sahana",
+    "studentGroupId": "MCA_SEM1_B",
+    "semester": 1,
+    "section": "B",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_MCA11_THEORY_SEM1B_Tue_S1",
+    "day": "Tue",
+    "startTime": "09:00",
+    "endTime": "09:55",
+    "slotId": "S1",
+    "subjectCode": "MCA11",
+    "subjectTitle": "Programming with Python",
+    "componentType": "theory",
+    "roomId": "AB-411",
+    "facultyId": "SH",
+    "facultyName": "Ms Sahana",
+    "studentGroupId": "MCA_SEM1_B",
+    "semester": 1,
+    "section": "B",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_MCA11_PRACT_SEM1B_Wed_S1S2",
+    "day": "Wed",
+    "startTime": "09:00",
+    "endTime": "10:50",
+    "slotId": "S1+S2",
+    "subjectCode": "MCA11",
+    "subjectTitle": "Programming with Python",
+    "componentType": "practical",
+    "roomId": "LAB-2",
+    "facultyId": "SH",
+    "facultyName": "Ms Sahana",
+    "studentGroupId": "MCA_SEM1_B",
+    "semester": 1,
+    "section": "B",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_MCA12_THEORY_SEM1A_Mon_S4",
+    "day": "Mon",
+    "startTime": "12:00",
+    "endTime": "12:55",
+    "slotId": "S4",
+    "subjectCode": "MCA12",
+    "subjectTitle": "Computational Mathematics",
+    "componentType": "theory",
+    "roomId": "AB-412",
+    "facultyId": "MATHS_Staff",
+    "facultyName": "Mathematics Department",
+    "studentGroupId": "MCA_SEM1_A",
+    "semester": 1,
+    "section": "A",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_MCA12_THEORY_SEM1A_Mon_S7",
+    "day": "Mon",
+    "startTime": "15:35",
+    "endTime": "16:30",
+    "slotId": "S7",
+    "subjectCode": "MCA12",
+    "subjectTitle": "Computational Mathematics",
+    "componentType": "theory",
+    "roomId": "AB-412",
+    "facultyId": "MATHS_Staff",
+    "facultyName": "Mathematics Department",
+    "studentGroupId": "MCA_SEM1_A",
+    "semester": 1,
+    "section": "A",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_MCA12_TUTORIAL_SEM1A_Tue_S1S2",
+    "day": "Tue",
+    "startTime": "09:00",
+    "endTime": "10:50",
+    "slotId": "S1+S2",
+    "subjectCode": "MCA12",
+    "subjectTitle": "Computational Mathematics",
+    "componentType": "tutorial",
+    "roomId": "AB-412",
+    "facultyId": "MATHS_Staff",
+    "facultyName": "Mathematics Department",
+    "studentGroupId": "MCA_SEM1_A",
+    "semester": 1,
+    "section": "A",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_MCA12_THEORY_SEM1B_Mon_S5",
+    "day": "Mon",
+    "startTime": "13:45",
+    "endTime": "14:40",
+    "slotId": "S5",
+    "subjectCode": "MCA12",
+    "subjectTitle": "Computational Mathematics",
+    "componentType": "theory",
+    "roomId": "AB-411",
+    "facultyId": "MATHS_Staff",
+    "facultyName": "Mathematics Department",
+    "studentGroupId": "MCA_SEM1_B",
+    "semester": 1,
+    "section": "B",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_MCA12_THEORY_SEM1B_Mon_S6",
+    "day": "Mon",
+    "startTime": "14:40",
+    "endTime": "15:35",
+    "slotId": "S6",
+    "subjectCode": "MCA12",
+    "subjectTitle": "Computational Mathematics",
+    "componentType": "theory",
+    "roomId": "AB-411",
+    "facultyId": "MATHS_Staff",
+    "facultyName": "Mathematics Department",
+    "studentGroupId": "MCA_SEM1_B",
+    "semester": 1,
+    "section": "B",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_MCA12_TUTORIAL_SEM1B_Tue_S3S4",
+    "day": "Tue",
+    "startTime": "11:05",
+    "endTime": "12:55",
+    "slotId": "S3+S4",
+    "subjectCode": "MCA12",
+    "subjectTitle": "Computational Mathematics",
+    "componentType": "tutorial",
+    "roomId": "AB-411",
+    "facultyId": "MATHS_Staff",
+    "facultyName": "Mathematics Department",
+    "studentGroupId": "MCA_SEM1_B",
+    "semester": 1,
+    "section": "B",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_MCA13_THEORY_SEM1A_Tue_S3",
+    "day": "Tue",
+    "startTime": "11:05",
+    "endTime": "12:00",
+    "slotId": "S3",
+    "subjectCode": "MCA13",
+    "subjectTitle": "Operating Systems and Shell Programming",
+    "componentType": "theory",
+    "roomId": "AB-402",
+    "facultyId": "KS",
+    "facultyName": "Ms Komal S",
+    "studentGroupId": "MCA_SEM1_A",
+    "semester": 1,
+    "section": "A",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_MCA13_THEORY_SEM1A_Tue_S4",
+    "day": "Tue",
+    "startTime": "12:00",
+    "endTime": "12:55",
+    "slotId": "S4",
+    "subjectCode": "MCA13",
+    "subjectTitle": "Operating Systems and Shell Programming",
+    "componentType": "theory",
+    "roomId": "AB-412",
+    "facultyId": "KS",
+    "facultyName": "Ms Komal S",
+    "studentGroupId": "MCA_SEM1_A",
+    "semester": 1,
+    "section": "A",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_MCA13_THEORY_SEM1A_Tue_S5",
+    "day": "Tue",
+    "startTime": "13:45",
+    "endTime": "14:40",
+    "slotId": "S5",
+    "subjectCode": "MCA13",
+    "subjectTitle": "Operating Systems and Shell Programming",
+    "componentType": "theory",
+    "roomId": "AB-402",
+    "facultyId": "KS",
+    "facultyName": "Ms Komal S",
+    "studentGroupId": "MCA_SEM1_A",
+    "semester": 1,
+    "section": "A",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_MCA13_PRACT_SEM1A_Wed_S3S4",
+    "day": "Wed",
+    "startTime": "11:05",
+    "endTime": "12:55",
+    "slotId": "S3+S4",
+    "subjectCode": "MCA13",
+    "subjectTitle": "Operating Systems and Shell Programming",
+    "componentType": "practical",
+    "roomId": "LAB-2",
+    "facultyId": "KS",
+    "facultyName": "Ms Komal S",
+    "studentGroupId": "MCA_SEM1_A",
+    "semester": 1,
+    "section": "A",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_MCA13_THEORY_SEM1B_Tue_S2",
+    "day": "Tue",
+    "startTime": "09:55",
+    "endTime": "10:50",
+    "slotId": "S2",
+    "subjectCode": "MCA13",
+    "subjectTitle": "Operating Systems and Shell Programming",
+    "componentType": "theory",
+    "roomId": "AB-411",
+    "facultyId": "MM",
+    "facultyName": "Dr M. Manjunath",
+    "studentGroupId": "MCA_SEM1_B",
+    "semester": 1,
+    "section": "B",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_MCA13_THEORY_SEM1B_Tue_S5",
+    "day": "Tue",
+    "startTime": "13:45",
+    "endTime": "14:40",
+    "slotId": "S5",
+    "subjectCode": "MCA13",
+    "subjectTitle": "Operating Systems and Shell Programming",
+    "componentType": "theory",
+    "roomId": "AB-411",
+    "facultyId": "MM",
+    "facultyName": "Dr M. Manjunath",
+    "studentGroupId": "MCA_SEM1_B",
+    "semester": 1,
+    "section": "B",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_MCA13_THEORY_SEM1B_Tue_S6",
+    "day": "Tue",
+    "startTime": "14:40",
+    "endTime": "15:35",
+    "slotId": "S6",
+    "subjectCode": "MCA13",
+    "subjectTitle": "Operating Systems and Shell Programming",
+    "componentType": "theory",
+    "roomId": "AB-402",
+    "facultyId": "MM",
+    "facultyName": "Dr M. Manjunath",
+    "studentGroupId": "MCA_SEM1_B",
+    "semester": 1,
+    "section": "B",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_MCA13_PRACT_SEM1B_Mon_S1S2",
+    "day": "Mon",
+    "startTime": "09:00",
+    "endTime": "10:50",
+    "slotId": "S1+S2",
+    "subjectCode": "MCA13",
+    "subjectTitle": "Operating Systems and Shell Programming",
+    "componentType": "practical",
+    "roomId": "LAB-1",
+    "facultyId": "MM",
+    "facultyName": "Dr M. Manjunath",
+    "studentGroupId": "MCA_SEM1_B",
+    "semester": 1,
+    "section": "B",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_MCA14_THEORY_SEM1A_Tue_S6",
+    "day": "Tue",
+    "startTime": "14:40",
+    "endTime": "15:35",
+    "slotId": "S6",
+    "subjectCode": "MCA14",
+    "subjectTitle": "Database Systems",
+    "componentType": "theory",
+    "roomId": "AB-411",
+    "facultyId": "SK",
+    "facultyName": "Mrs Savitha K",
+    "studentGroupId": "MCA_SEM1_A",
+    "semester": 1,
+    "section": "A",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_MCA14_THEORY_SEM1A_Tue_S7",
+    "day": "Tue",
+    "startTime": "15:35",
+    "endTime": "16:30",
+    "slotId": "S7",
+    "subjectCode": "MCA14",
+    "subjectTitle": "Database Systems",
+    "componentType": "theory",
+    "roomId": "AB-411",
+    "facultyId": "SK",
+    "facultyName": "Mrs Savitha K",
+    "studentGroupId": "MCA_SEM1_A",
+    "semester": 1,
+    "section": "A",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_MCA14_THEORY_SEM1A_Wed_S7",
+    "day": "Wed",
+    "startTime": "15:35",
+    "endTime": "16:30",
+    "slotId": "S7",
+    "subjectCode": "MCA14",
+    "subjectTitle": "Database Systems",
+    "componentType": "theory",
+    "roomId": "AB-402",
+    "facultyId": "SK",
+    "facultyName": "Mrs Savitha K",
+    "studentGroupId": "MCA_SEM1_A",
+    "semester": 1,
+    "section": "A",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_MCA14_PRACT_SEM1A_Thu_S5S6",
+    "day": "Thu",
+    "startTime": "13:45",
+    "endTime": "15:35",
+    "slotId": "S5+S6",
+    "subjectCode": "MCA14",
+    "subjectTitle": "Database Systems",
+    "componentType": "practical",
+    "roomId": "LAB-2",
+    "facultyId": "SK",
+    "facultyName": "Mrs Savitha K",
+    "studentGroupId": "MCA_SEM1_A",
+    "semester": 1,
+    "section": "A",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_MCA14_THEORY_SEM1B_Tue_S7",
+    "day": "Tue",
+    "startTime": "15:35",
+    "endTime": "16:30",
+    "slotId": "S7",
+    "subjectCode": "MCA14",
+    "subjectTitle": "Database Systems",
+    "componentType": "theory",
+    "roomId": "AB-412",
+    "facultyId": "DU",
+    "facultyName": "Ms Deepali U",
+    "studentGroupId": "MCA_SEM1_B",
+    "semester": 1,
+    "section": "B",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_MCA14_THEORY_SEM1B_Thu_S2",
+    "day": "Thu",
+    "startTime": "09:55",
+    "endTime": "10:50",
+    "slotId": "S2",
+    "subjectCode": "MCA14",
+    "subjectTitle": "Database Systems",
+    "componentType": "theory",
+    "roomId": "AB-402",
+    "facultyId": "DU",
+    "facultyName": "Ms Deepali U",
+    "studentGroupId": "MCA_SEM1_B",
+    "semester": 1,
+    "section": "B",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_MCA14_THEORY_SEM1B_Thu_S7",
+    "day": "Thu",
+    "startTime": "15:35",
+    "endTime": "16:30",
+    "slotId": "S7",
+    "subjectCode": "MCA14",
+    "subjectTitle": "Database Systems",
+    "componentType": "theory",
+    "roomId": "AB-411",
+    "facultyId": "DU",
+    "facultyName": "Ms Deepali U",
+    "studentGroupId": "MCA_SEM1_B",
+    "semester": 1,
+    "section": "B",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_MCA14_PRACT_SEM1B_Sat_S1S2",
+    "day": "Sat",
+    "startTime": "09:00",
+    "endTime": "10:50",
+    "slotId": "S1+S2",
+    "subjectCode": "MCA14",
+    "subjectTitle": "Database Systems",
+    "componentType": "practical",
+    "roomId": "LAB-2",
+    "facultyId": "DU",
+    "facultyName": "Ms Deepali U",
+    "studentGroupId": "MCA_SEM1_B",
+    "semester": 1,
+    "section": "B",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_MCA15_THEORY_SEM1A_Wed_S5",
+    "day": "Wed",
+    "startTime": "13:45",
+    "endTime": "14:40",
+    "slotId": "S5",
+    "subjectCode": "MCA15",
+    "subjectTitle": "Data Structures",
+    "componentType": "theory",
+    "roomId": "AB-402",
+    "facultyId": "SM",
+    "facultyName": "Ms Swathi M",
+    "studentGroupId": "MCA_SEM1_A",
+    "semester": 1,
+    "section": "A",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_MCA15_THEORY_SEM1A_Wed_S6",
+    "day": "Wed",
+    "startTime": "14:40",
+    "endTime": "15:35",
+    "slotId": "S6",
+    "subjectCode": "MCA15",
+    "subjectTitle": "Data Structures",
+    "componentType": "theory",
+    "roomId": "AB-402",
+    "facultyId": "SM",
+    "facultyName": "Ms Swathi M",
+    "studentGroupId": "MCA_SEM1_A",
+    "semester": 1,
+    "section": "A",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_MCA15_THEORY_SEM1A_Thu_S2",
+    "day": "Thu",
+    "startTime": "09:55",
+    "endTime": "10:50",
+    "slotId": "S2",
+    "subjectCode": "MCA15",
+    "subjectTitle": "Data Structures",
+    "componentType": "theory",
+    "roomId": "AB-411",
+    "facultyId": "SM",
+    "facultyName": "Ms Swathi M",
+    "studentGroupId": "MCA_SEM1_A",
+    "semester": 1,
+    "section": "A",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_MCA15_THEORY_SEM1B_Thu_S3",
+    "day": "Thu",
+    "startTime": "11:05",
+    "endTime": "12:00",
+    "slotId": "S3",
+    "subjectCode": "MCA15",
+    "subjectTitle": "Data Structures",
+    "componentType": "theory",
+    "roomId": "AB-402",
+    "facultyId": "SM",
+    "facultyName": "Ms Swathi M",
+    "studentGroupId": "MCA_SEM1_B",
+    "semester": 1,
+    "section": "B",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_MCA15_THEORY_SEM1B_Thu_S4",
+    "day": "Thu",
+    "startTime": "12:00",
+    "endTime": "12:55",
+    "slotId": "S4",
+    "subjectCode": "MCA15",
+    "subjectTitle": "Data Structures",
+    "componentType": "theory",
+    "roomId": "AB-402",
+    "facultyId": "SM",
+    "facultyName": "Ms Swathi M",
+    "studentGroupId": "MCA_SEM1_B",
+    "semester": 1,
+    "section": "B",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_MCA15_THEORY_SEM1B_Fri_S7",
+    "day": "Fri",
+    "startTime": "15:35",
+    "endTime": "16:30",
+    "slotId": "S7",
+    "subjectCode": "MCA15",
+    "subjectTitle": "Data Structures",
+    "componentType": "theory",
+    "roomId": "AB-402",
+    "facultyId": "SM",
+    "facultyName": "Ms Swathi M",
+    "studentGroupId": "MCA_SEM1_B",
+    "semester": 1,
+    "section": "B",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_MCA17_TUTORIAL_SEM1A_Fri_S1S2",
+    "day": "Fri",
+    "startTime": "09:00",
+    "endTime": "10:50",
+    "slotId": "S1+S2",
+    "subjectCode": "MCA17",
+    "subjectTitle": "Web Programming Laboratory",
+    "componentType": "tutorial",
+    "roomId": "LAB-2",
+    "facultyId": "PNP",
+    "facultyName": "Mrs Preethi P",
+    "studentGroupId": "MCA_SEM1_A",
+    "semester": 1,
+    "section": "A",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_MCA17_PRACT_SEM1A_Fri_S3S4",
+    "day": "Fri",
+    "startTime": "11:05",
+    "endTime": "12:55",
+    "slotId": "S3+S4",
+    "subjectCode": "MCA17",
+    "subjectTitle": "Web Programming Laboratory",
+    "componentType": "practical",
+    "roomId": "LAB-2",
+    "facultyId": "PNP",
+    "facultyName": "Mrs Preethi P",
+    "studentGroupId": "MCA_SEM1_A",
+    "semester": 1,
+    "section": "A",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_MCA17_PRACT_SEM1A_Fri_S5S6",
+    "day": "Fri",
+    "startTime": "13:45",
+    "endTime": "15:35",
+    "slotId": "S5+S6",
+    "subjectCode": "MCA17",
+    "subjectTitle": "Web Programming Laboratory",
+    "componentType": "practical",
+    "roomId": "LAB-2",
+    "facultyId": "PNP",
+    "facultyName": "Mrs Preethi P",
+    "studentGroupId": "MCA_SEM1_A",
+    "semester": 1,
+    "section": "A",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_MCAAEC1_TUTORIAL_SEM1A_Wed_S1",
+    "day": "Wed",
+    "startTime": "09:00",
+    "endTime": "09:55",
+    "slotId": "S1",
+    "subjectCode": "MCAAEC1",
+    "subjectTitle": "Professional Communication and Skill Development",
+    "componentType": "tutorial",
+    "roomId": "AB-411",
+    "facultyId": "",
+    "facultyName": "TBA",
+    "studentGroupId": "MCA_SEM1_A",
+    "semester": 1,
+    "section": "A",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_MCAAEC1_TUTORIAL_SEM1B_Wed_S3",
+    "day": "Wed",
+    "startTime": "11:05",
+    "endTime": "12:00",
+    "slotId": "S3",
+    "subjectCode": "MCAAEC1",
+    "subjectTitle": "Professional Communication and Skill Development",
+    "componentType": "tutorial",
+    "roomId": "AB-411",
+    "facultyId": "",
+    "facultyName": "TBA",
+    "studentGroupId": "MCA_SEM1_B",
+    "semester": 1,
+    "section": "B",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_MCABC_TUTORIAL_SEM1A_Wed_S2",
+    "day": "Wed",
+    "startTime": "09:55",
+    "endTime": "10:50",
+    "slotId": "S2",
+    "subjectCode": "MCABC",
+    "subjectTitle": "Mathematical Foundation",
+    "componentType": "tutorial",
+    "roomId": "AB-411",
+    "facultyId": "",
+    "facultyName": "TBA",
+    "studentGroupId": "MCA_SEM1_A",
+    "semester": 1,
+    "section": "A",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_MCABC_TUTORIAL_SEM1A_Thu_S1",
+    "day": "Thu",
+    "startTime": "09:00",
+    "endTime": "09:55",
+    "slotId": "S1",
+    "subjectCode": "MCABC",
+    "subjectTitle": "Mathematical Foundation",
+    "componentType": "tutorial",
+    "roomId": "AB-402",
+    "facultyId": "",
+    "facultyName": "TBA",
+    "studentGroupId": "MCA_SEM1_A",
+    "semester": 1,
+    "section": "A",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_MCABC_TUTORIAL_SEM1A_Thu_S3",
+    "day": "Thu",
+    "startTime": "11:05",
+    "endTime": "12:00",
+    "slotId": "S3",
+    "subjectCode": "MCABC",
+    "subjectTitle": "Mathematical Foundation",
+    "componentType": "tutorial",
+    "roomId": "AB-411",
+    "facultyId": "",
+    "facultyName": "TBA",
+    "studentGroupId": "MCA_SEM1_A",
+    "semester": 1,
+    "section": "A",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_MCABC_TUTORIAL_SEM1B_Wed_S4",
+    "day": "Wed",
+    "startTime": "12:00",
+    "endTime": "12:55",
+    "slotId": "S4",
+    "subjectCode": "MCABC",
+    "subjectTitle": "Mathematical Foundation",
+    "componentType": "tutorial",
+    "roomId": "AB-411",
+    "facultyId": "",
+    "facultyName": "TBA",
+    "studentGroupId": "MCA_SEM1_B",
+    "semester": 1,
+    "section": "B",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_MCABC_TUTORIAL_SEM1B_Wed_S5",
+    "day": "Wed",
+    "startTime": "13:45",
+    "endTime": "14:40",
+    "slotId": "S5",
+    "subjectCode": "MCABC",
+    "subjectTitle": "Mathematical Foundation",
+    "componentType": "tutorial",
+    "roomId": "AB-411",
+    "facultyId": "",
+    "facultyName": "TBA",
+    "studentGroupId": "MCA_SEM1_B",
+    "semester": 1,
+    "section": "B",
+    "supportingStaff": []
+  },
+  {
+    "sessionId": "ASG_MCABC_TUTORIAL_SEM1B_Wed_S6",
+    "day": "Wed",
+    "startTime": "14:40",
+    "endTime": "15:35",
+    "slotId": "S6",
+    "subjectCode": "MCABC",
+    "subjectTitle": "Mathematical Foundation",
+    "componentType": "tutorial",
+    "roomId": "AB-411",
+    "facultyId": "",
+    "facultyName": "TBA",
+    "studentGroupId": "MCA_SEM1_B",
+    "semester": 1,
+    "section": "B",
+    "supportingStaff": []
   }
-}
+]

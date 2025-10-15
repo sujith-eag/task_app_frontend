@@ -11,9 +11,16 @@ import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
 import ScheduleIcon from '@mui/icons-material/Schedule';
 import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 
+const componentColors = {
+    theory: { bgcolor: 'primary.main', color: 'primary.contrastText' },
+    practical: { bgcolor: 'error.dark', color: 'error.contrastText' },
+    tutorial: { bgcolor: 'success.dark', color: 'success.contrastText' },
+};
+
 const SessionModal = ({ session, onClose }) => {
     // Use the presence of the session object to control the dialog's open state
     if (!session) return null;
+    const color = componentColors[session.componentType?.toLowerCase()] || componentColors.theory;
 
     return (
         <Dialog 
@@ -21,55 +28,65 @@ const SessionModal = ({ session, onClose }) => {
             onClose={onClose} 
             fullWidth
             maxWidth="sm"
+            PaperProps={{
+                sx: { borderRadius: 3, overflow: 'visible' }
+            }}
         >
-            <DialogTitle sx={{ m: 0, p: 2, borderBottom: 1, borderColor: 'divider' }}>
-                <Box>
-                    <Typography variant="h6" component="div">
-                        {session.subjectTitle}
-                    </Typography>
-                    <Typography variant="body2" color="primary">
-                        {session.subjectCode} ({session.componentType})
-                    </Typography>
+            {/* Accent bar/header */}
+            <Box sx={{
+                height: 8,
+                width: '100%',
+                bgcolor: color.bgcolor,
+                borderTopLeftRadius: 12,
+                borderTopRightRadius: 12,
+            }} />
+            <DialogTitle sx={{ m: 0, p: 2, borderBottom: 1, borderColor: 'divider', pb: 1.5 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    <Box sx={{
+                        width: 36, height: 36, borderRadius: '50%',
+                        bgcolor: color.bgcolor, color: color.color,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontWeight: 700, fontSize: 20,
+                        boxShadow: 2,
+                    }}>
+                        <SchoolIcon fontSize="medium" />
+                    </Box>
+                    <Box>
+                        <Typography variant="h6" component="div" sx={{ fontWeight: 700 }}>
+                            {session.subjectTitle}
+                        </Typography>
+                        <Typography variant="body2" sx={{ color: color.bgcolor, fontWeight: 500 }}>
+                            {session.subjectCode} ({session.componentType})
+                        </Typography>
+                    </Box>
                 </Box>
-                <IconButton
-                    aria-label="close"
-                    onClick={onClose}
-                    sx={{
-                        position: 'absolute',
-                        right: 8,
-                        top: 8,
-                        color: (theme) => theme.palette.grey[500],
-                    }}
-                >
-                    <CloseIcon />
-                </IconButton>
             </DialogTitle>
 
-            <DialogContent>
+            <DialogContent sx={{ pt: 2, pb: 1 }}>
                 <List dense>
                     <ListItem>
-                        <ListItemIcon><SchoolIcon /></ListItemIcon>
-                        <ListItemText primary={session.facultyName} secondary="Faculty" />
+                        <ListItemIcon><SchoolIcon color="primary" /></ListItemIcon>
+                        <ListItemText primary={<b>{session.facultyName}</b>} secondary="Faculty" />
                     </ListItem>
                     <ListItem>
-                        <ListItemIcon><GroupIcon /></ListItemIcon>
-                        <ListItemText primary={session.studentGroupId} secondary="Group / Section" />
+                        <ListItemIcon><GroupIcon color="info" /></ListItemIcon>
+                        <ListItemText primary={<b>{session.studentGroupId}</b>} secondary="Group / Section" />
                     </ListItem>
                     <ListItem>
-                        <ListItemIcon><MeetingRoomIcon /></ListItemIcon>
-                        <ListItemText primary={session.roomId} secondary="Room" />
+                        <ListItemIcon><MeetingRoomIcon color="secondary" /></ListItemIcon>
+                        <ListItemText primary={<b>{session.roomId}</b>} secondary="Room" />
                     </ListItem>
                     <ListItem>
-                        <ListItemIcon><ScheduleIcon /></ListItemIcon>
-                        <ListItemText primary={`${session.day}, ${session.startTime} - ${session.endTime}`} secondary="Time" />
+                        <ListItemIcon><ScheduleIcon color="action" /></ListItemIcon>
+                        <ListItemText primary={<b>{`${session.day}, ${session.startTime} - ${session.endTime}`}</b>} secondary="Time" />
                     </ListItem>
                     {session.supportingStaff && session.supportingStaff.length > 0 && (
                         <>
                             <Divider sx={{ my: 1 }} />
                             <ListItem>
-                                <ListItemIcon><SupportAgentIcon /></ListItemIcon>
+                                <ListItemIcon><SupportAgentIcon color="success" /></ListItemIcon>
                                 <ListItemText 
-                                    primary={session.supportingStaff.map(staff => staff.staffName).join(', ')} 
+                                    primary={<b>{session.supportingStaff.map(staff => staff.staffName).join(', ')}</b>} 
                                     secondary="Supporting Staff" 
                                 />
                             </ListItem>
@@ -78,8 +95,10 @@ const SessionModal = ({ session, onClose }) => {
                 </List>
             </DialogContent>
 
-            <DialogActions>
-                <Button onClick={onClose}>Close</Button>
+            <DialogActions sx={{ px: 3, pb: 2, pt: 1 }}>
+                <Button onClick={onClose} variant="contained" color="primary" sx={{ borderRadius: 2, fontWeight: 600 }}>
+                    Close
+                </Button>
             </DialogActions>
         </Dialog>
     );

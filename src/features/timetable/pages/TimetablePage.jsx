@@ -1,5 +1,3 @@
-// src/features/timetable/pages/TimetablePage.jsx
-
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import {
@@ -8,44 +6,54 @@ import {
 } from '@mui/material';
 import Timetable from '../Timetable.jsx';
 
-// import timetableService from '../timetableService'; 
-
+// --- MOCK DATA SECTION ---
+// Replace sampleData and mockCurrentUser with API/user data in production
 import sampleData from '../data/sampleTimetable.json';
 
 const mockCurrentUser = {
-    type: 'student', // Try changing to 'staff' to test the other view
+    type: 'student', // Change to 'staff' to test staff view
     section: 'MCA_SEM3_A',
     facultyName: 'Ms Geethanjali R'
 };
+// --- END MOCK DATA SECTION ---
 
 const TimetablePage = () => {
-    // You would fetch the current user to pass down for default view selection
-    const { user } = useSelector((state) => state.auth);
+    // TODO: Replace mockCurrentUser with actual user from Redux or API
+    // const { user } = useSelector((state) => state.auth);
+    const user = mockCurrentUser;
 
+    // TODO: Replace sampleData with data fetched from API based on selected timetable
+    // const [timetableData, setTimetableData] = useState(null);
+    // const timetableSessions = timetableData ? timetableData.timetable_A : [];
+    const timetableSessions = Array.isArray(sampleData)
+        ? sampleData
+        : sampleData.timetable_A || [];
+
+    // Timetable selection state (for future API integration)
     const [availableTimetables, setAvailableTimetables] = useState([]);
     const [selectedTimetableId, setSelectedTimetableId] = useState('');
-    const [timetableData, setTimetableData] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
-    const timetableSessions = sampleData.timetable_A;
-    if (!timetableSessions) {
+
+    // Show error if no timetable data is available
+    if (!timetableSessions || timetableSessions.length === 0) {
         return <Alert severity="error">Timetable data could not be loaded. Check your JSON file.</Alert>;
     }
-    // Effect 1: Fetch the list of all available timetables on component mount
+
+    // --- EFFECT: Fetch available timetables (replace with API call) ---
     useEffect(() => {
         const fetchTimetableList = async () => {
             setIsLoading(true);
             try {
+                // TODO: Replace with API call to fetch available timetables
                 // const timetables = await timetableService.getAvailableTimetables();
-                // --- MOCKED DATA FOR DEMONSTRATION ---
+                // MOCKED DATA
                 const timetables = [{ id: 'MCA_SEM3_A', name: 'MCA 3rd Semester - Section A' }];
-                // ------------------------------------
                 setAvailableTimetables(timetables);
-                // Set the first timetable as the default selection
                 if (timetables.length > 0) {
                     setSelectedTimetableId(timetables[0].id);
                 } else {
-                    setIsLoading(false); // Stop loading if there's nothing to show
+                    setIsLoading(false);
                 }
             } catch (err) {
                 setError('Failed to fetch available timetables.');
@@ -55,23 +63,22 @@ const TimetablePage = () => {
         fetchTimetableList();
     }, []);
 
-    // Effect 2: Fetch the detailed session data whenever the selection changes
+    // --- EFFECT: Fetch timetable data for selected timetable (replace with API call) ---
     useEffect(() => {
         if (!selectedTimetableId) return;
-
         const fetchTimetableData = async () => {
             setIsLoading(true);
             setError(null);
             try {
+                // TODO: Replace with API call to fetch timetable data by ID
                 // const data = await timetableService.getTimetableDataById(selectedTimetableId);
-                // --- MOCKED DATA FOR DEMONSTRATION (using your provided JSON) ---
-                const response = { /* Paste your JSON object here */ };
-                const data = response.timetable_A; 
-                // -----------------------------------------------------------------
-                setTimetableData(data);
+                // MOCKED DATA
+                // const response = { ... };
+                // const data = response.timetable_A;
+                // setTimetableData(data);
             } catch (err) {
                 setError(`Failed to load data for the selected timetable.`);
-                setTimetableData(null);
+                // setTimetableData(null);
             }
             setIsLoading(false);
         };
@@ -84,7 +91,7 @@ const TimetablePage = () => {
                 <Typography variant="h4" component="h1" gutterBottom>
                     Academic Timetable
                 </Typography>
-
+                {/* Timetable selection dropdown (future: populate from API) */}
                 <FormControl fullWidth>
                     <InputLabel id="timetable-select-label">Select Timetable</InputLabel>
                     <Select
@@ -105,8 +112,9 @@ const TimetablePage = () => {
                 <Box sx={{ display: 'flex', justifyContent: 'center', my: 10 }}><CircularProgress /></Box>
             )}
             {error && <Alert severity="error">{error}</Alert>}
-            {!isLoading && !error && timetableSessions && (
-                <Timetable data={timetableSessions} currentUser={mockCurrentUser} />
+            {/* Pass user and timetableSessions as props. Replace with API/user data in production. */}
+            {!isLoading && !error && timetableSessions && timetableSessions.length > 0 && (
+                <Timetable data={timetableSessions} currentUser={user} />
             )}
             {!isLoading && !error && availableTimetables.length === 0 && (
                 <Alert severity="info">No timetables are available to display.</Alert>
