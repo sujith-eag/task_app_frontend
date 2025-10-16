@@ -12,7 +12,10 @@ const initialState = {
                     // This ONLY tracks list-level actions like getFiles
     itemStatus: {}, // Tracks status of individual files, 
                     // { 'fileId1': 'deleting', 'fileId2': 'sharing' }    
-    uploadProgress: 0,
+    // uploadProgress will store per-file progress as an object { '<fileName>': percent }
+    // uploadProgressOverall stores a single numeric percent for aggregate UI
+    uploadProgress: {},
+    uploadProgressOverall: 0,
     message: '',
     currentParentId: null,
     currentFolder: null,
@@ -44,9 +47,15 @@ export const selectMySharedFiles = createSelector(
   [selectFiles, selectUserId],
   (files, userId) => files.filter(f =>
     f.user && f.user._id === userId &&
-    (f.sharedWith.length > 0 || (f.publicShare && f.publicShare.isActive))
+        ( (Array.isArray(f.sharedWith) && f.sharedWith.length > 0) || 
+            (f.publicShare && f.publicShare.isActive && (
+                    // if expiresAt exists, only include if it's in the future
+                    !f.publicShare.expiresAt || new Date(f.publicShare.expiresAt) > new Date()
+            ))
+        )
   )
 );
+
 
 
 
@@ -107,27 +116,48 @@ export const getFiles = createAsyncThunk('files/getAll', async (parentId, thunkA
 export const uploadFiles = createAsyncThunk('files/upload', async ({ filesFormData, parentId }, thunkAPI) => {
     try {
         const token = thunkAPI.getState().auth.user.token;
+        // Extract files and uploadKeys arrays from the FormData
+        const files = filesFormData.getAll('files') || [];
+        const keys = filesFormData.getAll('uploadKeys') || [];
 
-        // Append parentId to the FormData before sending
-        filesFormData.append('parentId', parentId || 'null');
+        // Build parallel requests, each with its own FormData
+        const requests = files.map((file, idx) => {
+            const uploadKey = keys[idx] || file.name;
+            const fd = new FormData();
+            fd.append('files', file);
+            fd.append('parentId', parentId || 'null');
 
-        // Progress handler
-        const onUploadProgress = (progressEvent) => {
-            const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-            // Dispatch the progress update
-            thunkAPI.dispatch(setUploadProgress(percentCompleted));
-        };
+            // Each onUploadProgress uses the uploadKey captured in closure
+            const onUploadProgress = (progressEvent) => {
+                const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                // Dispatch per-file progress keyed by uploadKey
+                thunkAPI.dispatch(setUploadProgress({ [uploadKey]: percentCompleted }));
 
-        const response = await fileService.uploadFiles(filesFormData, token, onUploadProgress);
+                // Compute overall as average of present per-file progresses
+                const currentProgresses = Object.values(thunkAPI.getState().files.uploadProgress || {});
+                const sum = currentProgresses.reduce((s, v) => s + (typeof v === 'number' ? v : 0), 0);
+                const overall = currentProgresses.length ? Math.round(sum / currentProgresses.length) : 0;
+                thunkAPI.dispatch(setUploadProgress(overall));
+            };
+
+            // Use the existing fileService.uploadFiles which accepts an onUploadProgress handler
+            return fileService.uploadFiles(fd, token, onUploadProgress);
+        });
+
+        // Execute all uploads in parallel
+        const responses = await Promise.all(requests);
+
+        // Flatten responses
+        const uploaded = responses.flat();
 
         // Reset progress on success
-        thunkAPI.dispatch(setUploadProgress(0)); 
-        return response;
+        thunkAPI.dispatch(setUploadProgress(0));
+        return uploaded;
 
     } catch (error) {
         // Reset progress on failure
-        thunkAPI.dispatch(setUploadProgress(0)); 
-               
+        thunkAPI.dispatch(setUploadProgress(0));
+
         const message = (error.response?.data?.message) || error.message || error.toString();
         return thunkAPI.rejectWithValue(message);
     }
@@ -222,8 +252,19 @@ export const fileSlice = createSlice({
             state.message = '';
         },
         // Reducer for progress updates
+        // Accepts either an object like { filename: percent } to merge per-file progress
+        // or a number to set the overall percent (or 0 to reset both)
         setUploadProgress: (state, action) => {
-            state.uploadProgress = action.payload;
+            const payload = action.payload;
+            if (payload === 0) {
+                state.uploadProgress = {};
+                state.uploadProgressOverall = 0;
+            } else if (typeof payload === 'number') {
+                state.uploadProgressOverall = payload;
+            } else if (typeof payload === 'object') {
+                // Merge per-file progress into state.uploadProgress
+                state.uploadProgress = { ...state.uploadProgress, ...payload };
+            }
         },
         // Reducer to set the current folder
         setCurrentParentId: (state, action) => {
@@ -285,6 +326,19 @@ export const fileSlice = createSlice({
             .addCase(uploadFiles.fulfilled, (state, action) => {
                 state.status = 'succeeded';
                 state.files.unshift(...action.payload); // Add new files to the beginning
+            })
+            .addCase(uploadFiles.pending, (state, action) => {
+                state.status = 'loading';
+                // reset progress
+                state.uploadProgress = {};
+                state.uploadProgressOverall = 0;
+            })
+            .addCase(uploadFiles.rejected, (state, action) => {
+                state.status = 'failed';
+                state.message = action.payload;
+                // reset progress on error
+                state.uploadProgress = {};
+                state.uploadProgressOverall = 0;
             })
             
             // Delete File

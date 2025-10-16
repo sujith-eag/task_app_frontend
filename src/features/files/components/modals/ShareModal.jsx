@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     Dialog, DialogTitle, DialogContent, DialogActions, Box, 
@@ -20,8 +20,10 @@ const ShareModal = ({ isOpen, onClose, file }) => {
     const [searchTerm, setSearchTerm] = useState('');
 
     // Effect to fetch discoverable users when the modal opens
+    const didFetchRef = useRef(false);
     useEffect(() => {
-        if (isOpen) {
+        if (isOpen && !didFetchRef.current) {
+            didFetchRef.current = true;
             const fetchUsers = async () => {
                 setIsLoading(true);
                 try {
@@ -33,11 +35,14 @@ const ShareModal = ({ isOpen, onClose, file }) => {
                 setIsLoading(false);
             };
             fetchUsers();
-        } else {
+        }
+
+        if (!isOpen) {
             // Reset state when modal closes
             setUsers([]);
             setSearchTerm('');
             setSelectedUserId(null);
+            didFetchRef.current = false;
         }
     }, [isOpen, user.token]);
 

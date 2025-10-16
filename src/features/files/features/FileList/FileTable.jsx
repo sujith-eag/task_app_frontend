@@ -13,6 +13,9 @@ import ConfirmationDialog from '../../../../components/ConfirmationDialog.jsx';
 import FileBreadcrumbs from './FileBreadcrumbs.jsx';
 import BulkActionBar from './BulkActionBar.jsx';
 import FileListTabs from './FileListTabs.jsx';
+import ShareModal from '../../components/modals/ShareModal.jsx';
+import PublicShareModal from '../../components/modals/PublicShareModal.jsx';
+import ManageShareModal from '../../components/modals/ManageShareModal.jsx';
 
 const fileSelectors = {
     myFiles: selectMyFiles,
@@ -39,6 +42,13 @@ const FileTable = () => {
     // Hook for actions
     const { navigateToFolder, deleteSingleFile, 
         deleteBulkFiles, downloadFiles, removeBulkSharedAccess } = useFileActions();
+
+    // Centralized modal state to avoid mounting per-row modals
+    // activeModal.file will store the fileId (not the object) so we can derive the latest file
+    const [activeModal, setActiveModal] = useState({ type: null, fileId: null });
+
+    const openModal = (type, fileId) => setActiveModal({ type, fileId });
+    const closeModal = () => setActiveModal({ type: null, fileId: null });
     
     // Clear selection when the tab or the data list changes
     useEffect(() => {
@@ -158,14 +168,17 @@ const FileTable = () => {
                             <TableBody>
                                 {currentList.map(file => (
                                     <FileTableRow
-                                        key={file._id}
-                                        file={file}
-                                        isSelected={selectedFiles.includes(file._id)}
-                                        onSelectFile={handleSelectFile}
-                                        onDeleteClick={openSingleDeleteDialog}
-                                        onNavigate={navigateToFolder}
-                                        context={tabValue}
-                                    />
+                                            key={file._id}
+                                            file={file}
+                                            isSelected={selectedFiles.includes(file._id)}
+                                            onSelectFile={handleSelectFile}
+                                            onDeleteClick={openSingleDeleteDialog}
+                                            onNavigate={navigateToFolder}
+                                            context={tabValue}
+                                            onOpenShare={(f) => openModal('share', f)}
+                                            onOpenPublicShare={(f) => openModal('public', f)}
+                                            onOpenManageShare={(f) => openModal('manage', f)}
+                                        />
                                 ))}
                             </TableBody>
                         </Table>
@@ -174,6 +187,31 @@ const FileTable = () => {
                     <Typography>No files in this view.</Typography>
                 )}
             </Box>
+
+                {/* Centralized modals rendered once for the table */}
+                {activeModal.type === 'share' && (
+                    <ShareModal
+                        isOpen={true}
+                        onClose={closeModal}
+                        file={currentList.find(f => f._id === activeModal.fileId) || null}
+                    />
+                )}
+
+                {activeModal.type === 'public' && activeModal.fileId && (
+                    <PublicShareModal
+                        open={true}
+                        onClose={closeModal}
+                        file={currentList.find(f => f._id === activeModal.fileId) || null}
+                    />
+                )}
+
+                {activeModal.type === 'manage' && activeModal.fileId && (
+                    <ManageShareModal
+                        open={true}
+                        onClose={closeModal}
+                        file={currentList.find(f => f._id === activeModal.fileId) || null}
+                    />
+                )}
             
             {/* --- Dynamic Confirmation DIALOG --- */}
             <ConfirmationDialog

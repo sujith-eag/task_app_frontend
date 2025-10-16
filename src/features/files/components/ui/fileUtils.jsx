@@ -8,16 +8,33 @@ import GridOnIcon from '@mui/icons-material/GridOn'; // For Excel
 import FolderZipIcon from '@mui/icons-material/FolderZip'; // For Archives
 import CodeIcon from '@mui/icons-material/Code'; // For Code/Text
 import ArticleIcon from '@mui/icons-material/Article'; // The backup icon
+import PythonIcon from '@mui/icons-material/Adb';
+import NotebookIcon from '@mui/icons-material/Book';
+import TerminalIcon from '@mui/icons-material/Terminal';
 /**
  * Returns a Material UI icon component based on the file's MIME type.
  * @param {string} mimeType - The MIME type of the file.
  * @returns {React.ReactElement} A Material UI Icon component.
  */
-export const getFileIcon = (mimeType) => {
-    // Set a consistent color for all icons
-    const iconProps = { sx: { color: 'text.primary' } };
+export const getFileColor = (mimeType) => {
+    if (!mimeType) return 'grey.200';
+    if (mimeType.startsWith('image/')) return 'info.main';
+    if (mimeType === 'application/pdf') return 'error.main';
+    if (mimeType === 'application/x-ipynb+json' || mimeType === 'application/ipynb') return 'secondary.dark';
+    if (mimeType === 'text/x-python' || mimeType === 'application/x-python' || mimeType === 'text/x-java-source' || mimeType === 'text/x-csrc' || mimeType === 'text/x-c++src') return 'purple.500';
+    if (mimeType === 'application/msword' || mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') return 'secondary.main';
+    if (mimeType === 'application/vnd.ms-powerpoint' || mimeType === 'application/vnd.openxmlformats-officedocument.presentationml.presentation') return 'warning.main';
+    if (mimeType === 'application/vnd.ms-excel' || mimeType === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') return 'success.main';
+    if (mimeType === 'application/zip' || mimeType === 'application/x-rar-compressed') return 'secondary.main';
+    if (mimeType.startsWith('text/') || ['text/javascript', 'text/html', 'text/css', 'application/json'].includes(mimeType)) return 'primary.main';
+    return 'grey.200';
+};
 
-    if (mimeType.startsWith('image/')) return <ImageIcon {...iconProps} />;
+export const getFileIcon = (mimeType) => {
+    // Use white icons so they contrast on colored avatars
+    const iconProps = { sx: { color: 'common.white' } };
+
+    if (mimeType && mimeType.startsWith('image/')) return <ImageIcon {...iconProps} />;
     
     switch (mimeType) {
         case 'application/pdf':
@@ -34,6 +51,14 @@ export const getFileIcon = (mimeType) => {
         case 'application/zip':
         case 'application/x-rar-compressed':
             return <FolderZipIcon {...iconProps} />;
+        case 'application/x-ipynb+json':
+        case 'application/ipynb':
+            return <NotebookIcon {...iconProps} />;
+        case 'text/x-python':
+        case 'application/x-python':
+            return <PythonIcon {...iconProps} />;
+        case 'application/x-sh':
+            return <TerminalIcon {...iconProps} />;
         case 'text/javascript':
         case 'text/html':
         case 'text/css':
