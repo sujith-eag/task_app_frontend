@@ -3,52 +3,27 @@ import {
     Table, TableBody, TableCell, TableContainer,
     TableHead, TableRow, Paper, Typography, Box
 } from '@mui/material';
-
-      
-const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-const TIME_SLOTS = [
-  '09:00-09:55', '09:55-10:50', '11:05-12:00', '12:00-12:55', 
-  '13:45-14:40', '14:40-15:35', '15:35-16:30'
-];
-const componentColors = {
-    theory: { bgcolor: 'primary.main', color: 'primary.contrastText' },
-    practical: { bgcolor: 'error.dark', color: 'error.contrastText' },
-    tutorial: { bgcolor: 'success.dark', color: 'success.contrastText' },
-};
-const slotIndexMap = new Map(TIME_SLOTS.map((slot, i) => [slot.split('-')[0], i]));
+import { DAYS, TIME_SLOTS, UI_CONFIG } from '../constants';
+import { useSessionGrid } from '../hooks';
+import SessionCard from './SessionCard';
 
 const TimetableGrid = ({ sessions, viewType, onCellClick }) => {
-  const gridData = React.useMemo(() => {
-    const grid = {};
-    const occupiedSlots = new Set();
-    sessions.forEach(session => {
-      const day = session.day;
-      if (!grid[day]) grid[day] = {};
-      const start = new Date(`1970-01-01T${session.startTime}:00`);
-      const end = new Date(`1970-01-01T${session.endTime}:00`);
-      const duration = (end - start) / (1000 * 60);
-      const colSpan = duration > 60 ? 2 : 1;
-      if (!grid[day][session.startTime]) grid[day][session.startTime] = [];
-      grid[day][session.startTime].push({ ...session, colSpan });
-      if (colSpan === 2) {
-        const slotIndex = slotIndexMap.get(session.startTime);
-        if (slotIndex !== undefined && slotIndex + 1 < TIME_SLOTS.length) {
-          const nextSlotStart = TIME_SLOTS[slotIndex + 1].split('-')[0];
-          occupiedSlots.add(`${day}-${nextSlotStart}`);
-        }
-      }
-    });
-    return { grid, occupiedSlots };
-  }, [sessions]);
-
-  
-  
-  const { grid, occupiedSlots } = gridData;
+  // Use custom hook for grid calculation
+  const { grid, occupiedSlots } = useSessionGrid(sessions);
 
   try {
     return (
-      <TableContainer component={Paper} variant="outlined" sx={{ maxHeight: '80vh', overflowX: 'auto' }}>
-        <Table sx={{ tableLayout: 'fixed', minWidth: 900 }} stickyHeader>
+      <TableContainer 
+        component={Paper} 
+        variant="outlined" 
+        sx={{ 
+          maxHeight: UI_CONFIG.TABLE_MAX_HEIGHT, 
+          overflowX: 'auto',
+          overflowY: 'auto',
+          position: 'relative',
+        }}
+      >
+        <Table sx={{ tableLayout: 'fixed', minWidth: UI_CONFIG.TABLE_MIN_WIDTH }} stickyHeader>
           <TableHead>
             <TableRow>
               <TableCell 
@@ -127,53 +102,12 @@ const TimetableGrid = ({ sessions, viewType, onCellClick }) => {
                       >
                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                           {sessionsInCell.map((session, idx) => (
-                            <Box
+                            <SessionCard
                               key={session.sessionId || idx}
-                              onClick={() => onCellClick(session)}
-                              sx={{
-                                mb: 0.5,
-                                px: 1.2,
-                                py: 1,
-                                borderRadius: 2,
-                                boxShadow: 2,
-                                bgcolor: 'background.paper',
-                                position: 'relative',
-                                cursor: 'pointer',
-                                border: '1.5px solid',
-                                borderColor: 'divider',
-                                minHeight: 56,
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'flex-start',
-                                transition: 'transform 0.18s, box-shadow 0.18s',
-                                '&:hover': {
-                                  boxShadow: 6,
-                                  transform: 'scale(1.04)',
-                                  zIndex: 2,
-                                },
-                              }}
-                            >
-                              {/* Colored bar for session type */}
-                              <Box sx={{
-                                position: 'absolute',
-                                left: 0,
-                                top: 0,
-                                height: '100%',
-                                width: 6,
-                                borderTopLeftRadius: 8,
-                                borderBottomLeftRadius: 8,
-                                bgcolor: componentColors[session.componentType.toLowerCase()].bgcolor,
-                              }} />
-                              <Typography variant="subtitle1" sx={{ fontWeight: 700, fontSize: '1.08em', ml: 1.5, color: 'text.primary' }}>
-                                {session.subjectCode}
-                              </Typography>
-                              <Typography variant="caption" display="block" sx={{ ml: 1.5, color: 'text.secondary' }}>
-                                {session.roomId}
-                              </Typography>
-                              <Typography variant="caption" display="block" sx={{ ml: 1.5, opacity: 0.9, color: 'text.secondary' }}>
-                                {viewType === 'section' ? session.facultyName : session.studentGroupId}
-                              </Typography>
-                            </Box>
+                              session={session}
+                              viewType={viewType}
+                              onClick={onCellClick}
+                            />
                           ))}
                         </Box>
                       </TableCell>

@@ -10,17 +10,13 @@ import GroupIcon from '@mui/icons-material/Group';
 import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
 import ScheduleIcon from '@mui/icons-material/Schedule';
 import SupportAgentIcon from '@mui/icons-material/SupportAgent';
-
-const componentColors = {
-    theory: { bgcolor: 'primary.main', color: 'primary.contrastText' },
-    practical: { bgcolor: 'error.dark', color: 'error.contrastText' },
-    tutorial: { bgcolor: 'success.dark', color: 'success.contrastText' },
-};
+import { getComponentColor } from '../constants';
+import { formatSections, hasSections } from '../utils';
 
 const SessionModal = ({ session, onClose }) => {
     // Use the presence of the session object to control the dialog's open state
     if (!session) return null;
-    const color = componentColors[session.componentType?.toLowerCase()] || componentColors.theory;
+    const color = getComponentColor(session.componentType);
 
     return (
         <Dialog 
@@ -72,6 +68,16 @@ const SessionModal = ({ session, onClose }) => {
                         <ListItemIcon><GroupIcon color="info" /></ListItemIcon>
                         <ListItemText primary={<b>{session.studentGroupId}</b>} secondary="Group / Section" />
                     </ListItem>
+                    {/* Display sections if available */}
+                    {hasSections(session.sections) && (
+                        <ListItem>
+                            <ListItemIcon><GroupIcon color="primary" /></ListItemIcon>
+                            <ListItemText 
+                                primary={<b>{formatSections(session.sections)}</b>} 
+                                secondary="Section(s)" 
+                            />
+                        </ListItem>
+                    )}
                     <ListItem>
                         <ListItemIcon><MeetingRoomIcon color="secondary" /></ListItemIcon>
                         <ListItemText primary={<b>{session.roomId}</b>} secondary="Room" />

@@ -8,7 +8,7 @@ import Timetable from '../Timetable.jsx';
 
 // --- MOCK DATA SECTION ---
 // Replace sampleData and mockCurrentUser with API/user data in production
-import sampleData from '../data/sampleTimetable.json';
+import sampleData from '../data/newTimeTable.json';
 
 const mockCurrentUser = {
     type: 'student', // Change to 'staff' to test staff view
@@ -24,10 +24,8 @@ const TimetablePage = () => {
 
     // TODO: Replace sampleData with data fetched from API based on selected timetable
     // const [timetableData, setTimetableData] = useState(null);
-    // const timetableSessions = timetableData ? timetableData.timetable_A : [];
-    const timetableSessions = Array.isArray(sampleData)
-        ? sampleData
-        : sampleData.timetable_A || [];
+    // Extract timetable_A array from the new data structure
+    const timetableSessions = sampleData?.timetable_A || [];
 
     // Timetable selection state (for future API integration)
     const [availableTimetables, setAvailableTimetables] = useState([]);
