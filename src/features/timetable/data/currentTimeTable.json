@@ -978,7 +978,7 @@
         "B"
       ],
       "supportingStaff": [],
-      "shortCode": "24MCAP1"
+      "shortCode": "Project"
     },
     {
       "sessionId": "S_039",
@@ -990,8 +990,8 @@
       "subjectCode": "PROCTOR_SEM3",
       "subjectTitle": "Proctor Meeting",
       "componentType": "tutorial",
-      "facultyId": "PNP",
-      "facultyName": "Dr Preethi N Patil",
+      "facultyId": "ALL_FACULTY",
+      "facultyName": "All Faculty",
       "studentGroupIds": [
         "MCA_SEM3_A",
         "MCA_SEM3_B"
@@ -1002,7 +1002,7 @@
         "B"
       ],
       "supportingStaff": [],
-      "shortCode": "PROCTOR_SEM3"
+      "shortCode": "Proctor"
     },
     {
       "sessionId": "S_040",
@@ -1014,8 +1014,8 @@
       "subjectCode": "PLACEMENT_SEM3",
       "subjectTitle": "Placement Training",
       "componentType": "tutorial",
-      "facultyId": "SA",
-      "facultyName": "Dr S. Ajitha",
+      "facultyId": "EXTERNAL",
+      "facultyName": "External Trainer",
       "studentGroupIds": [
         "MCA_SEM3_A",
         "MCA_SEM3_B"
@@ -1026,7 +1026,7 @@
         "B"
       ],
       "supportingStaff": [],
-      "shortCode": "PLACEMENT_SEM3"
+      "shortCode": "Placement"
     },
     {
       "sessionId": "S_041",
@@ -2115,7 +2115,7 @@
       "roomId": "AB-402",
       "subjectCode": "MCAAEC1",
       "subjectTitle": "Professional Communication and Skill Development",
-      "componentType": "practical",
+      "componentType": "tutorial",
       "facultyId": "DEG",
       "facultyName": "Dr D. Evangelin Geetha",
       "studentGroupIds": [
@@ -2131,7 +2131,7 @@
           "name": "Mrs Komala R"
         }
       ],
-      "shortCode": "MCAAEC1"
+      "shortCode": "PCSD"
     },
     {
       "sessionId": "S_086",
@@ -2142,7 +2142,7 @@
       "roomId": "AB-411",
       "subjectCode": "MCAAEC1",
       "subjectTitle": "Professional Communication and Skill Development",
-      "componentType": "practical",
+      "componentType": "tutorial",
       "facultyId": "PNP",
       "facultyName": "Dr Preethi N Patil",
       "studentGroupIds": [
@@ -2156,13 +2156,9 @@
         {
           "id": "SA",
           "name": "Dr S. Ajitha"
-        },
-        {
-          "id": "SM",
-          "name": "Ms Swathi M"
         }
       ],
-      "shortCode": "MCAAEC1"
+      "shortCode": "PCSD"
     },
     {
       "sessionId": "S_087",
@@ -2184,7 +2180,7 @@
         "A"
       ],
       "supportingStaff": [],
-      "shortCode": "MCAAEC1"
+      "shortCode": "PCSD"
     },
     {
       "sessionId": "S_088",
@@ -2206,7 +2202,7 @@
         "B"
       ],
       "supportingStaff": [],
-      "shortCode": "MCAAEC1"
+      "shortCode": "PCSD"
     },
     {
       "sessionId": "S_089",
@@ -2218,8 +2214,8 @@
       "subjectCode": "PROCTOR_SEM1",
       "subjectTitle": "Proctor Meeting",
       "componentType": "tutorial",
-      "facultyId": "PNP",
-      "facultyName": "Dr Preethi N Patil",
+      "facultyId": "ALL_FACULTY",
+      "facultyName": "All Faculty",
       "studentGroupIds": [
         "MCA_SEM1_A",
         "MCA_SEM1_B"
@@ -2230,7 +2226,7 @@
         "B"
       ],
       "supportingStaff": [],
-      "shortCode": "PROCTOR_SEM1"
+      "shortCode": "Proctor"
     }
   ]
 }

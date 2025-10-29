@@ -48,6 +48,7 @@ export const useSessionGrid = (sessions) => {
     const grid = {};
     const occupiedSlots = new Set();
 
+    // Process all sessions
     sessions.forEach(session => {
       const day = session.day;
       
@@ -67,16 +68,36 @@ export const useSessionGrid = (sessions) => {
 
       // Add session to grid with calculated colSpan
       grid[day][session.startTime].push({ ...session, colSpan });
+    });
+
+    // Now mark occupied slots - but only for slots that DON'T have sessions starting there
+    sessions.forEach(session => {
+      const day = session.day;
+      const duration = calculateDuration(session.startTime, session.endTime);
+      const colSpan = calculateColSpan(duration);
 
       // Mark next slot as occupied if session spans 2 slots
+      // BUT only if there are no sessions starting at that next slot
       if (colSpan === 2) {
         const slotIndex = slotIndexMap.get(session.startTime);
         if (slotIndex !== undefined && slotIndex + 1 < TIME_SLOTS.length) {
           const nextSlotStart = TIME_SLOTS[slotIndex + 1].split('-')[0];
-          occupiedSlots.add(`${day}-${nextSlotStart}`);
+          // Only mark as occupied if no sessions start at this time
+          if (!grid[day]?.[nextSlotStart] || grid[day][nextSlotStart].length === 0) {
+            occupiedSlots.add(`${day}-${nextSlotStart}`);
+          }
         }
       }
     });
+
+    // Debug logging for Monday
+    if (grid['Mon']) {
+      console.log('=== Monday Grid ===');
+      Object.keys(grid['Mon']).sort().forEach(time => {
+        console.log(`${time}:`, grid['Mon'][time].map(s => `${s.shortCode}(${s.colSpan})`));
+      });
+      console.log('Occupied slots:', Array.from(occupiedSlots).filter(s => s.startsWith('Mon')));
+    }
 
     return { grid, occupiedSlots };
   }, [sessions, slotIndexMap]);

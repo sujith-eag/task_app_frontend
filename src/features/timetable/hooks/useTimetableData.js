@@ -34,26 +34,35 @@ export const useTimetableData = (data, currentUser) => {
       const sem = userSession ? String(userSession.semester) : semesterList[0];
       
       if (sem && semesterList.includes(sem)) {
-        setView({ type: VIEW_TYPES.SEMESTER, value: sem });
+        setView({ type: VIEW_TYPES.SEMESTER_SECTION, value: sem, sectionLetter: '' });
         return;
       }
-      setView({ type: VIEW_TYPES.SECTION, value: currentUser.section });
+      if (currentUser.section && sectionList.includes(currentUser.section)) {
+        setView({ type: VIEW_TYPES.SECTION, value: currentUser.section, sectionLetter: '' });
+        return;
+      }
     } else if (currentUser?.type === USER_TYPES.STAFF) {
       // Staff: Default to faculty view
       if (currentUser.facultyName && facultyList.includes(currentUser.facultyName)) {
-        setView({ type: VIEW_TYPES.FACULTY, value: currentUser.facultyName });
-      } else {
-        setView({ type: VIEW_TYPES.SECTION, value: sectionList[0] || '' });
+        setView({ type: VIEW_TYPES.FACULTY, value: currentUser.facultyName, sectionLetter: '' });
+        return;
       }
-    } else {
-      // Default: Section view
-      setView({ type: VIEW_TYPES.SECTION, value: sectionList[0] || '' });
     }
+    
+    // Default: View All
+    setView({ type: VIEW_TYPES.ALL, value: 'all', sectionLetter: '' });
   }, [currentUser, facultyList, sectionList, semesterList, data]);
 
   // Filter sessions based on current view
   const filteredSessions = useMemo(() => {
-    if (!view.value || !data) return [];
+    if (!data) return [];
+    
+    // If "all" view is selected, return all data
+    if (view.type === VIEW_TYPES.ALL) {
+      return data;
+    }
+    
+    if (!view.value) return [];
     
     // For semesterSection view with sectionLetter, filter by both
     // If only semester is selected (no sectionLetter), show all semester sessions

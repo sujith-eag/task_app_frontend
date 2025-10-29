@@ -14,8 +14,8 @@ const SessionCard = ({ session, viewType, onClick }) => {
       onClick={() => onClick(session)}
       sx={{
         mb: 0.5,
-        px: 1.2,
-        py: 1,
+        px: { xs: 0.8, md: 1.2 },
+        py: { xs: 0.8, md: 1 },
         borderRadius: 2,
         boxShadow: 2,
         bgcolor: 'background.paper',
@@ -23,7 +23,7 @@ const SessionCard = ({ session, viewType, onClick }) => {
         cursor: 'pointer',
         border: '1.5px solid',
         borderColor: 'divider',
-        minHeight: UI_CONFIG.SESSION_CARD_MIN_HEIGHT,
+        minHeight: { xs: 50, md: UI_CONFIG.SESSION_CARD_MIN_HEIGHT },
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'flex-start',
@@ -48,21 +48,47 @@ const SessionCard = ({ session, viewType, onClick }) => {
         bgcolor: color.bgcolor,
       }} />
       
-      <Typography variant="subtitle1" sx={{ fontWeight: 700, fontSize: '1.08em', ml: 1.5, color: 'text.primary' }}>
-        {session.subjectCode}
+      <Typography variant="subtitle1" sx={{ 
+        fontWeight: 700, 
+        fontSize: { xs: '0.9em', md: '1.08em' }, 
+        ml: 1.5, 
+        color: 'text.primary',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
+        width: '100%',
+      }}>
+        {session.shortCode && session.facultyId && session.subjectCode 
+          ? `${session.shortCode}(${session.facultyId})-${session.subjectCode}` 
+          : session.subjectCode || session.shortCode || 'N/A'}
       </Typography>
       
-      <Typography variant="caption" display="block" sx={{ ml: 1.5, color: 'text.secondary' }}>
+      <Typography variant="caption" display="block" sx={{ 
+        ml: 1.5, 
+        color: 'text.secondary',
+        fontSize: { xs: '0.7rem', md: '0.75rem' },
+      }}>
         {session.roomId}
       </Typography>
       
-      <Typography variant="caption" display="block" sx={{ ml: 1.5, opacity: 0.9, color: 'text.secondary' }}>
+      <Typography variant="caption" display="block" sx={{ 
+        ml: 1.5, 
+        opacity: 0.9, 
+        color: 'text.secondary',
+        fontSize: { xs: '0.7rem', md: '0.75rem' },
+      }}>
         {viewType === 'section' ? session.facultyName : session.studentGroupId}
       </Typography>
       
       {/* Display sections if available and array has content */}
       {hasSections(session.sections) && (
-        <Typography variant="caption" display="block" sx={{ ml: 1.5, opacity: 0.85, color: 'primary.main', fontWeight: 600 }}>
+        <Typography variant="caption" display="block" sx={{ 
+          ml: 1.5, 
+          opacity: 0.85, 
+          color: 'primary.main', 
+          fontWeight: 600,
+          fontSize: { xs: '0.7rem', md: '0.75rem' },
+        }}>
           Sec: {formatSections(session.sections)}
         </Typography>
       )}

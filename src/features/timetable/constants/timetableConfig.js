@@ -35,7 +35,8 @@ export const VIEW_TYPES = {
   SEMESTER: 'semester',
   SECTION: 'section',
   FACULTY: 'faculty',
-  SEMESTER_SECTION: 'semesterSection' // New: Semester + Section letter
+  SEMESTER_SECTION: 'semesterSection', // New: Semester + Section letter
+  ALL: 'all' // View all sessions without filtering
 };
 
 /**

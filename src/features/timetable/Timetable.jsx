@@ -3,15 +3,16 @@
 import React, { useState } from 'react';
 import {
     Box, Paper, Typography, FormControl,
-    InputLabel, Select, MenuItem
+    InputLabel, Select, MenuItem, Button
 } from '@mui/material';
 import TimetableGrid from './components/TimetableGrid';
 import SessionModal from './components/SessionModal';
 import SchoolIcon from '@mui/icons-material/School';
 import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
 import SupportAgentIcon from '@mui/icons-material/SupportAgent';
+import ViewWeekIcon from '@mui/icons-material/ViewWeek';
 import { useTimetableData } from './hooks';
-import { componentColors } from './constants';
+import { componentColors, VIEW_TYPES } from './constants';
 
 const Timetable = ({ data, currentUser }) => {
   const [modalData, setModalData] = useState(null);
@@ -32,18 +33,20 @@ const Timetable = ({ data, currentUser }) => {
 
   return (
     <Paper elevation={3} sx={{ p: { xs: 2, md: 3 }, borderRadius: 2 }}>
-      <Typography variant="h4" component="h1" textAlign="center" gutterBottom>
-        MCA 2025 Timetable
-      </Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mb: 3 }}>
+        <Typography variant="h4" component="h1" sx={{ textAlign: 'center' }}>
+          MCA 2025 Timetable
+        </Typography>
+      </Box>
 
       <Box 
         sx={{ 
           display: 'flex', 
           flexDirection: { xs: 'column', md: 'row' },
           justifyContent: 'center', 
-          gap: 3, 
+          gap: { xs: 2, md: 3 }, 
           mb: 4, 
-          p: 2, 
+          p: { xs: 1.5, md: 2 }, 
           backgroundColor: 'action.hover', 
           borderRadius: 1 
         }}
@@ -59,14 +62,25 @@ const Timetable = ({ data, currentUser }) => {
               <Select
                 labelId="semester-section-sem-label"
                 label="Semester"
-                value={view.type === 'semesterSection' ? view.value : ''}
+                value={view.type === 'semesterSection' ? view.value : (view.type === VIEW_TYPES.ALL ? 'all' : '')}
                 onChange={(e) => {
-                  // Start with semester only, no section letter yet
-                  handleViewChange('semesterSection', e.target.value, '');
+                  const selectedValue = e.target.value;
+                  if (selectedValue === 'all') {
+                    // Switch to "View All" mode
+                    handleViewChange(VIEW_TYPES.ALL, 'all', '');
+                  } else if (selectedValue) {
+                    // Start with semester only, no section letter yet
+                    handleViewChange('semesterSection', selectedValue, '');
+                  }
                 }}
                 aria-label="Select semester for view"
               >
-                <MenuItem value=""><em>-- Select Semester --</em></MenuItem>
+                <MenuItem value="all">
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <ViewWeekIcon fontSize="small" />
+                    <em>Semester 1 & 3</em>
+                  </Box>
+                </MenuItem>
                 {semesterList.map(s => <MenuItem key={s} value={s}>Semester {s}</MenuItem>)}
               </Select>
             </FormControl>
@@ -76,12 +90,12 @@ const Timetable = ({ data, currentUser }) => {
               <Select
                 labelId="semester-section-letter-label"
                 label="Section (Optional)"
-                value={view.type === 'semesterSection' ? (view.sectionLetter || '') : ''}
+                value={view.type === 'semesterSection' && view.value !== 'all' ? (view.sectionLetter || '') : ''}
                 onChange={(e) => {
                   // Apply section filter on top of semester
                   handleViewChange('semesterSection', view.value, e.target.value);
                 }}
-                disabled={view.type !== 'semesterSection' || !view.value}
+                disabled={view.type !== 'semesterSection' || !view.value || view.value === 'all'}
                 aria-label="Optionally filter by section letter"
               >
                 <MenuItem value=""><em>-- All Sections --</em></MenuItem>
@@ -89,26 +103,6 @@ const Timetable = ({ data, currentUser }) => {
               </Select>
             </FormControl>
           </Box>
-        </Box>
-
-        {/* View by Student Group */}
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, width: '100%' }}>
-          <Typography variant="caption" sx={{ fontWeight: 600, color: 'text.secondary', minHeight: 20 }}>
-            View by Student Group
-          </Typography>
-          <FormControl fullWidth>
-            <InputLabel id="section-select-label">Student Group</InputLabel>
-            <Select
-              labelId="section-select-label"
-              label="Student Group"
-              value={view.type === 'section' ? view.value : ''}
-              onChange={(e) => handleViewChange('section', e.target.value)}
-              aria-label="Select student group to view timetable"
-            >
-              <MenuItem value=""><em>-- Select Student Group --</em></MenuItem>
-              {sectionList.map(s => <MenuItem key={s} value={s}>{s}</MenuItem>)}
-            </Select>
-          </FormControl>
         </Box>
 
         {/* View by Faculty */}
@@ -122,10 +116,13 @@ const Timetable = ({ data, currentUser }) => {
               labelId="faculty-select-label"
               label="Faculty Name"
               value={view.type === 'faculty' ? view.value : ''}
-              onChange={(e) => handleViewChange('faculty', e.target.value)}
+              onChange={(e) => {
+                if (e.target.value) {
+                  handleViewChange('faculty', e.target.value);
+                }
+              }}
               aria-label="Select faculty to view timetable"
             >
-              <MenuItem value=""><em>-- Select Faculty --</em></MenuItem>
               {facultyList.map(f => <MenuItem key={f} value={f}>{f}</MenuItem>)}
             </Select>
           </FormControl>
@@ -135,26 +132,39 @@ const Timetable = ({ data, currentUser }) => {
       {/* Helper text to explain the filters */}
       <Box sx={{ mb: 2, px: 2 }}>
         <Typography variant="caption" sx={{ color: 'text.secondary', fontStyle: 'italic' }}>
-          {view.type === 'semesterSection' && view.sectionLetter && `Showing all classes (core + electives) for Semester ${view.value}, Section ${view.sectionLetter}`}
-          {view.type === 'semesterSection' && !view.sectionLetter && `Showing all classes for Semester ${view.value} (all sections)`}
-          {view.type === 'section' && `Showing classes for ${view.value}`}
-          {view.type === 'faculty' && `Showing all classes taught by ${view.value}`}
+          {view.type === VIEW_TYPES.ALL && 'Showing all classes across all semesters and sections'}
+          {view.type === 'semesterSection' && view.value && view.sectionLetter && `Showing all classes (core + electives) for Semester ${view.value}, Section ${view.sectionLetter}`}
+          {view.type === 'semesterSection' && view.value && !view.sectionLetter && `Showing all classes for Semester ${view.value} (all sections)`}
+          {view.type === 'section' && view.value && `Showing classes for ${view.value}`}
+          {view.type === 'faculty' && view.value && `Showing all classes taught by ${view.value}`}
+          {!view.value && view.type !== VIEW_TYPES.ALL && 'Please select a filter option above to view the timetable'}
         </Typography>
       </Box>
 
       {/* Color legend */}
-      <Box sx={{ display: 'flex', gap: 2, mb: 2, alignItems: 'center' }}>
-        <Typography variant="subtitle2">Legend:</Typography>
+      <Box sx={{ 
+        display: 'flex', 
+        flexWrap: 'wrap',
+        gap: { xs: 1, md: 2 }, 
+        mb: 2, 
+        alignItems: 'center',
+        justifyContent: { xs: 'center', md: 'flex-start' },
+      }}>
+        <Typography variant="subtitle2" sx={{ fontSize: { xs: '0.8rem', md: '0.875rem' } }}>
+          Legend:
+        </Typography>
         <Box sx={{ 
           display: 'flex', 
           alignItems: 'center', 
           gap: 0.5, 
           bgcolor: componentColors.theory.bgcolor, 
           color: componentColors.theory.color, 
-          px: 1, 
-          borderRadius: 1 
+          px: { xs: 0.75, md: 1 }, 
+          py: { xs: 0.25, md: 0.5 },
+          borderRadius: 1,
+          fontSize: { xs: '0.75rem', md: '0.875rem' },
         }}>
-          <SchoolIcon fontSize="small" sx={{ mr: 0.5 }} /> Theory
+          <SchoolIcon fontSize="small" sx={{ mr: 0.5, fontSize: { xs: '1rem', md: '1.25rem' } }} /> Theory
         </Box>
         <Box sx={{ 
           display: 'flex', 
@@ -162,10 +172,12 @@ const Timetable = ({ data, currentUser }) => {
           gap: 0.5, 
           bgcolor: componentColors.practical.bgcolor, 
           color: componentColors.practical.color, 
-          px: 1, 
-          borderRadius: 1 
+          px: { xs: 0.75, md: 1 }, 
+          py: { xs: 0.25, md: 0.5 },
+          borderRadius: 1,
+          fontSize: { xs: '0.75rem', md: '0.875rem' },
         }}>
-          <MeetingRoomIcon fontSize="small" sx={{ mr: 0.5 }} /> Practical
+          <MeetingRoomIcon fontSize="small" sx={{ mr: 0.5, fontSize: { xs: '1rem', md: '1.25rem' } }} /> Practical
         </Box>
         <Box sx={{ 
           display: 'flex', 
@@ -173,10 +185,12 @@ const Timetable = ({ data, currentUser }) => {
           gap: 0.5, 
           bgcolor: componentColors.tutorial.bgcolor, 
           color: componentColors.tutorial.color, 
-          px: 1, 
-          borderRadius: 1 
+          px: { xs: 0.75, md: 1 }, 
+          py: { xs: 0.25, md: 0.5 },
+          borderRadius: 1,
+          fontSize: { xs: '0.75rem', md: '0.875rem' },
         }}>
-          <SupportAgentIcon fontSize="small" sx={{ mr: 0.5 }} /> Tutorial
+          <SupportAgentIcon fontSize="small" sx={{ mr: 0.5, fontSize: { xs: '1rem', md: '1.25rem' } }} /> Tutorial
         </Box>
       </Box>
 
