@@ -57,14 +57,13 @@ function App() {
             <Route path='/verifyemail/:token' element={<VerifyEmailPage />} />
             <Route path='/download' element={<PublicDownloadPage />} />
 
+            <Route path='/timetable' element={<TimetablePage />} /> 
             {/* --- General Private Routes (Accessible to all logged-in users) --- */}
             <Route element={<PrivateRoute />}>
                 <Route path="/dashboard" element={<TaskDashboard />} />
                 <Route path='/profile' element={<ProfilePage />} />
                 <Route path='/files' element={<FilesPage />} />
                 <Route path='/chat' element={<ChatPage />} />
-  
-                <Route path='/timetable' element={<TimetablePage />} /> 
             </Route>
 
               {/* --- Student-Specific Routes --- */}
