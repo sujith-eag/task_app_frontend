@@ -90,15 +90,6 @@ export const useSessionGrid = (sessions) => {
       }
     });
 
-    // Debug logging for Monday
-    if (grid['Mon']) {
-      console.log('=== Monday Grid ===');
-      Object.keys(grid['Mon']).sort().forEach(time => {
-        console.log(`${time}:`, grid['Mon'][time].map(s => `${s.shortCode}(${s.colSpan})`));
-      });
-      console.log('Occupied slots:', Array.from(occupiedSlots).filter(s => s.startsWith('Mon')));
-    }
-
     return { grid, occupiedSlots };
   }, [sessions, slotIndexMap]);
 
