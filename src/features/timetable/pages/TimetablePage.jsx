@@ -8,7 +8,8 @@ import Timetable from '../Timetable.jsx';
 
 // --- MOCK DATA SECTION ---
 // Replace sampleData and mockCurrentUser with API/user data in production
-import sampleData from '../data/newTimeTable.json';
+// import sampleData from '../data/newTimeTable.json';
+import sampleData from '../data/currentTimeTable.json'
 
 const mockCurrentUser = {
     type: 'student', // Change to 'staff' to test staff view
