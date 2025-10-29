@@ -5,9 +5,47 @@ import { TIME_SLOTS } from '../constants';
 
 /**
  * Create a map of time slots to indices for quick lookup
+ * Handles both 24-hour format (from data) and 12-hour format (for display)
  */
 const createSlotIndexMap = (timeSlots) => {
-  return new Map(timeSlots.map((slot, i) => [slot.split('-')[0], i]));
+  // Extract start time from 12-hour format and map to 24-hour format
+  const timeMap = new Map();
+  
+  // Map 12-hour display format to 24-hour data format
+  const displayTo24Hour = {
+    '9:00 AM - 9:55 AM': '09:00',
+    '9:55 AM - 10:50 AM': '09:55',
+    '11:05 AM - 12:00 PM': '11:05',
+    '12:00 PM - 12:55 PM': '12:00',
+    '1:45 PM - 2:40 PM': '13:45',
+    '2:40 PM - 3:35 PM': '14:40',
+    '3:35 PM - 4:30 PM': '15:35'
+  };
+  
+  timeSlots.forEach((slot, i) => {
+    const time24 = displayTo24Hour[slot];
+    if (time24) {
+      timeMap.set(time24, i);
+    }
+  });
+  
+  return timeMap;
+};
+
+/**
+ * Helper to get 24-hour time from slot index
+ */
+const get24HourTime = (slot) => {
+  const displayTo24Hour = {
+    '9:00 AM - 9:55 AM': '09:00',
+    '9:55 AM - 10:50 AM': '09:55',
+    '11:05 AM - 12:00 PM': '11:05',
+    '12:00 PM - 12:55 PM': '12:00',
+    '1:45 PM - 2:40 PM': '13:45',
+    '2:40 PM - 3:35 PM': '14:40',
+    '3:35 PM - 4:30 PM': '15:35'
+  };
+  return displayTo24Hour[slot];
 };
 
 /**
@@ -81,7 +119,7 @@ export const useSessionGrid = (sessions) => {
       if (colSpan === 2) {
         const slotIndex = slotIndexMap.get(session.startTime);
         if (slotIndex !== undefined && slotIndex + 1 < TIME_SLOTS.length) {
-          const nextSlotStart = TIME_SLOTS[slotIndex + 1].split('-')[0];
+          const nextSlotStart = get24HourTime(TIME_SLOTS[slotIndex + 1]);
           // Only mark as occupied if no sessions start at this time
           if (!grid[day]?.[nextSlotStart] || grid[day][nextSlotStart].length === 0) {
             occupiedSlots.add(`${day}-${nextSlotStart}`);

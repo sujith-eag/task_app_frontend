@@ -7,16 +7,16 @@ export const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 /**
  * Time slots for the timetable
- * Format: 'HH:MM-HH:MM'
+ * Format: '12-hour format AM/PM'
  */
 export const TIME_SLOTS = [
-  '09:00-09:55',
-  '09:55-10:50',
-  '11:05-12:00',
-  '12:00-12:55',
-  '13:45-14:40',
-  '14:40-15:35',
-  '15:35-16:30'
+  '9:00 AM - 9:55 AM',
+  '9:55 AM - 10:50 AM',
+  '11:05 AM - 12:00 PM',
+  '12:00 PM - 12:55 PM',
+  '1:45 PM - 2:40 PM',
+  '2:40 PM - 3:35 PM',
+  '3:35 PM - 4:30 PM'
 ];
 
 /**

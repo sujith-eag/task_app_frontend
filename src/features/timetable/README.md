@@ -1,5 +1,48 @@
 # Timetable Feature - Architecture Documentation
 
+**Version:** 2.0 - Stage 1 Complete  
+**Last Updated:** October 30, 2025  
+**Status:** ✅ Production Ready
+
+---
+
+## 🎉 Stage 1 Completion Summary
+
+Stage 1 of the timetable design is now complete with the following achievements:
+
+### **Core Features Implemented:**
+- ✅ View All mode showing multiple semesters simultaneously
+- ✅ Progressive semester + section filtering
+- ✅ Faculty-based timetable view
+- ✅ Intelligent rendering for 2-slot sessions (labs/practicals)
+- ✅ Mixed-duration conflict resolution with section-based rows
+- ✅ Visual indicators for multi-section (common) sessions
+- ✅ 12-hour time format (AM/PM)
+- ✅ Professional dark mode support throughout
+- ✅ Responsive design for mobile and desktop
+
+### **UI/UX Enhancements:**
+- ✅ Gradient title with theme-aware colors
+- ✅ Enhanced filter section with proper dark mode contrast
+- ✅ Redesigned class type legend with hover effects
+- ✅ Improved helper text with background accent
+- ✅ Professional empty state messaging
+- ✅ Custom scrollbar styling (theme-aware)
+- ✅ Thicker colored bars for long sessions
+- ✅ Integrated modal header with connected accent bar
+- ✅ Better spacing and visual hierarchy
+- ✅ Smooth transitions and hover effects
+
+### **Technical Improvements:**
+- ✅ Comprehensive documentation (RENDERING_ARCHITECTURE.md, SEMESTER_SECTION_FILTER.md)
+- ✅ Intelligent conflict detection algorithm
+- ✅ Section-based row grouping when needed
+- ✅ Conditional rendering based on data analysis
+- ✅ Proper 12-hour to 24-hour time conversion
+- ✅ Theme-aware rgba color values
+
+---
+
 ## 📁 File Structure
 
 ```
@@ -694,7 +737,48 @@ const { grid, occupiedSlots } = semesterGrids[semester];
 
 ---
 
-## � Recent Updates & Bug Fixes
+## 📋 Recent Updates & Bug Fixes
+
+### **Version 2.0 - Stage 1 Complete (October 30, 2025)**
+
+**🎨 UI/UX Overhaul:**
+- ✅ Professional dark mode support across all components
+- ✅ Gradient title with theme-aware colors (light/dark variants)
+- ✅ Enhanced filter section with proper dark mode contrast
+- ✅ Redesigned class type legend with hover effects and container
+- ✅ Improved helper text with background accent and border
+- ✅ Professional empty state with styled container
+- ✅ Custom scrollbar styling (theme-aware rgba values)
+- ✅ Better spacing, borders, and visual hierarchy
+- ✅ Smooth transitions and hover effects throughout
+
+**⏰ Time Format Enhancement:**
+- ✅ Changed from 24-hour to 12-hour format (AM/PM)
+- ✅ Helper functions for time conversion (display vs data format)
+- ✅ Updated TIME_SLOTS constant to user-friendly format
+- ✅ Maintained backward compatibility with 24-hour data
+
+**📊 Grid & Layout Improvements:**
+- ✅ Fixed time slot wrapping on all screen sizes (nowrap)
+- ✅ Better responsive font sizes for mobile
+- ✅ Alternating row colors work properly in dark mode
+- ✅ Improved table container with rounded corners and shadows
+
+**🎴 SessionCard Enhancements:**
+- ✅ Theme-aware background colors for common sessions
+- ✅ Thicker colored bar for long sessions (8px vs 6px)
+- ✅ Better hover states for both light/dark modes
+- ✅ Removed duration badge (to prevent overlap)
+
+**🔲 SessionModal Improvements:**
+- ✅ Integrated accent bar into header (connected, not detached)
+- ✅ Proper dark mode background inheritance
+- ✅ Cleaner, more cohesive design
+
+**📝 Label Format:**
+- ✅ Changed from "S1 Sec A" to "Sem 1-A" for clarity
+- ✅ Consistent format across grid and helper text
+- ✅ Professional appearance without emojis in helper text
 
 ### **Version 2.1.0 (October 29, 2025)**
 
@@ -703,6 +787,9 @@ const { grid, occupiedSlots } = semesterGrids[semester];
 - ✅ Separate-row-per-semester rendering approach
 - ✅ Improved colSpan logic for 2-slot sessions
 - ✅ Pre-computed semester grids (React Hooks compliance)
+- ✅ Intelligent rendering with mixed-duration conflict detection
+- ✅ Section-based row grouping when conflicts exist
+- ✅ Visual indicators for multi-section sessions (blue border, bold text)
 
 **UI/UX Improvements:**
 - ✅ Modal opening performance (300ms, stays mounted)
@@ -710,6 +797,7 @@ const { grid, occupiedSlots } = semesterGrids[semester];
 - ✅ Removed redundant dropdowns (Student Group, Select Timetable)
 - ✅ Progressive section filter (enabled only when semester selected)
 - ✅ Integrated View All into semester dropdown
+- ✅ Added icons to filter section headers (SchoolIcon, SupportAgentIcon)
 
 **Bug Fixes:**
 - ✅ Fixed modal delay (300-500ms → 300ms)
@@ -720,6 +808,7 @@ const { grid, occupiedSlots } = semesterGrids[semester];
 - ✅ Fixed occupied slots logic (two-pass algorithm)
 - ✅ Fixed dropdown validation (removed empty options)
 - ✅ Updated deprecated MUI props (TransitionProps → slotProps)
+- ✅ Fixed Sem 1 rendering issues (mixed-duration conflicts resolved)
 
 **Technical Improvements:**
 - ✅ Extracted TimetableRow helper component
@@ -727,8 +816,28 @@ const { grid, occupiedSlots } = semesterGrids[semester];
 - ✅ renderedSlots Set for duplicate prevention
 - ✅ occupiedSlots Set for gap prevention
 - ✅ Responsive design enhancements (xs/md breakpoints)
+- ✅ Comprehensive documentation (RENDERING_ARCHITECTURE.md, SEMESTER_SECTION_FILTER.md)
 
-**Known Issues:**
+**Known Behavior:**
+- ℹ️ Section ordering may vary (A/B position not standardized) - Accepted behavior
+- ℹ️ Sem 1 uses section-based rows (due to mixed-duration conflicts)
+- ℹ️ Sem 3 uses regular rows (no conflicts, cleaner view)
+
+---
+
+## 🚀 Next Steps (Stage 2)
+
+Potential future enhancements for Stage 2:
+1. **Export functionality** - Download timetable as PDF or iCal
+2. **Print optimization** - Printer-friendly layout
+3. **Conflict detection** - Highlight scheduling conflicts
+4. **Comparison mode** - View multiple sections side-by-side
+5. **Auto-selection** - Set semester+section based on user profile
+6. **Favorites** - Save preferred filter combinations
+7. **Time filters** - Show only morning/afternoon classes
+8. **Day filters** - Show specific days only
+9. **Search functionality** - Find sessions by subject, faculty, or room
+10. **Calendar integration** - Export to Google Calendar, Outlook, etc.
 - ⚠️ Section ordering may vary (A/B position not standardized) - Accepted behavior
 
 ---
@@ -744,7 +853,8 @@ const { grid, occupiedSlots } = semesterGrids[semester];
 
 ---
 
-**Last Updated:** October 29, 2025  
-**Version:** 2.1.0
-**Status:** Production Ready  
-**Next Review:** Add TypeScript
+**Last Updated:** October 30, 2025  
+**Version:** 2.0 - Stage 1 Complete  
+**Status:** ✅ Production Ready  
+**Next Phase:** Stage 2 - Advanced Features (Export, Print, Calendar Integration)
+

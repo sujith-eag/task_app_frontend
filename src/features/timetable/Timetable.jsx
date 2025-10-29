@@ -32,9 +32,30 @@ const Timetable = ({ data, currentUser }) => {
   const handleCloseModal = () => setModalData(null);
 
   return (
-    <Paper elevation={3} sx={{ p: { xs: 2, md: 3 }, borderRadius: 2 }}>
+    <Paper 
+      elevation={3} 
+      sx={{ 
+        p: { xs: 2, md: 3 }, 
+        borderRadius: 2,
+        backgroundColor: 'background.paper',
+      }}
+    >
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4" component="h1" sx={{ textAlign: 'center' }}>
+        <Typography 
+          variant="h4" 
+          component="h1" 
+          sx={{ 
+            textAlign: 'center',
+            fontWeight: 700,
+            background: (theme) => 
+              theme.palette.mode === 'dark'
+                ? 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)'
+                : 'linear-gradient(45deg, #1976d2 30%, #42a5f5 90%)',
+            backgroundClip: 'text',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+          }}
+        >
           MCA 2025 Timetable
         </Typography>
       </Box>
@@ -47,7 +68,10 @@ const Timetable = ({ data, currentUser }) => {
           gap: { xs: 2, md: 3 }, 
           mb: 4, 
           p: { xs: 2, md: 3 }, 
-          backgroundColor: 'grey.50', 
+          backgroundColor: (theme) => 
+            theme.palette.mode === 'dark' 
+              ? 'rgba(255, 255, 255, 0.05)' 
+              : 'grey.50',
           borderRadius: 2,
           border: '1px solid',
           borderColor: 'divider',
@@ -135,8 +159,27 @@ const Timetable = ({ data, currentUser }) => {
       </Box>
 
       {/* Helper text to explain the filters */}
-      <Box sx={{ mb: 2, px: 2 }}>
-        <Typography variant="body2" sx={{ color: 'text.secondary', fontStyle: 'italic' }}>
+      <Box 
+        sx={{ 
+          mb: 3, 
+          px: 2, 
+          py: 1.5,
+          backgroundColor: (theme) => 
+            theme.palette.mode === 'dark' 
+              ? 'rgba(33, 150, 243, 0.08)' 
+              : 'rgba(33, 150, 243, 0.05)',
+          borderRadius: 2,
+          borderLeft: '4px solid',
+          borderColor: 'primary.main',
+        }}
+      >
+        <Typography 
+          variant="body2" 
+          sx={{ 
+            color: 'text.primary',
+            fontWeight: 500,
+          }}
+        >
           {view.type === VIEW_TYPES.ALL && 'Showing all classes across all semesters and sections'}
           {view.type === 'semesterSection' && view.value && view.sectionLetter && `Showing all classes (core + electives) for Sem ${view.value}-${view.sectionLetter}`}
           {view.type === 'semesterSection' && view.value && !view.sectionLetter && `Showing all classes for Semester ${view.value} (all sections)`}
@@ -150,13 +193,28 @@ const Timetable = ({ data, currentUser }) => {
       <Box sx={{ 
         display: 'flex', 
         flexWrap: 'wrap',
-        gap: { xs: 1, md: 2 }, 
-        mb: 2, 
+        gap: { xs: 1.5, md: 2 }, 
+        mb: 3, 
         alignItems: 'center',
         justifyContent: { xs: 'center', md: 'flex-start' },
+        p: 2,
+        backgroundColor: (theme) => 
+          theme.palette.mode === 'dark' 
+            ? 'rgba(255, 255, 255, 0.03)' 
+            : 'rgba(0, 0, 0, 0.02)',
+        borderRadius: 2,
+        border: '1px solid',
+        borderColor: 'divider',
       }}>
-        <Typography variant="subtitle2" sx={{ fontSize: { xs: '0.8rem', md: '0.875rem' } }}>
-          Legend:
+        <Typography 
+          variant="subtitle2" 
+          sx={{ 
+            fontSize: { xs: '0.85rem', md: '0.9rem' },
+            fontWeight: 600,
+            color: 'text.primary',
+          }}
+        >
+          Class Types:
         </Typography>
         <Box sx={{ 
           display: 'flex', 
@@ -164,12 +222,19 @@ const Timetable = ({ data, currentUser }) => {
           gap: 0.5, 
           bgcolor: componentColors.theory.bgcolor, 
           color: componentColors.theory.color, 
-          px: { xs: 0.75, md: 1 }, 
-          py: { xs: 0.25, md: 0.5 },
-          borderRadius: 1,
+          px: { xs: 1, md: 1.5 }, 
+          py: { xs: 0.5, md: 0.75 },
+          borderRadius: 1.5,
           fontSize: { xs: '0.75rem', md: '0.875rem' },
+          fontWeight: 600,
+          boxShadow: 1,
+          transition: 'transform 0.2s',
+          '&:hover': {
+            transform: 'translateY(-2px)',
+            boxShadow: 2,
+          }
         }}>
-          <SchoolIcon fontSize="small" sx={{ mr: 0.5, fontSize: { xs: '1rem', md: '1.25rem' } }} /> Theory
+          <SchoolIcon fontSize="small" sx={{ fontSize: { xs: '1rem', md: '1.1rem' } }} /> Theory
         </Box>
         <Box sx={{ 
           display: 'flex', 
@@ -177,12 +242,19 @@ const Timetable = ({ data, currentUser }) => {
           gap: 0.5, 
           bgcolor: componentColors.practical.bgcolor, 
           color: componentColors.practical.color, 
-          px: { xs: 0.75, md: 1 }, 
-          py: { xs: 0.25, md: 0.5 },
-          borderRadius: 1,
+          px: { xs: 1, md: 1.5 }, 
+          py: { xs: 0.5, md: 0.75 },
+          borderRadius: 1.5,
           fontSize: { xs: '0.75rem', md: '0.875rem' },
+          fontWeight: 600,
+          boxShadow: 1,
+          transition: 'transform 0.2s',
+          '&:hover': {
+            transform: 'translateY(-2px)',
+            boxShadow: 2,
+          }
         }}>
-          <MeetingRoomIcon fontSize="small" sx={{ mr: 0.5, fontSize: { xs: '1rem', md: '1.25rem' } }} /> Practical
+          <MeetingRoomIcon fontSize="small" sx={{ fontSize: { xs: '1rem', md: '1.1rem' } }} /> Practical
         </Box>
         <Box sx={{ 
           display: 'flex', 
@@ -190,20 +262,52 @@ const Timetable = ({ data, currentUser }) => {
           gap: 0.5, 
           bgcolor: componentColors.tutorial.bgcolor, 
           color: componentColors.tutorial.color, 
-          px: { xs: 0.75, md: 1 }, 
-          py: { xs: 0.25, md: 0.5 },
-          borderRadius: 1,
+          px: { xs: 1, md: 1.5 }, 
+          py: { xs: 0.5, md: 0.75 },
+          borderRadius: 1.5,
           fontSize: { xs: '0.75rem', md: '0.875rem' },
+          fontWeight: 600,
+          boxShadow: 1,
+          transition: 'transform 0.2s',
+          '&:hover': {
+            transform: 'translateY(-2px)',
+            boxShadow: 2,
+          }
         }}>
-          <SupportAgentIcon fontSize="small" sx={{ mr: 0.5, fontSize: { xs: '1rem', md: '1.25rem' } }} /> Tutorial
+          <SupportAgentIcon fontSize="small" sx={{ fontSize: { xs: '1rem', md: '1.1rem' } }} /> Tutorial
         </Box>
       </Box>
 
       {/* Error handling for empty data */}
       {filteredSessions.length === 0 ? (
-        <Typography color="error" align="center" sx={{ my: 4 }}>
-          No sessions found for the selected view.
-        </Typography>
+        <Box 
+          sx={{ 
+            my: 6, 
+            textAlign: 'center',
+            p: 4,
+            borderRadius: 2,
+            backgroundColor: (theme) => 
+              theme.palette.mode === 'dark' 
+                ? 'rgba(211, 47, 47, 0.08)' 
+                : 'rgba(211, 47, 47, 0.05)',
+            border: '1px solid',
+            borderColor: 'error.main',
+          }}
+        >
+          <Typography 
+            variant="h6" 
+            color="error" 
+            sx={{ mb: 1, fontWeight: 600 }}
+          >
+            No sessions found
+          </Typography>
+          <Typography 
+            variant="body2" 
+            color="text.secondary"
+          >
+            Try selecting a different filter option above
+          </Typography>
+        </Box>
       ) : (
         <TimetableGrid 
           sessions={filteredSessions} 

@@ -7,13 +7,27 @@ import { DAYS, TIME_SLOTS, UI_CONFIG, VIEW_TYPES } from '../constants';
 import { useSessionGrid } from '../hooks';
 import SessionCard from './SessionCard';
 
+// Helper to convert 12-hour display format to 24-hour data format
+const getStartTimeFrom12Hour = (slot) => {
+  const displayTo24Hour = {
+    '9:00 AM - 9:55 AM': '09:00',
+    '9:55 AM - 10:50 AM': '09:55',
+    '11:05 AM - 12:00 PM': '11:05',
+    '12:00 PM - 12:55 PM': '12:00',
+    '1:45 PM - 2:40 PM': '13:45',
+    '2:40 PM - 3:35 PM': '14:40',
+    '3:35 PM - 4:30 PM': '15:35'
+  };
+  return displayTo24Hour[slot];
+};
+
 // Helper component to render a single timetable row
 const TimetableRow = ({ day, semester, grid, occupiedSlots, viewType, onCellClick, rowIdx }) => {
   const cells = [];
   
   for (let i = 0; i < TIME_SLOTS.length; i++) {
     const slot = TIME_SLOTS[i];
-    const startTime = slot.split('-')[0];
+    const startTime = getStartTimeFrom12Hour(slot);
     
     // Check if this slot is occupied by a previous spanning session
     if (occupiedSlots.has(`${day}-${startTime}`)) {
@@ -96,7 +110,10 @@ const TimetableRow = ({ day, semester, grid, occupiedSlots, viewType, onCellClic
   return (
     <TableRow 
       sx={{ 
-        backgroundColor: rowIdx % 2 === 0 ? 'grey.50' : 'background.paper',
+        backgroundColor: (theme) => 
+          rowIdx % 2 === 0 
+            ? (theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.02)' : 'grey.50')
+            : 'background.paper',
         '&:hover': {
           backgroundColor: 'action.hover',
         }
@@ -199,10 +216,36 @@ const TimetableGrid = ({ sessions, viewType, onCellClick }) => {
           overflowX: 'auto',
           position: 'relative',
           width: '100%',
+          borderRadius: 2,
+          boxShadow: 3,
           '@media (min-height: 900px)': {
             maxHeight: '85vh',
             overflowY: 'auto',
-          }
+          },
+          // Smooth scrollbar styling
+          '&::-webkit-scrollbar': {
+            width: '8px',
+            height: '8px',
+          },
+          '&::-webkit-scrollbar-track': {
+            backgroundColor: (theme) => 
+              theme.palette.mode === 'dark' 
+                ? 'rgba(255, 255, 255, 0.05)' 
+                : 'rgba(0, 0, 0, 0.05)',
+          },
+          '&::-webkit-scrollbar-thumb': {
+            backgroundColor: (theme) => 
+              theme.palette.mode === 'dark' 
+                ? 'rgba(255, 255, 255, 0.2)' 
+                : 'rgba(0, 0, 0, 0.2)',
+            borderRadius: '4px',
+            '&:hover': {
+              backgroundColor: (theme) => 
+                theme.palette.mode === 'dark' 
+                  ? 'rgba(255, 255, 255, 0.3)' 
+                  : 'rgba(0, 0, 0, 0.3)',
+            },
+          },
         }}
       >
         <Table sx={{ 
@@ -237,11 +280,13 @@ const TimetableGrid = ({ sessions, viewType, onCellClick }) => {
                     fontWeight: 700,
                     backgroundColor: 'primary.main',
                     color: 'primary.contrastText',
-                    fontSize: { xs: '0.7rem', md: '0.9rem' },
+                    fontSize: { xs: '0.65rem', md: '0.85rem' },
                     borderRight: 1,
                     borderColor: 'rgba(255,255,255,0.2)',
                     p: { xs: 0.5, md: 2 },
                     width: `${100 / TIME_SLOTS.length}%`,
+                    lineHeight: 1.3,
+                    whiteSpace: 'nowrap',
                   }}
                 >
                   {time}
@@ -326,9 +371,9 @@ const TimetableGrid = ({ sessions, viewType, onCellClick }) => {
                     const duration = (parseInt(session.endTime.split(':')[0]) * 60 + parseInt(session.endTime.split(':')[1])) -
                                    (parseInt(session.startTime.split(':')[0]) * 60 + parseInt(session.startTime.split(':')[1]));
                     if (duration > 60) {
-                      const startIdx = TIME_SLOTS.findIndex(slot => slot.startsWith(session.startTime));
+                      const startIdx = TIME_SLOTS.findIndex(slot => getStartTimeFrom12Hour(slot) === session.startTime);
                       if (startIdx >= 0 && startIdx + 1 < TIME_SLOTS.length) {
-                        const nextSlot = TIME_SLOTS[startIdx + 1].split('-')[0];
+                        const nextSlot = getStartTimeFrom12Hour(TIME_SLOTS[startIdx + 1]);
                         sectionOccupiedSlots.add(`${session.day}-${nextSlot}`);
                       }
                     }

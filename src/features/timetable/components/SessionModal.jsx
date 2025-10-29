@@ -29,22 +29,42 @@ const SessionModal = ({ session, onClose }) => {
                     timeout: 300 // Faster transition
                 },
                 paper: {
-                    sx: { borderRadius: 3, overflow: 'visible' }
+                    sx: { 
+                        borderRadius: 3, 
+                        overflow: 'visible',
+                        backgroundColor: 'background.paper',
+                        backgroundImage: 'none',
+                    }
                 }
             }}
         >
             {/* Accent bar/header */}
             {session && (
                 <>
-                    <Box sx={{
-                        height: 8,
-                        width: '100%',
-                        bgcolor: color.bgcolor,
-                        borderTopLeftRadius: 12,
-                        borderTopRightRadius: 12,
-                    }} />
-                    <DialogTitle sx={{ m: 0, p: 2, borderBottom: 1, borderColor: 'divider', pb: 1.5 }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    <DialogTitle sx={{ 
+                        m: 0, 
+                        p: 0,
+                        pb: 0,
+                        overflow: 'hidden',
+                    }}>
+                        {/* Color accent bar integrated with header */}
+                        <Box sx={{
+                            height: 6,
+                            width: '100%',
+                            bgcolor: color.bgcolor,
+                            borderTopLeftRadius: 12,
+                            borderTopRightRadius: 12,
+                        }} />
+                        
+                        <Box sx={{ 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            gap: 2,
+                            p: 2,
+                            pb: 1.5,
+                            borderBottom: 1, 
+                            borderColor: 'divider',
+                        }}>
                             <Box sx={{
                                 width: 36, height: 36, borderRadius: '50%',
                                 bgcolor: color.bgcolor, color: color.color,

@@ -9,6 +9,15 @@ import { UI_CONFIG } from '../constants';
 const SessionCard = ({ session, viewType, onClick }) => {
   const color = getComponentColor(session.componentType);
   const isCommonSession = session.sections && session.sections.length > 1;
+  
+  // Calculate if this is a long session (>60 minutes)
+  const calculateDuration = (startTime, endTime) => {
+    const start = new Date(`1970-01-01T${startTime}:00`);
+    const end = new Date(`1970-01-01T${endTime}:00`);
+    return (end - start) / (1000 * 60);
+  };
+  const duration = calculateDuration(session.startTime, session.endTime);
+  const isLongSession = duration > 60;
 
   return (
     <Box
@@ -19,7 +28,12 @@ const SessionCard = ({ session, viewType, onClick }) => {
         py: { xs: 0.8, md: 1 },
         borderRadius: 2,
         boxShadow: 2,
-        bgcolor: isCommonSession ? 'rgba(25, 118, 210, 0.04)' : 'background.paper',
+        bgcolor: (theme) => 
+          isCommonSession 
+            ? (theme.palette.mode === 'dark' 
+                ? 'rgba(33, 150, 243, 0.12)' 
+                : 'rgba(25, 118, 210, 0.04)')
+            : 'background.paper',
         position: 'relative',
         cursor: 'pointer',
         border: '2px solid',
@@ -35,20 +49,28 @@ const SessionCard = ({ session, viewType, onClick }) => {
           zIndex: UI_CONFIG.HOVER_Z_INDEX,
           position: 'relative',
           borderColor: isCommonSession ? 'primary.dark' : 'primary.light',
-          bgcolor: isCommonSession ? 'rgba(25, 118, 210, 0.08)' : 'background.paper',
+          bgcolor: (theme) => 
+            isCommonSession 
+              ? (theme.palette.mode === 'dark' 
+                  ? 'rgba(33, 150, 243, 0.2)' 
+                  : 'rgba(25, 118, 210, 0.08)')
+              : (theme.palette.mode === 'dark' 
+                  ? 'rgba(255, 255, 255, 0.05)' 
+                  : 'background.paper'),
         },
       }}
     >
-      {/* Colored bar for session type */}
+      {/* Colored bar for session type - thicker for long sessions */}
       <Box sx={{
         position: 'absolute',
         left: 0,
         top: 0,
         height: '100%',
-        width: 6,
+        width: isLongSession ? 8 : 6,
         borderTopLeftRadius: 8,
         borderBottomLeftRadius: 8,
         bgcolor: color.bgcolor,
+        boxShadow: isLongSession ? 2 : 0,
       }} />
       
       <Typography variant="subtitle1" sx={{ 
