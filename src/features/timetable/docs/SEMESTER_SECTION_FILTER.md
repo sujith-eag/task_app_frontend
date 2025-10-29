@@ -136,7 +136,7 @@ User can select "-- All Sections --" to go back
 - ❌ MCA_SEM3_A sessions (filtered out)
 - ❌ ELEC_AD_A1 sessions (filtered out)
 
-**Helper Text:** *"Showing all classes (core + electives) for Semester 3, Section B"*
+**Helper Text:** *"Showing all classes (core + electives) for Sem 3-B"*
 
 ---
 
@@ -158,7 +158,7 @@ User can select "-- All Sections --" to go back
 
 ```
 ┌───────────────────────────────────────────────────────────────┐
-│  View by Semester [& Section]                                 │
+│  🎓 View by Semester                                          │
 │  ┌──────────────────────┐  ┌──────────────────────────────┐  │
 │  │ Semester: [3      ▼] │  │ Section: [-- All --      ▼]  │  │
 │  └──────────────────────┘  └──────────────────────────────┘  │
@@ -167,14 +167,7 @@ User can select "-- All Sections --" to go back
 └───────────────────────────────────────────────────────────────┘
 
 ┌───────────────────────────────────────────────────────────────┐
-│  View by Student Group                                         │
-│  ┌──────────────────────────────────────────────────────────┐│
-│  │ MCA_SEM3_A                                            ▼ ││
-│  └──────────────────────────────────────────────────────────┘│
-└───────────────────────────────────────────────────────────────┘
-
-┌───────────────────────────────────────────────────────────────┐
-│  View by Faculty                                               │
+│  👨‍🏫 View by Faculty                                            │
 │  ┌──────────────────────────────────────────────────────────┐│
 │  │ Ms Geethanjali R                                      ▼ ││
 │  └──────────────────────────────────────────────────────────┘│
@@ -184,11 +177,11 @@ Showing all classes for Semester 3 (all sections)
 ```
 
 **Key UI Features:**
-- ✅ Consistent labels above all filters
-- ✅ Proper alignment with `minHeight: 20`
-- ✅ Clear visual hierarchy
+- ✅ Consistent labels with icons (SchoolIcon, SupportAgentIcon)
+- ✅ Professional styling without emojis in helper text
+- ✅ Clear visual hierarchy with proper spacing
 - ✅ Disabled state for section until semester selected
-- ✅ Helper text explains current filter
+- ✅ Helper text with "Sem 1-A" format for clarity
 
 ---
 
@@ -323,9 +316,11 @@ handleViewChange('semesterSection', '3', 'B')
 ### **v2.0 - Progressive Filtering (Current)**
 - ✅ Combined two semester filters into one
 - ✅ Progressive disclosure: semester → optional section
-- ✅ Consistent labels across all filters
-- ✅ Improved alignment and spacing
+- ✅ Consistent labels with icons (SchoolIcon, SupportAgentIcon)
+- ✅ Improved alignment and spacing (grey.50 background, proper borders)
 - ✅ Cleaner, more intuitive UI
+- ✅ Professional helper text format: "Sem 1-A" instead of "Semester 1, Section A"
+- ✅ Removed emojis from helper text for professional appearance
 
 ### **v1.0 - Dual Semester Filters (Deprecated)**
 - ❌ Separate "Semester Only" and "Semester & Section" filters

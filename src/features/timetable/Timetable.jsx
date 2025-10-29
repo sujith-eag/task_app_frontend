@@ -46,18 +46,21 @@ const Timetable = ({ data, currentUser }) => {
           justifyContent: 'center', 
           gap: { xs: 2, md: 3 }, 
           mb: 4, 
-          p: { xs: 1.5, md: 2 }, 
-          backgroundColor: 'action.hover', 
-          borderRadius: 1 
+          p: { xs: 2, md: 3 }, 
+          backgroundColor: 'grey.50', 
+          borderRadius: 2,
+          border: '1px solid',
+          borderColor: 'divider',
         }}
       >
         {/* Combined Semester + Section View (Progressive Filter) */}
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, width: '100%' }}>
-          <Typography variant="caption" sx={{ fontWeight: 600, color: 'text.secondary', minHeight: 20 }}>
-            View by Semester {view.type === 'semesterSection' && view.sectionLetter && '& Section'}
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, width: '100%' }}>
+          <Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'text.primary', display: 'flex', alignItems: 'center', gap: 1 }}>
+            <SchoolIcon fontSize="small" />
+            View by Semester
           </Typography>
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            <FormControl fullWidth>
+          <Box sx={{ display: 'flex', gap: 1.5, flexDirection: { xs: 'column', sm: 'row' } }}>
+            <FormControl fullWidth size="small">
               <InputLabel id="semester-section-sem-label">Semester</InputLabel>
               <Select
                 labelId="semester-section-sem-label"
@@ -78,14 +81,14 @@ const Timetable = ({ data, currentUser }) => {
                 <MenuItem value="all">
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <ViewWeekIcon fontSize="small" />
-                    <em>Semester 1 & 3</em>
+                    <span>All Semesters</span>
                   </Box>
                 </MenuItem>
                 {semesterList.map(s => <MenuItem key={s} value={s}>Semester {s}</MenuItem>)}
               </Select>
             </FormControl>
             
-            <FormControl fullWidth>
+            <FormControl fullWidth size="small">
               <InputLabel id="semester-section-letter-label">Section (Optional)</InputLabel>
               <Select
                 labelId="semester-section-letter-label"
@@ -98,7 +101,7 @@ const Timetable = ({ data, currentUser }) => {
                 disabled={view.type !== 'semesterSection' || !view.value || view.value === 'all'}
                 aria-label="Optionally filter by section letter"
               >
-                <MenuItem value=""><em>-- All Sections --</em></MenuItem>
+                <MenuItem value=""><em>All Sections</em></MenuItem>
                 {sectionLetterList.map(s => <MenuItem key={s} value={s}>Section {s}</MenuItem>)}
               </Select>
             </FormControl>
@@ -106,11 +109,12 @@ const Timetable = ({ data, currentUser }) => {
         </Box>
 
         {/* View by Faculty */}
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, width: '100%' }}>
-          <Typography variant="caption" sx={{ fontWeight: 600, color: 'text.secondary', minHeight: 20 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, width: '100%' }}>
+          <Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'text.primary', display: 'flex', alignItems: 'center', gap: 1 }}>
+            <SupportAgentIcon fontSize="small" />
             View by Faculty
           </Typography>
-          <FormControl fullWidth>
+          <FormControl fullWidth size="small">
             <InputLabel id="faculty-select-label">Faculty Name</InputLabel>
             <Select
               labelId="faculty-select-label"
@@ -123,6 +127,7 @@ const Timetable = ({ data, currentUser }) => {
               }}
               aria-label="Select faculty to view timetable"
             >
+              <MenuItem value=""><em>Select Faculty</em></MenuItem>
               {facultyList.map(f => <MenuItem key={f} value={f}>{f}</MenuItem>)}
             </Select>
           </FormControl>
@@ -131,9 +136,9 @@ const Timetable = ({ data, currentUser }) => {
 
       {/* Helper text to explain the filters */}
       <Box sx={{ mb: 2, px: 2 }}>
-        <Typography variant="caption" sx={{ color: 'text.secondary', fontStyle: 'italic' }}>
+        <Typography variant="body2" sx={{ color: 'text.secondary', fontStyle: 'italic' }}>
           {view.type === VIEW_TYPES.ALL && 'Showing all classes across all semesters and sections'}
-          {view.type === 'semesterSection' && view.value && view.sectionLetter && `Showing all classes (core + electives) for Semester ${view.value}, Section ${view.sectionLetter}`}
+          {view.type === 'semesterSection' && view.value && view.sectionLetter && `Showing all classes (core + electives) for Sem ${view.value}-${view.sectionLetter}`}
           {view.type === 'semesterSection' && view.value && !view.sectionLetter && `Showing all classes for Semester ${view.value} (all sections)`}
           {view.type === 'section' && view.value && `Showing classes for ${view.value}`}
           {view.type === 'faculty' && view.value && `Showing all classes taught by ${view.value}`}

@@ -8,6 +8,7 @@ import { UI_CONFIG } from '../constants';
 
 const SessionCard = ({ session, viewType, onClick }) => {
   const color = getComponentColor(session.componentType);
+  const isCommonSession = session.sections && session.sections.length > 1;
 
   return (
     <Box
@@ -18,21 +19,23 @@ const SessionCard = ({ session, viewType, onClick }) => {
         py: { xs: 0.8, md: 1 },
         borderRadius: 2,
         boxShadow: 2,
-        bgcolor: 'background.paper',
+        bgcolor: isCommonSession ? 'rgba(25, 118, 210, 0.04)' : 'background.paper',
         position: 'relative',
         cursor: 'pointer',
-        border: '1.5px solid',
-        borderColor: 'divider',
+        border: '2px solid',
+        borderColor: isCommonSession ? 'primary.main' : 'divider',
         minHeight: { xs: 50, md: UI_CONFIG.SESSION_CARD_MIN_HEIGHT },
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'flex-start',
-        transition: 'transform 0.18s, box-shadow 0.18s',
+        transition: 'transform 0.18s, box-shadow 0.18s, border-color 0.2s, background-color 0.2s',
         '&:hover': {
           boxShadow: 6,
           transform: `scale(${UI_CONFIG.HOVER_SCALE})`,
           zIndex: UI_CONFIG.HOVER_Z_INDEX,
           position: 'relative',
+          borderColor: isCommonSession ? 'primary.dark' : 'primary.light',
+          bgcolor: isCommonSession ? 'rgba(25, 118, 210, 0.08)' : 'background.paper',
         },
       }}
     >
@@ -80,15 +83,19 @@ const SessionCard = ({ session, viewType, onClick }) => {
         {viewType === 'section' ? session.facultyName : session.studentGroupId}
       </Typography>
       
-      {/* Display sections if available and array has content */}
+      {/* Display sections with visual distinction for multi-section */}
       {hasSections(session.sections) && (
-        <Typography variant="caption" display="block" sx={{ 
-          ml: 1.5, 
-          opacity: 0.85, 
-          color: 'primary.main', 
-          fontWeight: 600,
-          fontSize: { xs: '0.7rem', md: '0.75rem' },
-        }}>
+        <Typography 
+          variant="caption" 
+          display="block"
+          sx={{ 
+            ml: 1.5,
+            opacity: 0.85, 
+            color: isCommonSession ? 'primary.main' : 'text.secondary',
+            fontWeight: isCommonSession ? 700 : 600,
+            fontSize: { xs: '0.7rem', md: '0.75rem' },
+          }}
+        >
           Sec: {formatSections(session.sections)}
         </Typography>
       )}

@@ -10,49 +10,38 @@ import SessionCard from './SessionCard';
 // Helper component to render a single timetable row
 const TimetableRow = ({ day, semester, grid, occupiedSlots, viewType, onCellClick, rowIdx }) => {
   const cells = [];
-  const renderedSlots = new Set();
   
   for (let i = 0; i < TIME_SLOTS.length; i++) {
     const slot = TIME_SLOTS[i];
     const startTime = slot.split('-')[0];
     
-    if (renderedSlots.has(startTime)) {
+    // Check if this slot is occupied by a previous spanning session
+    if (occupiedSlots.has(`${day}-${startTime}`)) {
+      // Skip rendering - this slot is part of a previous 2-slot session
       continue;
     }
     
     const sessionsInCell = grid[day]?.[startTime];
     
-    if (occupiedSlots.has(`${day}-${startTime}`) && (!sessionsInCell || sessionsInCell.length === 0)) {
-      continue;
-    }
-    
     if (sessionsInCell && sessionsInCell.length > 0) {
+      // Check if any session spans 2 slots
       const hasSpanningSession = sessionsInCell.some(s => s.colSpan === 2);
       
-      let cellColSpan = 1;
-      if (hasSpanningSession && i + 1 < TIME_SLOTS.length) {
-        const nextSlotStart = TIME_SLOTS[i + 1].split('-')[0];
-        const nextSlotHasSessions = grid[day]?.[nextSlotStart] && grid[day][nextSlotStart].length > 0;
-        if (!nextSlotHasSessions) {
-          cellColSpan = 2;
-        }
-      }
-      
       cells.push(
-        <TableCell
-          key={slot}
-          colSpan={cellColSpan}
-          sx={{
-            p: { xs: 0.5, md: 1 },
-            textAlign: 'center',
-            verticalAlign: 'top',
-            border: 1,
-            borderColor: 'divider',
-            backgroundColor: 'background.default',
-            minHeight: { xs: '80px', md: '100px' },
-            height: 'auto',
-          }}
-        >
+                  <TableCell
+            key={slot}
+            colSpan={hasSpanningSession ? 2 : 1}
+            sx={{
+              p: { xs: 0.5, md: 1 },
+              textAlign: 'left',
+              verticalAlign: 'top',
+              border: 1,
+              borderColor: 'divider',
+              backgroundColor: 'background.default',
+              minHeight: { xs: '80px', md: '100px' },
+              height: 'auto',
+            }}
+          >
           <Box sx={{ 
             display: 'flex', 
             flexDirection: 'column', 
@@ -70,14 +59,8 @@ const TimetableRow = ({ day, semester, grid, occupiedSlots, viewType, onCellClic
           </Box>
         </TableCell>
       );
-      
-      renderedSlots.add(startTime);
-      
-      if (cellColSpan === 2 && i + 1 < TIME_SLOTS.length) {
-        const nextSlotStart = TIME_SLOTS[i + 1].split('-')[0];
-        renderedSlots.add(nextSlotStart);
-      }
     } else {
+      // Empty cell
       cells.push(
         <TableCell 
           key={slot} 
@@ -88,11 +71,27 @@ const TimetableRow = ({ day, semester, grid, occupiedSlots, viewType, onCellClic
           }} 
         />
       );
-      renderedSlots.add(startTime);
     }
   }
   
-  const dayLabel = semester ? `${day} (Sem ${semester})` : day;
+  // Format day label based on whether we have semester/section info
+  let dayLabel = day;
+  let semesterLabel = null;
+  
+  if (semester) {
+    // Extract semester number and section if present
+    // semester could be like "1 (A)" or just "1"
+    const match = semester.match(/^(\d+)\s*\(([A-Z])\)$/);
+    if (match) {
+      // Has section: "1 (A)" -> show "Mon | Sem 1-A" (cleaner format for View All)
+      dayLabel = day;
+      semesterLabel = `Sem ${match[1]}-${match[2]}`;
+    } else {
+      // No section: "1" -> show "Mon | Sem 1"
+      dayLabel = day;
+      semesterLabel = `Sem ${semester}`;
+    }
+  }
   
   return (
     <TableRow 
@@ -118,7 +117,21 @@ const TimetableRow = ({ day, semester, grid, occupiedSlots, viewType, onCellClic
           p: { xs: 0.5, md: 1 },
         }}
       >
-        {dayLabel}
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.25 }}>
+          <Box sx={{ fontSize: { xs: '0.85rem', md: '1rem' }, fontWeight: 700 }}>
+            {dayLabel}
+          </Box>
+          {semesterLabel && (
+            <Box sx={{ 
+              fontSize: { xs: '0.65rem', md: '0.75rem' }, 
+              fontWeight: 600,
+              opacity: 0.9,
+              mt: -0.25
+            }}>
+              {semesterLabel}
+            </Box>
+          )}
+        </Box>
       </TableCell>
       {cells}
     </TableRow>
@@ -128,8 +141,42 @@ const TimetableRow = ({ day, semester, grid, occupiedSlots, viewType, onCellClic
 const TimetableGrid = ({ sessions, viewType, onCellClick }) => {
   const isViewAll = viewType === VIEW_TYPES.ALL;
   
+  // Check if we have mixed-duration conflicts that require section-based grouping
+  const hasMixedDurationConflicts = useMemo(() => {
+    if (sessions.length === 0) return false;
+    
+    // Group sessions by day and startTime
+    const timeSlotGrid = {};
+    sessions.forEach(session => {
+      const key = `${session.day}-${session.startTime}`;
+      if (!timeSlotGrid[key]) timeSlotGrid[key] = [];
+      timeSlotGrid[key].push(session);
+    });
+    
+    // Check if any time slot has sessions with different durations
+    for (const [key, sessionsInSlot] of Object.entries(timeSlotGrid)) {
+      if (sessionsInSlot.length > 1) {
+        const durations = new Set();
+        sessionsInSlot.forEach(s => {
+          const duration = (parseInt(s.endTime.split(':')[0]) * 60 + parseInt(s.endTime.split(':')[1])) -
+                          (parseInt(s.startTime.split(':')[0]) * 60 + parseInt(s.startTime.split(':')[1]));
+          durations.add(duration);
+        });
+        
+        // If we have multiple sessions at same time with different durations, we have a conflict
+        if (durations.size > 1) {
+          return true;
+        }
+      }
+    }
+    
+    return false;
+  }, [sessions]);
+  
+  const shouldUseSectionGrouping = isViewAll || hasMixedDurationConflicts;
+  
   const sessionsBySemester = useMemo(() => {
-    if (!isViewAll) return null;
+    if (!shouldUseSectionGrouping) return null;
     
     const grouped = {};
     sessions.forEach(session => {
@@ -139,55 +186,7 @@ const TimetableGrid = ({ sessions, viewType, onCellClick }) => {
     });
     
     return grouped;
-  }, [sessions, isViewAll]);
-  
-  // Pre-compute grids for each semester when in View All mode
-  const semesterGrids = useMemo(() => {
-    if (!isViewAll || !sessionsBySemester) return null;
-    
-    const grids = {};
-    Object.keys(sessionsBySemester).forEach(semester => {
-      const semSessions = sessionsBySemester[semester];
-      // Manually compute grid for each semester (can't use hook here)
-      const semGrid = {};
-      const semOccupiedSlots = new Set();
-      
-      // Build grid
-      semSessions.forEach(session => {
-        const day = session.day;
-        if (!semGrid[day]) semGrid[day] = {};
-        
-        const duration = (new Date(`1970-01-01T${session.endTime}:00`) - new Date(`1970-01-01T${session.startTime}:00`)) / (1000 * 60);
-        const colSpan = duration > 60 ? 2 : 1;
-        
-        if (!semGrid[day][session.startTime]) {
-          semGrid[day][session.startTime] = [];
-        }
-        semGrid[day][session.startTime].push({ ...session, colSpan });
-      });
-      
-      // Mark occupied slots
-      semSessions.forEach(session => {
-        const day = session.day;
-        const duration = (new Date(`1970-01-01T${session.endTime}:00`) - new Date(`1970-01-01T${session.startTime}:00`)) / (1000 * 60);
-        const colSpan = duration > 60 ? 2 : 1;
-        
-        if (colSpan === 2) {
-          const slotIndex = TIME_SLOTS.findIndex(slot => slot.split('-')[0] === session.startTime);
-          if (slotIndex !== -1 && slotIndex + 1 < TIME_SLOTS.length) {
-            const nextSlotStart = TIME_SLOTS[slotIndex + 1].split('-')[0];
-            if (!semGrid[day]?.[nextSlotStart] || semGrid[day][nextSlotStart].length === 0) {
-              semOccupiedSlots.add(`${day}-${nextSlotStart}`);
-            }
-          }
-        }
-      });
-      
-      grids[semester] = { grid: semGrid, occupiedSlots: semOccupiedSlots };
-    });
-    
-    return grids;
-  }, [isViewAll, sessionsBySemester]);
+  }, [sessions, shouldUseSectionGrouping]);
   
   const { grid, occupiedSlots } = useSessionGrid(sessions);
 
@@ -251,19 +250,99 @@ const TimetableGrid = ({ sessions, viewType, onCellClick }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {isViewAll ? (
+            {shouldUseSectionGrouping ? (
               DAYS.flatMap((day, dayIdx) => {
-                return Object.keys(sessionsBySemester).sort().map((semester, semIdx) => {
-                  const { grid: semGrid, occupiedSlots: semOccupiedSlots } = semesterGrids[semester];
-                  const rowIdx = dayIdx * Object.keys(sessionsBySemester).length + semIdx;
+                // Group by semester + section to avoid mixed-duration conflicts
+                const semesterSectionGroups = {};
+                const commonSessionsPerDay = {}; // Track multi-section sessions to show only once
+                
+                Object.entries(sessionsBySemester).forEach(([semester, sessions]) => {
+                  // Filter sessions for this specific day first
+                  const daySessionsForSemester = sessions.filter(s => s.day === day);
+                  
+                  // Separate single-section and multi-section sessions
+                  const singleSectionSessions = daySessionsForSemester.filter(s => s.sections.length === 1);
+                  const multiSectionSessions = daySessionsForSemester.filter(s => s.sections.length > 1);
+                  
+                  // Store multi-section sessions separately (to be shown once)
+                  if (multiSectionSessions.length > 0) {
+                    const commonKey = `${semester}-COMMON`;
+                    commonSessionsPerDay[commonKey] = multiSectionSessions;
+                  }
+                  
+                  // Group single-section sessions by section
+                  const sectionGroups = singleSectionSessions.reduce((acc, session) => {
+                    session.sections.forEach(section => {
+                      const key = `${semester}-${section}`;
+                      if (!acc[key]) acc[key] = [];
+                      acc[key].push(session);
+                    });
+                    return acc;
+                  }, {});
+                  Object.assign(semesterSectionGroups, sectionGroups);
+                });
+                
+                // Add common sessions to each section group
+                Object.entries(commonSessionsPerDay).forEach(([commonKey, commonSessions]) => {
+                  const semester = commonKey.split('-')[0];
+                  // Find all section groups for this semester and add common sessions
+                  Object.keys(semesterSectionGroups).forEach(key => {
+                    if (key.startsWith(`${semester}-`)) {
+                      semesterSectionGroups[key] = [...semesterSectionGroups[key], ...commonSessions];
+                    }
+                  });
+                });
+                
+                // Filter out empty groups
+                const nonEmptyGroups = Object.keys(semesterSectionGroups)
+                  .filter(key => semesterSectionGroups[key].length > 0)
+                  .sort();
+                
+                if (nonEmptyGroups.length === 0) {
+                  return []; // No sessions for this day
+                }
+                
+                return nonEmptyGroups.map((semesterSection, idx) => {
+                  const [semester, section] = semesterSection.split('-');
+                  const sessions = semesterSectionGroups[semesterSection];
+                  
+                  // Calculate grid for this semester-section combination
+                  const sectionGrid = sessions.reduce((acc, session) => {
+                    const { day: sessionDay, startTime } = session;
+                    if (!acc[sessionDay]) acc[sessionDay] = {};
+                    if (!acc[sessionDay][startTime]) acc[sessionDay][startTime] = [];
+                    
+                    const duration = (parseInt(session.endTime.split(':')[0]) * 60 + parseInt(session.endTime.split(':')[1])) -
+                                   (parseInt(session.startTime.split(':')[0]) * 60 + parseInt(session.startTime.split(':')[1]));
+                    const colSpan = duration > 60 ? 2 : 1;
+                    
+                    acc[sessionDay][startTime].push({ ...session, colSpan });
+                    return acc;
+                  }, {});
+                  
+                  // Calculate occupied slots
+                  const sectionOccupiedSlots = new Set();
+                  sessions.forEach(session => {
+                    const duration = (parseInt(session.endTime.split(':')[0]) * 60 + parseInt(session.endTime.split(':')[1])) -
+                                   (parseInt(session.startTime.split(':')[0]) * 60 + parseInt(session.startTime.split(':')[1]));
+                    if (duration > 60) {
+                      const startIdx = TIME_SLOTS.findIndex(slot => slot.startsWith(session.startTime));
+                      if (startIdx >= 0 && startIdx + 1 < TIME_SLOTS.length) {
+                        const nextSlot = TIME_SLOTS[startIdx + 1].split('-')[0];
+                        sectionOccupiedSlots.add(`${session.day}-${nextSlot}`);
+                      }
+                    }
+                  });
+                  
+                  const rowIdx = dayIdx * Object.keys(semesterSectionGroups).length + idx;
                   
                   return (
                     <TimetableRow
-                      key={`${day}-sem${semester}`}
+                      key={`${day}-sem${semester}-sec${section}`}
                       day={day}
-                      semester={semester}
-                      grid={semGrid}
-                      occupiedSlots={semOccupiedSlots}
+                      semester={`${semester} (${section})`}
+                      grid={sectionGrid}
+                      occupiedSlots={sectionOccupiedSlots}
                       viewType={viewType}
                       onCellClick={onCellClick}
                       rowIdx={rowIdx}
