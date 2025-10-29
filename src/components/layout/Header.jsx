@@ -2,6 +2,7 @@ import { logout, reset as resetAuth } from '../../features/auth/authSlice.js';
 import { reset as resetTasks } from '../../features/tasks/taskSlice.js';
 import { ColorModeContext } from '../../context/ThemeContext.jsx';
 import eagleLogo from '../../assets/eagle-logo.png';
+import ConfirmationDialog from '../ConfirmationDialog.jsx';
 
 import { useState, useContext } from 'react';
 import { useTheme } from '@mui/material/styles';
@@ -39,7 +40,7 @@ const Header = () => {
     const { user } = useSelector((state) => state.auth);
 
     const [anchorEl, setAnchorEl] = useState(null);
-    const [confirmingLogout, setConfirmingLogout] = useState(false);
+    const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
     
     const isDesktop = useMediaQuery(theme.breakpoints.up('md'));  
     const isMenuOpen = Boolean(anchorEl);
@@ -50,13 +51,18 @@ const Header = () => {
     const handleMenuClose = () => {
         setAnchorEl(null);
     };
-    const handleLogoutConfirm = () => {
+    
+    const handleLogoutClick = () => {
+        setLogoutDialogOpen(true);
+        handleMenuClose(); // Close menu when opening dialog
+    };
+    
+    const handleLogoutConfirm = async () => {
         const userName = user?.name;
-        dispatch(logout());
-        dispatch(resetAuth());
-        dispatch(resetTasks());
-        handleMenuClose();
-        setConfirmingLogout(false);
+        await dispatch(logout());
+        await dispatch(resetAuth());
+        await dispatch(resetTasks());
+        setLogoutDialogOpen(false);
         toast.success(`Goodbye, ${userName || 'User'}!`);
         navigate('/');
     };
@@ -93,7 +99,7 @@ const Header = () => {
           <Box
             component="img"
             src={eagleLogo}
-            alt="Eagle Tasks Logo"
+            alt="Eagle Campus Logo"
             // Responsive logo height
             sx={{ 
                 height: { xs: 35, md: 45 }, 
@@ -251,24 +257,16 @@ const Header = () => {
                             </MenuItem>
                         )}
 
-                        {/* --- Interactive Logout Link --- */}
-                        {!confirmingLogout ? (
-                            <MenuItem onClick={() => setConfirmingLogout(true)}
-                                sx={menuItemStyles}
-                            > <ListItemIcon> <LogoutIcon fontSize="small" /></ListItemIcon>
+                        {/* --- Logout Link --- */}
+                        <MenuItem 
+                            onClick={handleLogoutClick}
+                            sx={menuItemStyles}
+                        >
+                            <ListItemIcon>
+                                <LogoutIcon fontSize="small" />
+                            </ListItemIcon>
                             Logout
-                            </MenuItem>
-                            ) : (
-                            <>
-                            <MenuItem onClick={handleLogoutConfirm} 
-                                    sx={{ color: 'error.main' }}>
-                                Confirm Logout
-                            </MenuItem>
-                            <MenuItem onClick={() => setConfirmingLogout(false)}>
-                                Cancel
-                            </MenuItem>
-                            </>
-                        )}
+                        </MenuItem>
 
                     </div>
                 ) : (
@@ -313,6 +311,18 @@ const Header = () => {
                 </div>
                 )}
             </Menu>
+            
+            {/* Logout Confirmation Dialog */}
+            <ConfirmationDialog
+                open={logoutDialogOpen}
+                onClose={() => setLogoutDialogOpen(false)}
+                onConfirm={handleLogoutConfirm}
+                title="Logout"
+                message={`Are you sure you want to logout${user?.name ? `, ${user.name}` : ''}?`}
+                variant="warning"
+                confirmText="Logout"
+                cancelText="Stay Logged In"
+            />
         </AppBar>
     );
 };

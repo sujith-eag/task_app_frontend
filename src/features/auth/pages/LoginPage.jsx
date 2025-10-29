@@ -2,7 +2,7 @@ import { login, reset } from '../authSlice.js';
 
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 import { Container, Box, Avatar, Typography, TextField, 
@@ -20,7 +20,11 @@ const Login = () => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const location = useLocation();
   const [showPassword, setShowPassword] = useState(false);
+  
+  // Get the return URL from location state (set by PrivateRoute)
+  const returnUrl = location.state?.from || '/profile';
   
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const isEmailValid = emailRegex.test(email);
@@ -51,14 +55,15 @@ const Login = () => {
     }
     if (isSuccess && user) {
       toast.success(`Welcome back, ${user.name}!`);
-      navigate('/profile');
+      // Redirect to the return URL or default to profile
+      navigate(returnUrl, { replace: true });
     } else if (user || isSuccess){
-      navigate('/profile');
+      navigate(returnUrl, { replace: true });
     }
     return () => {
       dispatch(reset());
     }
-  }, [user, isError, isSuccess, message, navigate, dispatch]);
+  }, [user, isError, isSuccess, message, navigate, dispatch, returnUrl]);
 
   const onChange = (e) => {
     setFormData((prevState) => ({
