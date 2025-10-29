@@ -3,6 +3,36 @@ import axios from 'axios'
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const AUTH_API_URL = `${API_BASE_URL}/auth/`;
 
+// --- Axios Interceptor for Token Expiration Handling ---
+axios.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        // Handle 401 Unauthorized (Token expired or invalid)
+        if (error.response?.status === 401) {
+            const currentPath = window.location.pathname;
+            // Don't redirect if already on auth pages
+            const authPages = ['/login', '/register', '/forgotpassword', '/resetpassword'];
+            const isAuthPage = authPages.some(page => currentPath.startsWith(page));
+            
+            if (!isAuthPage) {
+                // Clear user data
+                localStorage.removeItem('user');
+                // Redirect to login
+                window.location.href = '/login';
+                // Show error message (will display after redirect)
+                setTimeout(() => {
+                    // Using setTimeout to ensure it shows after redirect
+                    const event = new CustomEvent('auth:sessionExpired', { 
+                        detail: { message: 'Your session has expired. Please log in again.' } 
+                    });
+                    window.dispatchEvent(event);
+                }, 100);
+            }
+        }
+        return Promise.reject(error);
+    }
+);
+
 // --- Authentication & User Management ---
 
 /**
