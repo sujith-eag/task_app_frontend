@@ -118,132 +118,36 @@ const LibrarySection = () => {
                   >
                     This application is a full-stack showcase built with a modern, production-grade MERN stack to deliver a robust and scalable platform.
                   </Typography>
-                  <Stack 
-                    direction="row" 
-                    spacing={1} 
-                    flexWrap="wrap" 
-                    sx={{ gap: 1, mb: 3 }}
-                  >
+                  <Stack direction="row" spacing={1} flexWrap="wrap" sx={{ gap: 1, mb: 3 }}>
                     {eagleCampusStack.map((tech) => (
-                      <Chip 
-                        key={tech.name} 
-                        icon={tech.icon} 
-                        label={tech.name} 
-                        variant="outlined" 
-                        color="primary"
-                        sx={{
-                          fontWeight: 600,
-                          fontSize: { xs: '0.8rem', sm: '0.85rem' },
-                          transition: 'all 0.2s ease',
-                          '&:hover': {
-                            transform: 'scale(1.05)',
-                            boxShadow: 2,
-                            bgcolor: 'primary.main',
-                            color: 'primary.contrastText',
-                            '& .MuiChip-icon': {
-                              color: 'inherit',
-                            }
-                          }
-                        }}
-                      />
+                      <Chip key={tech.name} icon={tech.icon} label={tech.name} variant="outlined" color="primary" />
                     ))}
                   </Stack>
                 </Box>
               </Grid>
 
-              {/* Vertical Divider - Hidden on mobile */}
-              <Grid item xs={12} md="auto" sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', px: 0 }}>
-                <Divider 
-                  orientation="vertical" 
-                  flexItem
-                  sx={{ 
-                    borderColor: 'primary.main',
-                    borderWidth: 1,
-                    opacity: 0.3,
-                  }} 
-                />
-              </Grid>
-
-              {/* Horizontal Divider - Visible on mobile */}
-              <Grid item xs={12} sx={{ display: { xs: 'block', md: 'none' }, py: 0 }}>
-                <Divider 
-                  sx={{ 
-                    borderColor: 'primary.main',
-                    borderWidth: 1,
-                    opacity: 0.3,
-                  }} 
-                />
-              </Grid>
-
-              {/* Column 2: Sujith's Library */}
-              <Grid item xs={12} md>
-                <Box sx={{ 
-                  height: '100%', 
-                  display: 'flex', 
-                  flexDirection: 'column',
-                  position: 'relative',
-                  zIndex: 1
-                }}>
-                  <Typography 
-                    variant="h4" 
-                    component="h3" 
-                    sx={{ 
-                      fontWeight: 800, 
-                      mb: 2,
-                      fontSize: { xs: '1.5rem', sm: '1.75rem', md: '2rem' },
-                      background: (theme) => theme.palette.mode === 'light'
-                        ? 'linear-gradient(135deg, #d81b60 0%, #c2185b 100%)'
-                        : 'linear-gradient(135deg, #f48fb1 0%, #f06292 100%)',
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                    }}
-                  >
+              {/* Divider for medium screens and up */}
+              <Grid item xs={12} md={6}>
+                <Divider sx={{ display: { xs: 'block', md: 'none' }, mb: 4 }} />
+                <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                  <Typography variant="h5" component="h3" sx={{ fontWeight: 'bold', mb: 1.5 }}>
                     Explore Sujith's Library
                   </Typography>
-                  <Typography 
-                    variant="body1" 
-                    color="text.secondary" 
-                    sx={{ 
-                      flexGrow: 1, 
-                      mb: 3, 
-                      lineHeight: 1.7,
-                      fontSize: { xs: '0.9rem', sm: '0.95rem', md: '1rem' }
-                    }}
-                  >
+                  <Typography variant="body1" color="text.secondary" sx={{ flexGrow: 1, mb: 3 }}>
                     A growing knowledge hub featuring a curated collection of notes and insights, built with a modern frontend stack.
                   </Typography>
                   <Stack 
                     direction="row" 
                     spacing={1} 
                     flexWrap="wrap" 
-                    sx={{ gap: 1, mb: 3 }}
-                  >
+                    // justifyContent={{ xs: 'center', md: 'flex-start' }}
+                    sx={{ gap: 1, mb: 3 }}>
                     {libraryStack.map((tech) => (
-                      <Chip 
-                        key={tech.name} 
-                        icon={tech.icon} 
-                        label={tech.name} 
-                        variant="outlined" 
-                        color="secondary"
-                        sx={{
-                          fontWeight: 600,
-                          fontSize: { xs: '0.8rem', sm: '0.85rem' },
-                          transition: 'all 0.2s ease',
-                          '&:hover': {
-                            transform: 'scale(1.05)',
-                            boxShadow: 2,
-                            bgcolor: 'secondary.main',
-                            color: 'secondary.contrastText',
-                            '& .MuiChip-icon': {
-                              color: 'inherit',
-                            }
-                          }
-                        }}
-                      />
+                      <Chip key={tech.name} icon={tech.icon} label={tech.name} variant="outlined" color="secondary" />
                     ))}
                   </Stack>
                   
-                  <Box sx={{ mt: 'auto' }}>
+                  <Box sx={{ mt: 'auto', py:2 }}>
                     <Button
                       variant="contained"
                       color="secondary"
@@ -251,22 +155,8 @@ const LibrarySection = () => {
                       href="https://sujith-eag.in"
                       target="_blank"
                       rel="noopener noreferrer"
-                      sx={{
-                        py: { xs: 1.25, sm: 1.5 },
-                        px: { xs: 3, sm: 4 },
-                        fontSize: { xs: '0.9rem', sm: '1rem' },
-                        fontWeight: 700,
-                        borderRadius: '50px',
-                        textTransform: 'none',
-                        boxShadow: 3,
-                        transition: 'all 0.3s ease',
-                        '&:hover': {
-                          transform: 'translateY(-3px)',
-                          boxShadow: 6,
-                        }
-                      }}
                     >
-                      Visit Sujith's Library →
+                      Visit Sujith’s Library
                     </Button>
                   </Box>
                 </Box>

@@ -92,22 +92,6 @@ const Footer = () => {
                   }
                 }}
               />
-              <Typography 
-                variant="h6" 
-                sx={{ 
-                  fontWeight: 700,
-                  fontSize: { xs: '1rem', sm: '1.1rem' },
-                  background: (theme) =>
-                    theme.palette.mode === 'dark'
-                      ? 'linear-gradient(135deg, #90caf9 0%, #64b5f6 100%)'
-                      : 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text'
-                }}
-              >
-                Eagle Campus
-              </Typography>
             </Box>
             
             <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.85rem' }}>
