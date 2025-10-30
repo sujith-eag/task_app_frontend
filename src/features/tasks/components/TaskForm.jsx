@@ -116,13 +116,34 @@ const TaskForm = () => {
   };
 
   return (
-    <Paper elevation={2} sx={{ p: { xs: 2, sm: 3 }, mb: 4 }}>
-      <Typography variant="h5" gutterBottom>
+    <Paper 
+      elevation={2} 
+      sx={{ 
+        p: { xs: 2, sm: 3 }, 
+        mb: 4,
+        transition: 'all 0.3s ease',
+        '&:hover': {
+          boxShadow: 4
+        }
+      }}
+    >
+      <Typography 
+        variant="h5" 
+        gutterBottom 
+        sx={{ 
+          fontWeight: 600,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1,
+          mb: 3
+        }}
+      >
+        <AddCircleOutlineIcon color="primary" />
         Create a New Task
       </Typography>
 
       <Box component="form" onSubmit={onSubmit}>
-        <Stack spacing={2}>
+        <Stack spacing={2.5}>
 
           {/* Title */}
           <TextField
@@ -134,12 +155,20 @@ const TaskForm = () => {
             value={title}
             onChange={onChange}
             error={!!errors.title}
-            helperText={errors.title}
+            helperText={errors.title || `${title.length}/100 characters`}
             slotProps={{
               input: {
                 maxLength: 100,
                 pattern: "^[a-zA-Z0-9\\s.,!?-]+$",
               },
+            }}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                transition: 'all 0.2s',
+                '&:hover': {
+                  boxShadow: 1
+                }
+              }
             }}
           />
 
@@ -154,9 +183,17 @@ const TaskForm = () => {
             value={description}
             onChange={onChange}
             error={!!errors.description}
-            helperText={errors.description}
+            helperText={errors.description || `${description.length}/500 characters`}
             slotProps={{
               input: { maxLength: 500 },
+            }}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                transition: 'all 0.2s',
+                '&:hover': {
+                  boxShadow: 1
+                }
+              }
             }}
           />
 
@@ -177,9 +214,24 @@ const TaskForm = () => {
                 label="Priority"
                 onChange={onChange}
               >
-                <MenuItem value="Low">Low</MenuItem>
-                <MenuItem value="Medium">Medium</MenuItem>
-                <MenuItem value="High">High</MenuItem>
+                <MenuItem value="Low">
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: 'info.main' }} />
+                    Low
+                  </Box>
+                </MenuItem>
+                <MenuItem value="Medium">
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: 'warning.main' }} />
+                    Medium
+                  </Box>
+                </MenuItem>
+                <MenuItem value="High">
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: 'error.main' }} />
+                    High
+                  </Box>
+                </MenuItem>
               </Select>
             </FormControl>
           </Box>
@@ -193,7 +245,16 @@ const TaskForm = () => {
             value={tags}
             onChange={onChange}
             error={!!errors.tags}
-            helperText={errors.tags}
+            helperText={errors.tags || "e.g., work, urgent, personal"}
+            placeholder="work, urgent, personal"
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                transition: 'all 0.2s',
+                '&:hover': {
+                  boxShadow: 1
+                }
+              }
+            }}
           />
 
           {/* Submit */}
@@ -203,9 +264,20 @@ const TaskForm = () => {
             fullWidth
             startIcon={<AddCircleOutlineIcon />}
             disabled={!isFormValid() || isLoading}
-            sx={{ mt: 1 }}
+            sx={{ 
+              mt: 1,
+              py: 1.5,
+              transition: 'all 0.3s ease',
+              '&:hover': {
+                transform: 'translateY(-2px)',
+                boxShadow: 4
+              },
+              '&:active': {
+                transform: 'translateY(0)'
+              }
+            }}
           >
-            Add Task
+            {isLoading ? 'Creating...' : 'Add Task'}
           </Button>
         </Stack>
       </Box>

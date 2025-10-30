@@ -80,28 +80,69 @@ const SubTaskChecklist = ({ taskId, subTasks }) => {
     <Box sx={{ mt: 2 }}>
       <Typography variant="subtitle1">Checklist</Typography>
 
-      <List dense>
-        {subTasks?.map((subTask) => (
-          <ListItem
-            key={subTask._id}
-            disablePadding
-            secondaryAction={
-              <IconButton edge="end" aria-describedby={id} onClick={(e) => handleSubTaskDeleteClick(e, subTask._id)}>
-                <DeleteOutlineIcon />
-              </IconButton>
-            }>
-            <Checkbox
-              edge="start"
-              checked={subTask.completed}
-              onChange={(e) => handleToggleSubTask(subTask._id, e.target.checked)}
-            />
-            <ListItemText
-              primary={subTask.text}
-              sx={{ textDecoration: subTask.completed ? 'line-through' : 'none' }}
-            />
-          </ListItem>
-        ))}
-      </List>
+      {subTasks && subTasks.length === 0 ? (
+        <Box 
+          sx={{ 
+            p: 2, 
+            mt: 1, 
+            mb: 1,
+            backgroundColor: 'action.hover',
+            borderRadius: 1,
+            textAlign: 'center'
+          }}
+        >
+          <Typography variant="body2" color="text.secondary">
+            No subtasks yet. Add one to break down this task!
+          </Typography>
+        </Box>
+      ) : (
+        <List dense>
+          {subTasks?.map((subTask) => (
+            <ListItem
+              key={subTask._id}
+              disablePadding
+              sx={{ 
+                mb: 0.5,
+                alignItems: 'flex-start'
+              }}
+              secondaryAction={
+                <IconButton 
+                  edge="end" 
+                  aria-describedby={id} 
+                  onClick={(e) => handleSubTaskDeleteClick(e, subTask._id)}
+                  sx={{ mt: 0.5 }}
+                >
+                  <DeleteOutlineIcon />
+                </IconButton>
+              }>
+              <Checkbox
+                edge="start"
+                checked={subTask.completed}
+                onChange={(e) => handleToggleSubTask(subTask._id, e.target.checked)}
+                sx={{ pt: 0.5 }}
+              />
+              <ListItemText
+                primary={subTask.text}
+                sx={{ 
+                  textDecoration: subTask.completed ? 'line-through' : 'none',
+                  pr: 1,
+                  wordBreak: 'break-word',
+                  overflowWrap: 'break-word'
+                }}
+                primaryTypographyProps={{
+                  sx: {
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
+                  }
+                }}
+              />
+            </ListItem>
+          ))}
+        </List>
+      )}
 
       {/* Add SubTask Field */}
       <Box component="form" onSubmit={handleSubTaskSubmit} sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>

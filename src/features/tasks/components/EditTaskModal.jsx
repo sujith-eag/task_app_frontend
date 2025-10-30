@@ -95,11 +95,33 @@ const EditTaskModal = ({ task, open, onClose }) => {
   };
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>Edit Task</DialogTitle>
+    <Dialog 
+      open={open} 
+      onClose={onClose} 
+      fullWidth 
+      maxWidth="sm"
+      TransitionProps={{
+        timeout: 400
+      }}
+      PaperProps={{
+        sx: {
+          borderRadius: 2,
+          boxShadow: 24
+        }
+      }}
+    >
+      <DialogTitle sx={{ 
+        pb: 2, 
+        fontSize: '1.5rem', 
+        fontWeight: 600,
+        borderBottom: 1,
+        borderColor: 'divider'
+      }}>
+        Edit Task
+      </DialogTitle>
       <Box component="form" onSubmit={onSubmit}>
-        <DialogContent>
-          <Stack spacing={2} sx={{ mt: 1 }}>
+        <DialogContent sx={{ pt: 3 }}>
+          <Stack spacing={2.5}>
             <TextField
               required
               fullWidth
@@ -109,6 +131,7 @@ const EditTaskModal = ({ task, open, onClose }) => {
               onChange={onChange}
               error={!!errors.title}
               helperText={errors.title || `${formData.title.length}/${MAX_TITLE}`}
+              autoFocus
             />
             <TextField
               fullWidth
@@ -123,45 +146,65 @@ const EditTaskModal = ({ task, open, onClose }) => {
             />
 
 
-            <Box sx={{ display: 'flex', gap: 2 }}>
-            <Box sx={{ flex: 1 }}>
+            <Box sx={{ display: 'flex', gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
+              <Box sx={{ flex: 1 }}>
                 <DatePicker
-                label="Due Date"
-                value={formData.dueDate}
-                onChange={(newDate) => {
+                  label="Due Date"
+                  value={formData.dueDate}
+                  onChange={(newDate) => {
                     if (newDate && newDate < new Date()) {
-                    setErrors((prev) => ({ ...prev, dueDate: "Due date cannot be in the past." }));
-                    return;
+                      setErrors((prev) => ({ ...prev, dueDate: "Due date cannot be in the past." }));
+                      return;
                     }
                     setErrors((prev) => ({ ...prev, dueDate: "" }));
                     setFormData((prev) => ({
-                    ...prev,
-                    dueDate: newDate,
+                      ...prev,
+                      dueDate: newDate,
                     }));
-                }}
-                format='dd/MM/yyyy'
-                slotProps={{
+                  }}
+                  format='dd/MM/yyyy'
+                  slotProps={{
                     textField: {
-                    fullWidth: true,
-                    error: !!errors.dueDate,
-                    helperText: errors.dueDate,
+                      fullWidth: true,
+                      error: !!errors.dueDate,
+                      helperText: errors.dueDate,
                     },
-                }}
+                  }}
                 />
-            </Box>
+              </Box>
 
-            <Box sx={{ flex: 1 }}>
-                <Select
+              <Box sx={{ flex: 1 }}>
+                <TextField
+                  select
                   fullWidth
                   name="priority"
+                  label="Priority"
                   value={formData.priority}
                   onChange={onChange}
-                  >
-                  <MenuItem value="Low">Low</MenuItem>
-                  <MenuItem value="Medium">Medium</MenuItem>
-                  <MenuItem value="High">High</MenuItem>
-                </Select>
-            </Box>
+                  SelectProps={{
+                    native: false,
+                  }}
+                >
+                  <MenuItem value="Low">
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Box sx={{ width: 12, height: 12, borderRadius: '50%', bgcolor: 'info.main' }} />
+                      Low
+                    </Box>
+                  </MenuItem>
+                  <MenuItem value="Medium">
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Box sx={{ width: 12, height: 12, borderRadius: '50%', bgcolor: 'warning.main' }} />
+                      Medium
+                    </Box>
+                  </MenuItem>
+                  <MenuItem value="High">
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Box sx={{ width: 12, height: 12, borderRadius: '50%', bgcolor: 'error.main' }} />
+                      High
+                    </Box>
+                  </MenuItem>
+                </TextField>
+              </Box>
             </Box>
 
             <TextField
@@ -171,14 +214,24 @@ const EditTaskModal = ({ task, open, onClose }) => {
               value={formData.tags}
               onChange={onChange}
               error={!!errors.tags}
-              helperText={errors.tags}
+              helperText={errors.tags || "e.g., work, urgent, personal"}
             />
           </Stack>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={onClose}>Cancel</Button>
-          <Button type="submit" variant="contained" disabled={!isFormValid() || isLoading}>
-            Save Changes
+        <DialogActions sx={{ px: 3, py: 2, borderTop: 1, borderColor: 'divider' }}>
+          <Button 
+            onClick={onClose}
+            sx={{ minWidth: 100 }}
+          >
+            Cancel
+          </Button>
+          <Button 
+            type="submit" 
+            variant="contained" 
+            disabled={!isFormValid() || isLoading}
+            sx={{ minWidth: 120 }}
+          >
+            {isLoading ? 'Saving...' : 'Save Changes'}
           </Button>
         </DialogActions>
       </Box>

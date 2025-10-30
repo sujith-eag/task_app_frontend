@@ -25,18 +25,41 @@ const Dashboard = () => {
 
   return (
   <Box> 
-      <Box sx={{ textAlign: 'center', mb: 4 }}>
+      <Box 
+        sx={{ 
+          textAlign: 'center', 
+          mb: 4, 
+          p: 3,
+          borderRadius: 2,
+          background: (theme) => 
+            theme.palette.mode === 'dark'
+              ? 'linear-gradient(135deg, rgba(103, 58, 183, 0.1) 0%, rgba(63, 81, 181, 0.1) 100%)'
+              : 'linear-gradient(135deg, rgba(103, 58, 183, 0.05) 0%, rgba(63, 81, 181, 0.05) 100%)',
+          animation: 'fadeIn 0.6s ease-out',
+          '@keyframes fadeIn': {
+            from: { opacity: 0, transform: 'translateY(-10px)' },
+            to: { opacity: 1, transform: 'translateY(0)' }
+          }
+        }}
+      >
         <Typography 
           variant="h3" 
           component="h1" 
           gutterBottom
           sx={{
-            fontWeight: 'moderate',
+            fontWeight: 700,
             fontSize: {
               xs: '2.2rem',
               md: '2.4rem',
               sm: '3rem'
-            }
+            },
+            background: (theme) => 
+              theme.palette.mode === 'dark'
+                ? 'linear-gradient(135deg, #90caf9 0%, #64b5f6 100%)'
+                : 'linear-gradient(135deg, #673ab7 0%, #3f51b5 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text'
           }}
           >
         Welcome {user?.name}
@@ -50,7 +73,8 @@ const Dashboard = () => {
               xs: '1.1rem',
               md: '1.2rem',
               sm: '1.5rem',
-            }
+            },
+            fontWeight: 500
           }}
           >
           Your Personal Task Dashboard

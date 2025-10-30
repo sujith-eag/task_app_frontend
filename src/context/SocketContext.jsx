@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useRef, useState } from 'r
 import { useSelector, useDispatch } from 'react-redux';
 import { io } from 'socket.io-client';
 import { addMessage, setOnlineUsers, updateMessagesToRead } from '../features/chat/chatSlice.js';
+import { toast } from 'react-toastify';
 
 
 const SocketContext = createContext();
@@ -10,7 +11,10 @@ export const useSocket = () => useContext(SocketContext);
 export const SocketContextProvider = ({ children }) => {
     // We use useState to trigger re-renders when the socket connects/disconnects
     const [socket, setSocket] = useState(null); 
+    const [isConnected, setIsConnected] = useState(false);
+    const [isReconnecting, setIsReconnecting] = useState(false);
     const socketRef = useRef(null);
+    const hasShownDisconnectToast = useRef(false); // Prevent duplicate toasts
     const { user } = useSelector((state) => state.auth);
     const dispatch = useDispatch();
 
@@ -36,6 +40,43 @@ export const SocketContextProvider = ({ children }) => {
             // --- Set up event listeners ---
             socketRef.current.on('connect', () => {
                 console.log('✅ Socket.IO connected successfully:', socketRef.current.id);
+                setIsConnected(true);
+                setIsReconnecting(false);
+                hasShownDisconnectToast.current = false;
+                
+                // Show success toast on reconnection (not on initial connection)
+                if (socketRef.current.recovered) {
+                    toast.success('Connection restored', {
+                        position: 'bottom-right',
+                        autoClose: 3000,
+                        toastId: 'socket-reconnected'
+                    });
+                }
+            });
+
+            socketRef.current.on('disconnect', (reason) => {
+                console.log('🔌 Socket.IO disconnected:', reason);
+                setIsConnected(false);
+                
+                // Only show toast for unexpected disconnections (not manual logout)
+                if (reason !== 'io client disconnect' && !hasShownDisconnectToast.current) {
+                    hasShownDisconnectToast.current = true;
+                    toast.error('Connection lost. Attempting to reconnect...', {
+                        position: 'bottom-right',
+                        autoClose: false,
+                        toastId: 'socket-disconnected'
+                    });
+                }
+            });
+
+            socketRef.current.io.on('reconnect_attempt', () => {
+                console.log('🔄 Attempting to reconnect...');
+                setIsReconnecting(true);
+            });
+
+            socketRef.current.io.on('reconnect_failed', () => {
+                console.error('❌ Reconnection failed');
+                setIsReconnecting(false);
             });
 
             socketRef.current.on('receiveMessage', (message) => {
@@ -45,6 +86,7 @@ export const SocketContextProvider = ({ children }) => {
 
             socketRef.current.on('connect_error', (err) => {
                 console.error('❌ Socket.IO connection error:', err.message);
+                setIsConnected(false);
             });
                 
             // DEBUGGING
@@ -58,17 +100,41 @@ export const SocketContextProvider = ({ children }) => {
                 if(socketRef.current) {
                     socketRef.current.disconnect();
                     setSocket(null);
+                    setIsConnected(false);
+                    setIsReconnecting(false);
                     socketRef.current = null;
                     console.log('🔌 Socket.IO disconnected.');
+                    
+                    // Dismiss any connection-related toasts on logout
+                    toast.dismiss('socket-disconnected');
+                    toast.dismiss('socket-reconnected');
                 }
             };
         } else {
             setSocket(null);
+            setIsConnected(false);
+            setIsReconnecting(false);
         } // Dependency array only react to the token.
     }, [user?.token, dispatch]);
 
+    // Manual reconnect function
+    const reconnect = () => {
+        if (socketRef.current && !socketRef.current.connected) {
+            console.log('🔄 Manual reconnection triggered');
+            setIsReconnecting(true);
+            socketRef.current.connect();
+        }
+    };
+
+    const value = {
+        socket,
+        isConnected,
+        isReconnecting,
+        reconnect
+    };
+
     return (
-        <SocketContext.Provider value={socket}>
+        <SocketContext.Provider value={value}>
             {children}
         </SocketContext.Provider>
     );

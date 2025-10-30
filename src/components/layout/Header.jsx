@@ -3,6 +3,7 @@ import { reset as resetTasks } from '../../features/tasks/taskSlice.js';
 import { ColorModeContext } from '../../context/ThemeContext.jsx';
 import eagleLogo from '../../assets/eagle-logo.png';
 import ConfirmationDialog from '../ConfirmationDialog.jsx';
+import ConnectionStatus from '../ConnectionStatus.jsx';
 
 import { useState, useContext } from 'react';
 import { useTheme } from '@mui/material/styles';
@@ -71,16 +72,25 @@ const Header = () => {
     <AppBar 
       position="sticky" 
       color="default" 
-    //   elevation={1}
       elevation={0} // Remove shadow for a cleaner glass effect     
       sx={{ 
-        marginBottom: '40px',
-        // --- glassmorphism styles ---
+        marginBottom: { xs: '24px', sm: '32px', md: '40px' },
+        // --- Enhanced glassmorphism styles ---
         background: (theme) => theme.palette.mode === 'dark'
-        ? 'rgba(18, 18, 18, 0.7)' // Dark mode semi-transparent
-        : 'rgba(255, 255, 255, 0.7)', // Light mode semi-transparent
-        backdropFilter: 'blur(10px)',
-        borderBottom: (theme) => `1px solid ${theme.palette.divider}`,
+        ? 'linear-gradient(180deg, rgba(26, 31, 58, 0.85) 0%, rgba(18, 18, 18, 0.7) 100%)' // Dark mode gradient
+        : 'linear-gradient(180deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.7) 100%)', // Light mode gradient
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)', // Safari support
+        borderBottom: (theme) => theme.palette.mode === 'dark'
+          ? `2px solid transparent`
+          : `2px solid transparent`,
+        backgroundImage: (theme) => theme.palette.mode === 'dark'
+          ? 'linear-gradient(90deg, rgba(144, 202, 249, 0.3) 0%, rgba(100, 181, 246, 0.3) 50%, rgba(144, 202, 249, 0.3) 100%)'
+          : 'linear-gradient(90deg, rgba(25, 118, 210, 0.2) 0%, rgba(21, 101, 192, 0.2) 50%, rgba(25, 118, 210, 0.2) 100%)',
+        backgroundPosition: '0 100%',
+        backgroundSize: '100% 2px',
+        backgroundRepeat: 'no-repeat',
+        transition: 'all 0.3s ease',
     }}
 
 >
@@ -139,15 +149,82 @@ const Header = () => {
           </IconButton>
         </Tooltip>
 
+        {/* Socket Connection Status - Only shown when disconnected */}
+        {user && <ConnectionStatus />}
+
         {user ? (
             <Tooltip title="Account">
-                <IconButton color="inherit" onClick={handleMenuOpen}>
-                    {user.avatar ? <Avatar sx={{ width: 32, height: 32 }} src={user.avatar} /> : <AccountCircle />}
+                <IconButton 
+                    color="inherit" 
+                    onClick={handleMenuOpen}
+                    sx={{
+                        position: 'relative',
+                        transition: 'all 0.2s ease',
+                        '&:hover': {
+                            transform: 'scale(1.05)',
+                        }
+                    }}
+                >
+                    {user.avatar ? (
+                        <Box sx={{ position: 'relative' }}>
+                            <Avatar 
+                                sx={{ 
+                                    width: 36, 
+                                    height: 36,
+                                    border: (theme) => `2px solid ${theme.palette.primary.main}`,
+                                    transition: 'all 0.2s ease',
+                                }} 
+                                src={user.avatar} 
+                            />
+                            {/* Online status indicator */}
+                            <Box
+                                sx={{
+                                    position: 'absolute',
+                                    bottom: 0,
+                                    right: 0,
+                                    width: 10,
+                                    height: 10,
+                                    borderRadius: '50%',
+                                    backgroundColor: 'success.main',
+                                    border: '2px solid',
+                                    borderColor: 'background.paper',
+                                    boxShadow: (theme) => `0 0 0 2px ${theme.palette.success.main}40`,
+                                }}
+                            />
+                        </Box>
+                    ) : (
+                        <Box sx={{ position: 'relative' }}>
+                            <AccountCircle sx={{ fontSize: 36 }} />
+                            <Box
+                                sx={{
+                                    position: 'absolute',
+                                    bottom: 2,
+                                    right: 2,
+                                    width: 10,
+                                    height: 10,
+                                    borderRadius: '50%',
+                                    backgroundColor: 'success.main',
+                                    border: '2px solid',
+                                    borderColor: 'background.paper',
+                                }}
+                            />
+                        </Box>
+                    )}
                 </IconButton>
             </Tooltip>
         ) : (
             <Tooltip title="Menu">
-                <IconButton color="inherit" onClick={handleMenuOpen}>
+                <IconButton 
+                    color="inherit" 
+                    onClick={handleMenuOpen}
+                    sx={{
+                        transition: 'all 0.2s ease',
+                        '&:hover': {
+                            transform: 'scale(1.05)',
+                            bgcolor: 'action.hover',
+                        }
+                    }}
+                >
                     <MenuIcon />
                 </IconButton>
             </Tooltip>
@@ -156,92 +233,214 @@ const Header = () => {
 </Toolbar>
 
             {/* --- SINGLE, DYNAMIC MENU --- */}
-            <Menu anchorEl={anchorEl} open={isMenuOpen} onClose={handleMenuClose}>
+            <Menu 
+                anchorEl={anchorEl} 
+                open={isMenuOpen} 
+                onClose={handleMenuClose}
+                TransitionProps={{
+                    timeout: 300,
+                }}
+                PaperProps={{
+                    sx: {
+                        mt: 1.5,
+                        minWidth: 240,
+                        borderRadius: 2,
+                        boxShadow: (theme) => theme.palette.mode === 'dark'
+                            ? '0 8px 32px rgba(0, 0, 0, 0.5)'
+                            : '0 8px 32px rgba(0, 0, 0, 0.15)',
+                        background: (theme) => theme.palette.mode === 'dark'
+                            ? 'linear-gradient(135deg, rgba(26, 31, 58, 0.95) 0%, rgba(18, 18, 18, 0.95) 100%)'
+                            : 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(250, 250, 250, 0.95) 100%)',
+                        backdropFilter: 'blur(10px)',
+                        border: 1,
+                        borderColor: 'divider',
+                    }
+                }}
+            >
                 {user ? (
                     // Logged-in menu items
                     <div>
-                        <MenuItem disabled sx={{ '&.Mui-disabled': { opacity: 1 } }}>
-                            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                            <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-                                Hi, {user?.name || 'User'}
-                            </Typography>
-                            <Typography variant="caption" color="text.secondary">
-                                {user?.email}
-                            </Typography>
+                        {/* User Info Header */}
+                        <MenuItem 
+                            disabled 
+                            sx={{ 
+                                '&.Mui-disabled': { opacity: 1 },
+                                py: 1.5,
+                                borderBottom: 1,
+                                borderColor: 'divider',
+                                mb: 1,
+                            }}
+                        >
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, width: '100%' }}>
+                                {user.avatar ? (
+                                    <Avatar 
+                                        src={user.avatar} 
+                                        sx={{ 
+                                            width: 40, 
+                                            height: 40,
+                                            border: 2,
+                                            borderColor: 'primary.main'
+                                        }} 
+                                    />
+                                ) : (
+                                    <Avatar 
+                                        sx={{ 
+                                            width: 40, 
+                                            height: 40,
+                                            bgcolor: 'primary.main'
+                                        }}
+                                    >
+                                        {user?.name?.charAt(0).toUpperCase()}
+                                    </Avatar>
+                                )}
+                                <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: 0 }}>
+                                    <Typography 
+                                        variant="body2" 
+                                        sx={{ 
+                                            fontWeight: 700,
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            whiteSpace: 'nowrap',
+                                        }}
+                                    >
+                                        {user?.name || 'User'}
+                                    </Typography>
+                                    <Typography 
+                                        variant="caption" 
+                                        color="text.secondary"
+                                        sx={{
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            whiteSpace: 'nowrap',
+                                        }}
+                                    >
+                                        {user?.email}
+                                    </Typography>
+                                </Box>
                             </Box>
                         </MenuItem>
 
+                        {/* Personal Section */}
+                        <Box sx={{ px: 2, py: 0.5 }}>
+                            <Typography 
+                                variant="caption" 
+                                color="text.secondary" 
+                                sx={{ 
+                                    fontWeight: 700,
+                                    textTransform: 'uppercase',
+                                    letterSpacing: 1,
+                                }}
+                            >
+                                Personal
+                            </Typography>
+                        </Box>
+
                         {/* --- My Profile Link --- */}
                         {location.pathname !== '/profile' && (
-                        <MenuItem component={Link} to='/profile' onClick={handleMenuClose}
-                            sx={menuItemStyles}
+                        <MenuItem 
+                            component={Link} 
+                            to='/profile' 
+                            onClick={handleMenuClose}
+                            sx={getMenuItemStyles(location.pathname === '/profile')}
                         >
                         <ListItemIcon><AccountBoxIcon fontSize="small" /></ListItemIcon>
                         My Profile
                         </MenuItem>)
-                        }                        
+                        }
 
-                        {/* --- Admin Dashboard Link --- */}
-                        {user?.role === 'admin' && location.pathname !== '/admin/dashboard' && (
-                            <MenuItem component={Link} to='/admin/dashboard' onClick={handleMenuClose}
-                                sx={menuItemStyles}
-                            >
-                                <ListItemIcon><AdminPanelSettingsIcon fontSize="small" /></ListItemIcon>
-                                Admin Dashboard
-                            </MenuItem>
-                        )}
-                        {/* --- Teacher Dashboard --- */}
-                        {user.role === 'teacher' && location.pathname !== '/teacher/dashboard' && (
-                            <MenuItem component={Link} to='/teacher/dashboard' onClick={handleMenuClose}
-                                sx={menuItemStyles}                            
-                            >
-                            <ListItemIcon><ClassIcon fontSize="small" /></ListItemIcon>
-                                My Dashboard
-                            </MenuItem>
-                        )}
-                        {/* --- Student Dashboard --- */}
-                        {user.role === 'student' && location.pathname !== '/student/dashboard' && (
-                            <MenuItem component={Link} to='/student/dashboard' onClick={handleMenuClose}
-                                sx={menuItemStyles}                            
-                            >
-                            <ListItemIcon><SchoolIcon fontSize="small" /></ListItemIcon>
-                                My Dashboard
-                            </MenuItem>
-                        )}
                         {/* --- Task Dashboard Link --- */}
                         {location.pathname !== '/dashboard' && (
-                            <MenuItem component={Link} to='/dashboard' onClick={handleMenuClose}
-                                sx={menuItemStyles}                            
+                            <MenuItem 
+                                component={Link} 
+                                to='/dashboard' 
+                                onClick={handleMenuClose}
+                                sx={getMenuItemStyles(location.pathname === '/dashboard')}                            
                             >
                             <ListItemIcon><AssignmentIcon fontSize="small" /></ListItemIcon>
                                 Task Manager
                             </MenuItem>
                         )}
 
+                        {/* Dashboards Section - Role-based */}
+                        {(user?.role === 'admin' || user?.role === 'teacher' || user?.role === 'student') && (
+                            <>
+                                <Divider sx={{ my: 1 }} />
+                                <Box sx={{ px: 2, py: 0.5 }}>
+                                    <Typography 
+                                        variant="caption" 
+                                        color="text.secondary" 
+                                        sx={{ 
+                                            fontWeight: 700,
+                                            textTransform: 'uppercase',
+                                            letterSpacing: 1,
+                                        }}
+                                    >
+                                        Dashboards
+                                    </Typography>
+                                </Box>
 
+                                {/* --- Admin Dashboard Link --- */}
+                                {user?.role === 'admin' && location.pathname !== '/admin/dashboard' && (
+                                    <MenuItem 
+                                        component={Link} 
+                                        to='/admin/dashboard' 
+                                        onClick={handleMenuClose}
+                                        sx={getMenuItemStyles(location.pathname === '/admin/dashboard')}
+                                    >
+                                        <ListItemIcon><AdminPanelSettingsIcon fontSize="small" /></ListItemIcon>
+                                        Admin Dashboard
+                                    </MenuItem>
+                                )}
+                                {/* --- Teacher Dashboard --- */}
+                                {user.role === 'teacher' && location.pathname !== '/teacher/dashboard' && (
+                                    <MenuItem 
+                                        component={Link} 
+                                        to='/teacher/dashboard' 
+                                        onClick={handleMenuClose}
+                                        sx={getMenuItemStyles(location.pathname === '/teacher/dashboard')}                            
+                                    >
+                                    <ListItemIcon><ClassIcon fontSize="small" /></ListItemIcon>
+                                        My Dashboard
+                                    </MenuItem>
+                                )}
+                                {/* --- Student Dashboard --- */}
+                                {user.role === 'student' && location.pathname !== '/student/dashboard' && (
+                                    <MenuItem 
+                                        component={Link} 
+                                        to='/student/dashboard' 
+                                        onClick={handleMenuClose}
+                                        sx={getMenuItemStyles(location.pathname === '/student/dashboard')}                            
+                                    >
+                                    <ListItemIcon><SchoolIcon fontSize="small" /></ListItemIcon>
+                                        My Dashboard
+                                    </MenuItem>
+                                )}
+                            </>
+                        )}
 
-            {/* FOR LOGGED-IN USERS */}
-            <Divider sx={{ my: 1 }} />
-
-            <MenuItem 
-                component={Link} 
-                to='/download' 
-                onClick={handleMenuClose} 
-                sx={menuItemStyles}>
-                <ListItemIcon>
-                    <DownloadIcon fontSize="small" />
-                </ListItemIcon>
-                Download File
-            </MenuItem>
-
-            <Divider sx={{ my: 1 }} />
-
-
+                        {/* Resources Section */}
+                        <Divider sx={{ my: 1 }} />
+                        <Box sx={{ px: 2, py: 0.5 }}>
+                            <Typography 
+                                variant="caption" 
+                                color="text.secondary" 
+                                sx={{ 
+                                    fontWeight: 700,
+                                    textTransform: 'uppercase',
+                                    letterSpacing: 1,
+                                }}
+                            >
+                                Resources
+                            </Typography>
+                        </Box>
 
                         {/* --- Files Page Link --- */}
                         {location.pathname !== '/files' && (
-                            <MenuItem component={Link} to='/files' onClick={handleMenuClose}
-                                sx={menuItemStyles}                        
+                            <MenuItem 
+                                component={Link} 
+                                to='/files' 
+                                onClick={handleMenuClose}
+                                sx={getMenuItemStyles(location.pathname === '/files')}                        
                             >
                             <ListItemIcon><InsertDriveFileIcon fontSize="small" /></ListItemIcon>
                                 Files
@@ -249,20 +448,64 @@ const Header = () => {
                         )}
                         {/* --- Message Link --- */}
                         {location.pathname !== '/chat' && (
-                            <MenuItem component={Link} to='/chat' onClick={handleMenuClose}
-                                sx={menuItemStyles}                            
+                            <MenuItem 
+                                component={Link} 
+                                to='/chat' 
+                                onClick={handleMenuClose}
+                                sx={getMenuItemStyles(location.pathname === '/chat')}                            
                             >
                             <ListItemIcon><ChatIcon fontSize="small" /></ListItemIcon>
                                 Messages
                             </MenuItem>
                         )}
 
+                        {/* Public Features Section */}
+                        <Divider sx={{ my: 1 }} />
+                        <Box sx={{ px: 2, py: 0.5 }}>
+                            <Typography 
+                                variant="caption" 
+                                color="text.secondary" 
+                                sx={{ 
+                                    fontWeight: 700,
+                                    textTransform: 'uppercase',
+                                    letterSpacing: 1,
+                                }}
+                            >
+                                Public Access
+                            </Typography>
+                        </Box>
+
+                        <MenuItem 
+                            component={Link} 
+                            to='/download' 
+                            onClick={handleMenuClose} 
+                            sx={getMenuItemStyles(location.pathname === '/download')}
+                        >
+                            <ListItemIcon>
+                                <DownloadIcon fontSize="small" />
+                            </ListItemIcon>
+                            Download File
+                        </MenuItem>
+
+                        {/* Account Section */}
+                        <Divider sx={{ my: 1 }} />
+
                         {/* --- Logout Link --- */}
                         <MenuItem 
                             onClick={handleLogoutClick}
-                            sx={menuItemStyles}
+                            sx={{
+                                ...getMenuItemStyles(false),
+                                color: 'error.main',
+                                '&:hover': {
+                                    bgcolor: 'error.main',
+                                    color: 'error.contrastText',
+                                    '& .MuiListItemIcon-root': {
+                                        color: 'error.contrastText',
+                                    }
+                                }
+                            }}
                         >
-                            <ListItemIcon>
+                            <ListItemIcon sx={{ color: 'error.main' }}>
                                 <LogoutIcon fontSize="small" />
                             </ListItemIcon>
                             Logout
@@ -272,17 +515,40 @@ const Header = () => {
                 ) : (
                     // Logged-out menu items
                 <div>
-                    <MenuItem disabled sx={{ '&.Mui-disabled': { opacity: 1 } }}>
-                        <Typography variant="body2" color="text.secondary">
-                            You are not logged in.
+                    <MenuItem 
+                        disabled 
+                        sx={{ 
+                            '&.Mui-disabled': { opacity: 1 },
+                            py: 1.5,
+                            borderBottom: 1,
+                            borderColor: 'divider',
+                            mb: 1,
+                        }}
+                    >
+                        <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>
+                            Welcome! Please sign in
                         </Typography>
                     </MenuItem>
+
+                    <Box sx={{ px: 2, py: 0.5 }}>
+                        <Typography 
+                            variant="caption" 
+                            color="text.secondary" 
+                            sx={{ 
+                                fontWeight: 700,
+                                textTransform: 'uppercase',
+                                letterSpacing: 1,
+                            }}
+                        >
+                            Account
+                        </Typography>
+                    </Box>
 
                     <MenuItem 
                         component={Link} 
                         to='/login' 
                         onClick={handleMenuClose} 
-                        sx={menuItemStyles}
+                        sx={getMenuItemStyles(location.pathname === '/login')}
                     >
                         <ListItemIcon><LoginIcon fontSize="small" /></ListItemIcon>
                         Login
@@ -291,17 +557,32 @@ const Header = () => {
                         component={Link} 
                         to='/register' 
                         onClick={handleMenuClose} 
-                        sx={menuItemStyles}
+                        sx={getMenuItemStyles(location.pathname === '/register')}
                     >
                         <ListItemIcon><PersonAddIcon fontSize="small" /></ListItemIcon>
                         Register
                     </MenuItem>
                     
+                    <Divider sx={{ my: 1 }} />
+                    <Box sx={{ px: 2, py: 0.5 }}>
+                        <Typography 
+                            variant="caption" 
+                            color="text.secondary" 
+                            sx={{ 
+                                fontWeight: 700,
+                                textTransform: 'uppercase',
+                                letterSpacing: 1,
+                            }}
+                        >
+                            Public Access
+                        </Typography>
+                    </Box>
+                    
                     <MenuItem 
                         component={Link} 
                         to='/download' 
                         onClick={handleMenuClose} 
-                        sx={menuItemStyles}
+                        sx={getMenuItemStyles(location.pathname === '/download')}
                         >
                             <ListItemIcon>
                                 <DownloadIcon fontSize="small" />
@@ -327,13 +608,40 @@ const Header = () => {
     );
 };
 
-// Reusable styles for menu items
-const menuItemStyles = {
-    transition: 'background-color 0.2s ease, transform 0.15s ease',
+// Enhanced menu item styles with active state support
+const getMenuItemStyles = (isActive) => ({
+    py: 1.25,
+    px: 2,
+    minHeight: 44, // Better touch target for mobile
+    transition: 'all 0.2s ease',
+    position: 'relative',
+    ...(isActive && {
+        bgcolor: 'action.selected',
+        borderLeft: 3,
+        borderColor: 'primary.main',
+        '&:before': {
+            content: '""',
+            position: 'absolute',
+            left: 0,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            width: 4,
+            height: '70%',
+            bgcolor: 'primary.main',
+            borderRadius: '0 4px 4px 0',
+        }
+    }),
     '&:hover': {
-        bgcolor: 'action.hover',
+        bgcolor: isActive ? 'action.selected' : 'action.hover',
         transform: 'translateX(4px)',
+        '& .MuiListItemIcon-root': {
+            transform: 'scale(1.1)',
+        }
     },
-};
+    '& .MuiListItemIcon-root': {
+        minWidth: 36,
+        transition: 'transform 0.2s ease',
+    }
+});
 
 export default Header;

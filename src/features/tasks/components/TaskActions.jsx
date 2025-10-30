@@ -2,10 +2,10 @@ import React, { useState, useCallback, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 // MUI Components & Icons
-import { Box, IconButton, Dialog, DialogActions, 
-    DialogContent, DialogContentText, DialogTitle, Button, Typography } from '@mui/material';
+import { Box, IconButton, Typography, Tooltip, Button } from '@mui/material';
 import { Close as CloseIcon, Edit as EditIcon } from '@mui/icons-material';
 
+import ConfirmationDialog from '../../../components/ConfirmationDialog.jsx';
 import { deleteTask, removeTaskOptimistic, 
   undoDeleteTask } from '../taskSlice.js';
 
@@ -42,9 +42,9 @@ const TaskActions = ({ taskId, taskTitle, onOpenEdit }) => {
   const dispatch = useDispatch();
   const deleteTimeoutRef = useRef(null);
 
-  const handleDeleteConfirm = useCallback(() => {
-    dispatch(removeTaskOptimistic(taskId));
+  const handleDeleteConfirm = useCallback(async () => {
     setOpenDeleteDialog(false);
+    dispatch(removeTaskOptimistic(taskId));
 
     const undoAction = () => {
       if (deleteTimeoutRef.current) {
@@ -64,59 +64,57 @@ const TaskActions = ({ taskId, taskTitle, onOpenEdit }) => {
     
     deleteTimeoutRef.current = setTimeout(() =>{
       dispatch(deleteTask(taskId));
-    }, 4500);  
-  }, [dispatch, taskId, taskTitle]);
+    }, 4500);
+  }, [dispatch, taskId]);
 
   return (
     <>
-      <Box>
-        <IconButton 
-            size="small" 
-            onClick={onOpenEdit} 
-            aria-label="edit task">
+      <Box sx={{ display: 'flex', gap: 0.5 }}>
+        <Tooltip title="Edit task" arrow>
+          <IconButton 
+              size="small" 
+              onClick={onOpenEdit} 
+              aria-label="edit task"
+              sx={{
+                transition: 'all 0.2s',
+                '&:hover': {
+                  transform: 'scale(1.1)',
+                  color: 'primary.main'
+                }
+              }}
+          >
             <EditIcon />
-        </IconButton>
+          </IconButton>
+        </Tooltip>
         
-        <IconButton 
-            size="small" 
-            onClick={() => setOpenDeleteDialog(true)} 
-            aria-label="delete task">
+        <Tooltip title="Delete task" arrow>
+          <IconButton 
+              size="small" 
+              onClick={() => setOpenDeleteDialog(true)} 
+              aria-label="delete task"
+              sx={{
+                transition: 'all 0.2s',
+                '&:hover': {
+                  transform: 'scale(1.1)',
+                  color: 'error.main'
+                }
+              }}
+          >
             <CloseIcon />
-        </IconButton>
+          </IconButton>
+        </Tooltip>
       </Box>
 
-      <Dialog 
-        open={openDeleteDialog} 
+      <ConfirmationDialog
+        open={openDeleteDialog}
         onClose={() => setOpenDeleteDialog(false)}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"      
-        >
-        <DialogTitle id="alert-dialog-title"
-            >{"Confirm Deletion"}
-        </DialogTitle>
-
-        <DialogContent>
-          <DialogContentText 
-            id="alert-dialog-description">
-            Are you sure you want to delete the task: "{taskTitle}"?
-          </DialogContentText>
-        </DialogContent>
-
-        <DialogActions>
-          <Button 
-            onClick={() => setOpenDeleteDialog(false)}
-            >Cancel
-          </Button>
-          
-          <Button 
-            onClick={handleDeleteConfirm} 
-            color="error" 
-            autoFocus
-            >Delete
-        </Button>
-        </DialogActions>
-
-      </Dialog>
+        onConfirm={handleDeleteConfirm}
+        title="Delete Task"
+        message={`Are you sure you want to delete "${taskTitle}"? You can undo this action within 4 seconds.`}
+        variant="delete"
+        confirmText="Delete"
+        cancelText="Cancel"
+      />
     </>
   );
 };
