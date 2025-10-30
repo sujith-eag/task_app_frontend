@@ -9,7 +9,13 @@ import { toast } from 'react-toastify';
 import { updateTeacherAssignments, deleteTeacherAssignment
     } from '../../adminSlice/adminTeacherSlice.js';
 
-import { getSubjects } from '../../adminSlice/adminSubjectSlice.js'
+import { getSubjects } from '../../adminSlice/adminSubjectSlice.js';
+
+// Components
+import ConfirmationDialog from '../../../../components/ConfirmationDialog';
+
+// Hook
+import useConfirmDialog from '../../../../hooks/useConfirmDialog';
 
 const style = {
     position: 'absolute',
@@ -27,6 +33,7 @@ const sections = ['A', 'B'];
 
 const TeacherAssignmentModal = ({ open, handleClose, teacher }) => {
     const dispatch = useDispatch();
+    const { dialogState, showDialog } = useConfirmDialog();
 
     // Different name for the subjects from the store to avoid confusion
     const { subjects: allSubjects, isLoading: isSubjectsLoading } = useSelector((state) => state.adminSubjects);
@@ -94,13 +101,29 @@ const TeacherAssignmentModal = ({ open, handleClose, teacher }) => {
     };
 
     // Handler for DELETING an existing assignment
-    const handleDeleteAssignment = (assignmentId) => {
-        if (window.confirm('Are you sure you want to remove this assignment?')) {
-            dispatch(deleteTeacherAssignment({ teacherId: teacher._id, assignmentId }))
-                .unwrap()
-                .then(() => toast.success("Assignment removed successfully!"))
-                .catch(err => toast.error(err));
-        }
+    const handleDeleteAssignment = (assignment) => {
+        const subjectName = assignment.subject?.name || 'this subject';
+        const sectionText = assignment.sections?.join(', ') || 'unknown sections';
+        
+        showDialog({
+            title: 'Remove Assignment',
+            message: `Are you sure you want to remove the assignment for "${subjectName}" (Sections: ${sectionText})?`,
+            variant: 'delete',
+            confirmText: 'Remove Assignment',
+            cancelText: 'Cancel',
+            onConfirm: async () => {
+                try {
+                    await dispatch(deleteTeacherAssignment({ 
+                        teacherId: teacher._id, 
+                        assignmentId: assignment._id 
+                    })).unwrap();
+                    toast.success("Assignment removed successfully!");
+                } catch (err) {
+                    toast.error(err || 'Failed to remove assignment');
+                    throw err; // Keep dialog open on error
+                }
+            }
+        });
     };
 
     const isFormInvalid = !selectedSubject || selectedSections.length === 0 || !batch || !semester;
@@ -214,7 +237,10 @@ const TeacherAssignmentModal = ({ open, handleClose, teacher }) => {
                 </Button>
                 <Button onClick={handleClose} sx={{ mt: 2, ml: 1 }}>
                     Cancel
-                </Button> 
+                </Button>
+                
+                {/* Confirmation Dialog */}
+                <ConfirmationDialog {...dialogState} />
             </Box>
         </Modal>
     );

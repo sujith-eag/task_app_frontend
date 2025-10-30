@@ -296,7 +296,6 @@ const TimetableGrid = ({ sessions, viewType, onCellClick }) => {
                   borderRight: 2,
                   borderColor: 'divider',
                   p: { xs: 1, md: 2 },
-                  fontWeight: 700,
                   // Critical for mobile sticky behavior
                   position: 'sticky',
                   top: 0,
