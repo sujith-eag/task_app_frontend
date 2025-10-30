@@ -126,12 +126,21 @@ const TimetableRow = ({ day, semester, grid, occupiedSlots, viewType, onCellClic
           width: { xs: '80px', md: '120px' },
           minWidth: { xs: '80px', md: '120px' },
           maxWidth: { xs: '80px', md: '120px' },
-          backgroundColor: 'primary.light',
-          color: 'primary.contrastText',
+          background: (theme) => 
+            theme.palette.mode === 'dark'
+              ? 'linear-gradient(135deg, rgba(33, 150, 243, 0.3) 0%, rgba(21, 101, 192, 0.25) 100%)'
+              : 'linear-gradient(135deg, rgba(25, 118, 210, 0.15) 0%, rgba(13, 71, 161, 0.12) 100%)',
+          color: (theme) => 
+            theme.palette.mode === 'dark' 
+              ? 'primary.light' 
+              : 'primary.dark',
           fontSize: { xs: '0.75rem', md: '0.9rem' },
           borderRight: 2,
           borderColor: 'divider',
           p: { xs: 0.5, md: 1 },
+          boxShadow: (theme) => theme.palette.mode === 'dark'
+            ? 'inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 1px 3px rgba(0, 0, 0, 0.3)'
+            : 'inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 1px 3px rgba(0, 0, 0, 0.08)',
         }}
       >
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.25 }}>
@@ -211,39 +220,48 @@ const TimetableGrid = ({ sessions, viewType, onCellClick }) => {
     return (
       <TableContainer 
         component={Paper} 
-        variant="outlined" 
+        elevation={3}
         sx={{ 
           overflowX: 'auto',
           position: 'relative',
           width: '100%',
-          borderRadius: 2,
-          boxShadow: 3,
+          borderRadius: { xs: 2, sm: 2.5 },
+          border: '2px solid',
+          borderColor: 'divider',
+          boxShadow: (theme) => theme.palette.mode === 'dark'
+            ? '0 8px 32px rgba(0, 0, 0, 0.6), 0 2px 8px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05)'
+            : '0 8px 32px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.7)',
           '@media (min-height: 900px)': {
             maxHeight: '85vh',
             overflowY: 'auto',
           },
-          // Smooth scrollbar styling
+          // Enhanced scrollbar styling
           '&::-webkit-scrollbar': {
-            width: '8px',
-            height: '8px',
+            width: '10px',
+            height: '10px',
           },
           '&::-webkit-scrollbar-track': {
-            backgroundColor: (theme) => 
+            background: (theme) => 
               theme.palette.mode === 'dark' 
-                ? 'rgba(255, 255, 255, 0.05)' 
-                : 'rgba(0, 0, 0, 0.05)',
+                ? 'linear-gradient(90deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.05) 100%)' 
+                : 'linear-gradient(90deg, rgba(0, 0, 0, 0.03) 0%, rgba(0, 0, 0, 0.05) 100%)',
+            borderRadius: '5px',
           },
           '&::-webkit-scrollbar-thumb': {
-            backgroundColor: (theme) => 
+            background: (theme) => 
               theme.palette.mode === 'dark' 
-                ? 'rgba(255, 255, 255, 0.2)' 
-                : 'rgba(0, 0, 0, 0.2)',
-            borderRadius: '4px',
+                ? 'linear-gradient(180deg, rgba(33, 150, 243, 0.5) 0%, rgba(21, 101, 192, 0.4) 100%)'
+                : 'linear-gradient(180deg, rgba(25, 118, 210, 0.6) 0%, rgba(13, 71, 161, 0.5) 100%)',
+            borderRadius: '5px',
+            border: '2px solid',
+            borderColor: (theme) => theme.palette.mode === 'dark' 
+              ? 'rgba(255, 255, 255, 0.1)' 
+              : 'rgba(0, 0, 0, 0.1)',
             '&:hover': {
-              backgroundColor: (theme) => 
+              background: (theme) => 
                 theme.palette.mode === 'dark' 
-                  ? 'rgba(255, 255, 255, 0.3)' 
-                  : 'rgba(0, 0, 0, 0.3)',
+                  ? 'linear-gradient(180deg, rgba(33, 150, 243, 0.7) 0%, rgba(21, 101, 192, 0.6) 100%)'
+                  : 'linear-gradient(180deg, rgba(25, 118, 210, 0.8) 0%, rgba(13, 71, 161, 0.7) 100%)',
             },
           },
         }}
@@ -262,12 +280,24 @@ const TimetableGrid = ({ sessions, viewType, onCellClick }) => {
                   width: { xs: '80px', md: '120px' },
                   minWidth: { xs: '80px', md: '120px' },
                   maxWidth: { xs: '80px', md: '120px' },
-                  backgroundColor: 'primary.main',
-                  color: 'primary.contrastText',
+                  background: (theme) => 
+                    theme.palette.mode === 'dark'
+                      ? 'linear-gradient(135deg, rgba(33, 150, 243, 0.25) 0%, rgba(21, 101, 192, 0.2) 100%)'
+                      : 'linear-gradient(135deg, rgba(25, 118, 210, 0.12) 0%, rgba(13, 71, 161, 0.1) 100%)',
+                  backdropFilter: 'blur(10px)',
+                  backgroundColor: (theme) => 
+                    theme.palette.mode === 'dark'
+                      ? 'rgba(26, 31, 58, 0.9)'
+                      : 'rgba(255, 255, 255, 0.9)',
+                  color: (theme) => 
+                    theme.palette.mode === 'dark' 
+                      ? 'primary.light' 
+                      : 'primary.dark',
                   fontSize: { xs: '0.8rem', md: '1rem' },
                   borderRight: 2,
                   borderColor: 'divider',
                   p: { xs: 1, md: 2 },
+                  fontWeight: 700,
                 }}
               >
                 Day
@@ -278,11 +308,22 @@ const TimetableGrid = ({ sessions, viewType, onCellClick }) => {
                   align="center" 
                   sx={{ 
                     fontWeight: 700,
-                    backgroundColor: 'primary.main',
-                    color: 'primary.contrastText',
+                    background: (theme) => 
+                      theme.palette.mode === 'dark'
+                        ? 'linear-gradient(135deg, rgba(33, 150, 243, 0.25) 0%, rgba(21, 101, 192, 0.2) 100%)'
+                        : 'linear-gradient(135deg, rgba(25, 118, 210, 0.12) 0%, rgba(13, 71, 161, 0.1) 100%)',
+                    backdropFilter: 'blur(10px)',
+                    backgroundColor: (theme) => 
+                      theme.palette.mode === 'dark'
+                        ? 'rgba(26, 31, 58, 0.9)'
+                        : 'rgba(255, 255, 255, 0.9)',
+                    color: (theme) => 
+                      theme.palette.mode === 'dark' 
+                        ? 'primary.light' 
+                        : 'primary.dark',
                     fontSize: { xs: '0.65rem', md: '0.85rem' },
                     borderRight: 1,
-                    borderColor: 'rgba(255,255,255,0.2)',
+                    borderColor: 'divider',
                     p: { xs: 0.5, md: 2 },
                     width: `${100 / TIME_SLOTS.length}%`,
                     lineHeight: 1.3,

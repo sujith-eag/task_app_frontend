@@ -33,11 +33,14 @@ const Timetable = ({ data, currentUser }) => {
 
   return (
     <Paper 
-      elevation={3} 
+      elevation={4} 
       sx={{ 
         p: { xs: 2, md: 3 }, 
-        borderRadius: 2,
+        borderRadius: { xs: 2, sm: 3 },
         backgroundColor: 'background.paper',
+        boxShadow: (theme) => theme.palette.mode === 'dark'
+          ? '0 10px 40px rgba(0, 0, 0, 0.6), 0 0 1px rgba(255, 255, 255, 0.1)'
+          : '0 10px 40px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.08)',
       }}
     >
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mb: 3 }}>
@@ -68,13 +71,16 @@ const Timetable = ({ data, currentUser }) => {
           gap: { xs: 2, md: 3 }, 
           mb: 4, 
           p: { xs: 2, md: 3 }, 
-          backgroundColor: (theme) => 
+          background: (theme) => 
             theme.palette.mode === 'dark' 
-              ? 'rgba(255, 255, 255, 0.05)' 
-              : 'grey.50',
+              ? 'linear-gradient(135deg, rgba(33, 150, 243, 0.08) 0%, rgba(21, 101, 192, 0.05) 100%)'
+              : 'linear-gradient(135deg, rgba(25, 118, 210, 0.05) 0%, rgba(13, 71, 161, 0.03) 100%)',
           borderRadius: 2,
-          border: '1px solid',
-          borderColor: 'divider',
+          border: '2px solid',
+          borderColor: 'primary.main',
+          boxShadow: (theme) => theme.palette.mode === 'dark'
+            ? '0 4px 20px rgba(33, 150, 243, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+            : '0 4px 20px rgba(25, 118, 210, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.5)',
         }}
       >
         {/* Combined Semester + Section View (Progressive Filter) */}
@@ -158,60 +164,31 @@ const Timetable = ({ data, currentUser }) => {
         </Box>
       </Box>
 
-      {/* Helper text to explain the filters */}
-      <Box 
-        sx={{ 
-          mb: 3, 
-          px: 2, 
-          py: 1.5,
-          backgroundColor: (theme) => 
-            theme.palette.mode === 'dark' 
-              ? 'rgba(33, 150, 243, 0.08)' 
-              : 'rgba(33, 150, 243, 0.05)',
-          borderRadius: 2,
-          borderLeft: '4px solid',
-          borderColor: 'primary.main',
-        }}
-      >
-        <Typography 
-          variant="body2" 
-          sx={{ 
-            color: 'text.primary',
-            fontWeight: 500,
-          }}
-        >
-          {view.type === VIEW_TYPES.ALL && 'Showing all classes across all semesters and sections'}
-          {view.type === 'semesterSection' && view.value && view.sectionLetter && `Showing all classes (core + electives) for Sem ${view.value}-${view.sectionLetter}`}
-          {view.type === 'semesterSection' && view.value && !view.sectionLetter && `Showing all classes for Semester ${view.value} (all sections)`}
-          {view.type === 'section' && view.value && `Showing classes for ${view.value}`}
-          {view.type === 'faculty' && view.value && `Showing all classes taught by ${view.value}`}
-          {!view.value && view.type !== VIEW_TYPES.ALL && 'Please select a filter option above to view the timetable'}
-        </Typography>
-      </Box>
-
-      {/* Color legend */}
+      {/* Color legend - Mobile-friendly horizontal layout */}
       <Box sx={{ 
         display: 'flex', 
+        flexDirection: 'row',
         flexWrap: 'wrap',
         gap: { xs: 1.5, md: 2 }, 
         mb: 3, 
         alignItems: 'center',
-        justifyContent: { xs: 'center', md: 'flex-start' },
-        p: 2,
+        p: { xs: 2, md: 2.5 },
         backgroundColor: (theme) => 
           theme.palette.mode === 'dark' 
-            ? 'rgba(255, 255, 255, 0.03)' 
-            : 'rgba(0, 0, 0, 0.02)',
+            ? 'rgba(255, 255, 255, 0.05)' 
+            : 'rgba(0, 0, 0, 0.03)',
         borderRadius: 2,
-        border: '1px solid',
+        border: '2px solid',
         borderColor: 'divider',
+        boxShadow: 1,
       }}>
         <Typography 
           variant="subtitle2" 
           sx={{ 
-            fontSize: { xs: '0.85rem', md: '0.9rem' },
-            fontWeight: 600,
+            fontSize: { xs: '0.9rem', md: '0.95rem' },
+            fontWeight: 700,
             color: 'text.primary',
+            mr: { xs: 0, sm: 1 },
           }}
         >
           Class Types:
@@ -219,63 +196,125 @@ const Timetable = ({ data, currentUser }) => {
         <Box sx={{ 
           display: 'flex', 
           alignItems: 'center', 
-          gap: 0.5, 
+          justifyContent: { xs: 'flex-start', sm: 'center' },
+          gap: 0.75, 
           bgcolor: componentColors.theory.bgcolor, 
           color: componentColors.theory.color, 
-          px: { xs: 1, md: 1.5 }, 
-          py: { xs: 0.5, md: 0.75 },
-          borderRadius: 1.5,
-          fontSize: { xs: '0.75rem', md: '0.875rem' },
+          px: { xs: 1.5, md: 2 }, 
+          py: { xs: 0.75, md: 1 },
+          borderRadius: 2,
+          fontSize: { xs: '0.8rem', md: '0.875rem' },
           fontWeight: 600,
-          boxShadow: 1,
-          transition: 'transform 0.2s',
+          boxShadow: 2,
+          border: '1px solid',
+          borderColor: (theme) => theme.palette.mode === 'dark' 
+            ? 'rgba(255, 255, 255, 0.1)' 
+            : 'rgba(0, 0, 0, 0.1)',
+          transition: 'all 0.2s ease',
           '&:hover': {
             transform: 'translateY(-2px)',
-            boxShadow: 2,
+            boxShadow: 4,
+            borderColor: (theme) => theme.palette.mode === 'dark' 
+              ? 'rgba(255, 255, 255, 0.2)' 
+              : 'rgba(0, 0, 0, 0.2)',
           }
         }}>
-          <SchoolIcon fontSize="small" sx={{ fontSize: { xs: '1rem', md: '1.1rem' } }} /> Theory
+          <SchoolIcon fontSize="small" sx={{ fontSize: { xs: '1.1rem', md: '1.2rem' } }} /> 
+          <Typography component="span" sx={{ fontSize: 'inherit', fontWeight: 'inherit' }}>Theory</Typography>
         </Box>
         <Box sx={{ 
           display: 'flex', 
           alignItems: 'center', 
-          gap: 0.5, 
+          justifyContent: { xs: 'flex-start', sm: 'center' },
+          gap: 0.75, 
           bgcolor: componentColors.practical.bgcolor, 
           color: componentColors.practical.color, 
-          px: { xs: 1, md: 1.5 }, 
-          py: { xs: 0.5, md: 0.75 },
-          borderRadius: 1.5,
-          fontSize: { xs: '0.75rem', md: '0.875rem' },
+          px: { xs: 1.5, md: 2 }, 
+          py: { xs: 0.75, md: 1 },
+          borderRadius: 2,
+          fontSize: { xs: '0.8rem', md: '0.875rem' },
           fontWeight: 600,
-          boxShadow: 1,
-          transition: 'transform 0.2s',
+          boxShadow: 2,
+          border: '1px solid',
+          borderColor: (theme) => theme.palette.mode === 'dark' 
+            ? 'rgba(255, 255, 255, 0.1)' 
+            : 'rgba(0, 0, 0, 0.1)',
+          transition: 'all 0.2s ease',
           '&:hover': {
             transform: 'translateY(-2px)',
-            boxShadow: 2,
+            boxShadow: 4,
+            borderColor: (theme) => theme.palette.mode === 'dark' 
+              ? 'rgba(255, 255, 255, 0.2)' 
+              : 'rgba(0, 0, 0, 0.2)',
           }
         }}>
-          <MeetingRoomIcon fontSize="small" sx={{ fontSize: { xs: '1rem', md: '1.1rem' } }} /> Practical
+          <MeetingRoomIcon fontSize="small" sx={{ fontSize: { xs: '1.1rem', md: '1.2rem' } }} /> 
+          <Typography component="span" sx={{ fontSize: 'inherit', fontWeight: 'inherit' }}>Practical</Typography>
         </Box>
         <Box sx={{ 
           display: 'flex', 
           alignItems: 'center', 
-          gap: 0.5, 
+          justifyContent: { xs: 'flex-start', sm: 'center' },
+          gap: 0.75, 
           bgcolor: componentColors.tutorial.bgcolor, 
           color: componentColors.tutorial.color, 
-          px: { xs: 1, md: 1.5 }, 
-          py: { xs: 0.5, md: 0.75 },
-          borderRadius: 1.5,
-          fontSize: { xs: '0.75rem', md: '0.875rem' },
+          px: { xs: 1.5, md: 2 }, 
+          py: { xs: 0.75, md: 1 },
+          borderRadius: 2,
+          fontSize: { xs: '0.8rem', md: '0.875rem' },
           fontWeight: 600,
-          boxShadow: 1,
-          transition: 'transform 0.2s',
+          boxShadow: 2,
+          border: '1px solid',
+          borderColor: (theme) => theme.palette.mode === 'dark' 
+            ? 'rgba(255, 255, 255, 0.1)' 
+            : 'rgba(0, 0, 0, 0.1)',
+          transition: 'all 0.2s ease',
           '&:hover': {
             transform: 'translateY(-2px)',
-            boxShadow: 2,
+            boxShadow: 4,
+            borderColor: (theme) => theme.palette.mode === 'dark' 
+              ? 'rgba(255, 255, 255, 0.2)' 
+              : 'rgba(0, 0, 0, 0.2)',
           }
         }}>
-          <SupportAgentIcon fontSize="small" sx={{ fontSize: { xs: '1rem', md: '1.1rem' } }} /> Tutorial
+          <SupportAgentIcon fontSize="small" sx={{ fontSize: { xs: '1.1rem', md: '1.2rem' } }} /> 
+          <Typography component="span" sx={{ fontSize: 'inherit', fontWeight: 'inherit' }}>Tutorial</Typography>
         </Box>
+      </Box>
+
+      {/* Helper text to explain the filters - moved above grid */}
+      <Box 
+        sx={{ 
+          mb: 3, 
+          px: { xs: 2, md: 2.5 }, 
+          py: { xs: 1.5, md: 2 },
+          background: (theme) => 
+            theme.palette.mode === 'dark' 
+              ? 'linear-gradient(90deg, rgba(33, 150, 243, 0.12) 0%, rgba(33, 150, 243, 0.06) 100%)' 
+              : 'linear-gradient(90deg, rgba(33, 150, 243, 0.08) 0%, rgba(33, 150, 243, 0.04) 100%)',
+          borderRadius: 2,
+          border: '2px solid',
+          borderColor: 'primary.main',
+          boxShadow: (theme) => theme.palette.mode === 'dark'
+            ? '0 2px 12px rgba(33, 150, 243, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05)'
+            : '0 2px 12px rgba(33, 150, 243, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.6)',
+        }}
+      >
+        <Typography 
+          variant="body2" 
+          sx={{ 
+            color: 'text.primary',
+            fontWeight: 500,
+            fontSize: { xs: '0.85rem', sm: '0.875rem' },
+          }}
+        >
+          {view.type === VIEW_TYPES.ALL && 'All semesters & sections'}
+          {view.type === 'semesterSection' && view.value && view.sectionLetter && `Sem ${view.value}-${view.sectionLetter} (Core + Electives)`}
+          {view.type === 'semesterSection' && view.value && !view.sectionLetter && `Sem ${view.value} - All sections`}
+          {view.type === 'section' && view.value && `${view.value}`}
+          {view.type === 'faculty' && view.value && `Faculty: ${view.value}`}
+          {!view.value && view.type !== VIEW_TYPES.ALL && 'Select a filter to view timetable'}
+        </Typography>
       </Box>
 
       {/* Error handling for empty data */}
@@ -286,12 +325,15 @@ const Timetable = ({ data, currentUser }) => {
             textAlign: 'center',
             p: 4,
             borderRadius: 2,
-            backgroundColor: (theme) => 
+            background: (theme) => 
               theme.palette.mode === 'dark' 
-                ? 'rgba(211, 47, 47, 0.08)' 
-                : 'rgba(211, 47, 47, 0.05)',
-            border: '1px solid',
+                ? 'linear-gradient(135deg, rgba(211, 47, 47, 0.12) 0%, rgba(198, 40, 40, 0.08) 100%)' 
+                : 'linear-gradient(135deg, rgba(211, 47, 47, 0.08) 0%, rgba(198, 40, 40, 0.05) 100%)',
+            border: '2px solid',
             borderColor: 'error.main',
+            boxShadow: (theme) => theme.palette.mode === 'dark'
+              ? '0 4px 20px rgba(211, 47, 47, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05)'
+              : '0 4px 20px rgba(211, 47, 47, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.5)',
           }}
         >
           <Typography 

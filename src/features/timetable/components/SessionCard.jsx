@@ -26,7 +26,7 @@ const SessionCard = ({ session, viewType, onClick }) => {
         mb: 0.5,
         px: { xs: 0.8, md: 1.2 },
         py: { xs: 0.8, md: 1 },
-        borderRadius: 2,
+        borderRadius: 1.5,
         boxShadow: 2,
         bgcolor: (theme) => 
           isCommonSession 
@@ -60,23 +60,24 @@ const SessionCard = ({ session, viewType, onClick }) => {
         },
       }}
     >
-      {/* Colored bar for session type - thicker for long sessions */}
+      {/* Colored bar for session type - more prominent and wider */}
       <Box sx={{
         position: 'absolute',
         left: 0,
         top: 0,
         height: '100%',
-        width: isLongSession ? 8 : 6,
-        borderTopLeftRadius: 8,
-        borderBottomLeftRadius: 8,
+        width: isLongSession ? 10 : 8,
+        borderTopLeftRadius: 6,
+        borderBottomLeftRadius: 6,
         bgcolor: color.bgcolor,
-        boxShadow: isLongSession ? 2 : 0,
+        boxShadow: `2px 0 8px ${color.bgcolor}80`,
+        opacity: 0.95,
       }} />
       
       <Typography variant="subtitle1" sx={{ 
         fontWeight: 700, 
         fontSize: { xs: '0.9em', md: '1.08em' }, 
-        ml: 1.5, 
+        ml: 2, 
         color: 'text.primary',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
@@ -89,7 +90,7 @@ const SessionCard = ({ session, viewType, onClick }) => {
       </Typography>
       
       <Typography variant="caption" display="block" sx={{ 
-        ml: 1.5, 
+        ml: 2, 
         color: 'text.secondary',
         fontSize: { xs: '0.7rem', md: '0.75rem' },
       }}>
@@ -97,7 +98,7 @@ const SessionCard = ({ session, viewType, onClick }) => {
       </Typography>
       
       <Typography variant="caption" display="block" sx={{ 
-        ml: 1.5, 
+        ml: 2, 
         opacity: 0.9, 
         color: 'text.secondary',
         fontSize: { xs: '0.7rem', md: '0.75rem' },
@@ -111,7 +112,7 @@ const SessionCard = ({ session, viewType, onClick }) => {
           variant="caption" 
           display="block"
           sx={{ 
-            ml: 1.5,
+            ml: 2,
             opacity: 0.85, 
             color: isCommonSession ? 'primary.main' : 'text.secondary',
             fontWeight: isCommonSession ? 700 : 600,

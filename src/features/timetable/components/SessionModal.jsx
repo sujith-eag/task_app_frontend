@@ -31,7 +31,7 @@ const SessionModal = ({ session, onClose }) => {
                 paper: {
                     sx: { 
                         borderRadius: 3, 
-                        overflow: 'visible',
+                        overflow: 'hidden',
                         backgroundColor: 'background.paper',
                         backgroundImage: 'none',
                     }
@@ -43,83 +43,137 @@ const SessionModal = ({ session, onClose }) => {
                 <>
                     <DialogTitle sx={{ 
                         m: 0, 
-                        p: 0,
-                        pb: 0,
-                        overflow: 'hidden',
+                        p: 2,
+                        pb: 2,
+                        borderBottom: 1, 
+                        borderColor: 'divider',
                     }}>
-                        {/* Color accent bar integrated with header */}
-                        <Box sx={{
-                            height: 6,
-                            width: '100%',
-                            bgcolor: color.bgcolor,
-                            borderTopLeftRadius: 12,
-                            borderTopRightRadius: 12,
-                        }} />
-                        
                         <Box sx={{ 
                             display: 'flex', 
                             alignItems: 'center', 
                             gap: 2,
-                            p: 2,
-                            pb: 1.5,
-                            borderBottom: 1, 
-                            borderColor: 'divider',
                         }}>
                             <Box sx={{
-                                width: 36, height: 36, borderRadius: '50%',
-                                bgcolor: color.bgcolor, color: color.color,
-                                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                fontWeight: 700, fontSize: 20,
+                                width: 40, 
+                                height: 40, 
+                                borderRadius: '8px',
+                                bgcolor: color.bgcolor, 
+                                color: color.color,
+                                display: 'flex', 
+                                alignItems: 'center', 
+                                justifyContent: 'center',
+                                fontWeight: 700, 
+                                fontSize: 20,
                                 boxShadow: 2,
                             }}>
                                 <SchoolIcon fontSize="medium" />
                             </Box>
-                            <Box>
-                                <Typography variant="h6" component="div" sx={{ fontWeight: 700 }}>
+                            <Box sx={{ flex: 1 }}>
+                                <Typography variant="h6" component="div" sx={{ fontWeight: 700, mb: 0.5 }}>
                                     {session.shortCode ? `${session.shortCode} - ` : ''}{session.subjectTitle}
                                 </Typography>
-                                <Typography variant="body2" sx={{ color: color.bgcolor, fontWeight: 500 }}>
-                                    {session.subjectCode} ({session.componentType})
-                                </Typography>
+                                <Box sx={{ 
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: 1,
+                                    px: 1.5,
+                                    py: 0.5,
+                                    borderRadius: 1.5,
+                                    bgcolor: `${color.bgcolor}20`,
+                                    border: '2px solid',
+                                    borderColor: color.bgcolor,
+                                }}>
+                                    <Typography variant="body2" sx={{ color: color.bgcolor, fontWeight: 600 }}>
+                                        {session.subjectCode}
+                                    </Typography>
+                                    <Box sx={{
+                                        width: 4,
+                                        height: 4,
+                                        borderRadius: '50%',
+                                        bgcolor: color.bgcolor,
+                                    }} />
+                                    <Typography variant="body2" sx={{ color: color.bgcolor, fontWeight: 600 }}>
+                                        {session.componentType}
+                                    </Typography>
+                                </Box>
                             </Box>
                         </Box>
                     </DialogTitle>
 
-                    <DialogContent sx={{ pt: 2, pb: 1 }}>
+                    <DialogContent sx={{ pt: 2.5, pb: 1 }}>
                         <List dense>
-                            <ListItem>
+                            <ListItem sx={{
+                                borderRadius: 1.5,
+                                mb: 0.5,
+                                '&:hover': { bgcolor: 'action.hover' }
+                            }}>
                                 <ListItemIcon><SchoolIcon color="primary" /></ListItemIcon>
-                                <ListItemText primary={<b>{session.facultyName}</b>} secondary="Faculty" />
+                                <ListItemText 
+                                    primary={<Typography sx={{ fontWeight: 600 }}>{session.facultyName}</Typography>} 
+                                    secondary="Faculty" 
+                                />
                             </ListItem>
-                            <ListItem>
+                            <ListItem sx={{
+                                borderRadius: 1.5,
+                                mb: 0.5,
+                                '&:hover': { bgcolor: 'action.hover' }
+                            }}>
                                 <ListItemIcon><GroupIcon color="info" /></ListItemIcon>
-                                <ListItemText primary={<b>{session.studentGroupId}</b>} secondary="Group / Section" />
+                                <ListItemText 
+                                    primary={<Typography sx={{ fontWeight: 600 }}>{session.studentGroupId}</Typography>} 
+                                    secondary="Group / Section" 
+                                />
                             </ListItem>
                             {/* Display sections if available */}
                             {hasSections(session.sections) && (
-                                <ListItem>
+                                <ListItem sx={{
+                                    borderRadius: 1.5,
+                                    mb: 0.5,
+                                    '&:hover': { bgcolor: 'action.hover' }
+                                }}>
                                     <ListItemIcon><GroupIcon color="primary" /></ListItemIcon>
                                     <ListItemText 
-                                        primary={<b>{formatSections(session.sections)}</b>} 
+                                        primary={<Typography sx={{ fontWeight: 600 }}>{formatSections(session.sections)}</Typography>} 
                                         secondary="Section(s)" 
                                     />
                                 </ListItem>
                             )}
-                            <ListItem>
+                            <ListItem sx={{
+                                borderRadius: 1.5,
+                                mb: 0.5,
+                                '&:hover': { bgcolor: 'action.hover' }
+                            }}>
                                 <ListItemIcon><MeetingRoomIcon color="secondary" /></ListItemIcon>
-                                <ListItemText primary={<b>{session.roomId}</b>} secondary="Room" />
+                                <ListItemText 
+                                    primary={<Typography sx={{ fontWeight: 600 }}>{session.roomId}</Typography>} 
+                                    secondary="Room" 
+                                />
                             </ListItem>
-                            <ListItem>
+                            <ListItem sx={{
+                                borderRadius: 1.5,
+                                mb: 0.5,
+                                '&:hover': { bgcolor: 'action.hover' }
+                            }}>
                                 <ListItemIcon><ScheduleIcon color="action" /></ListItemIcon>
-                                <ListItemText primary={<b>{`${session.day}, ${session.startTime} - ${session.endTime}`}</b>} secondary="Time" />
+                                <ListItemText 
+                                    primary={<Typography sx={{ fontWeight: 600 }}>{`${session.day}, ${session.startTime} - ${session.endTime}`}</Typography>} 
+                                    secondary="Time" 
+                                />
                             </ListItem>
                             {session.supportingStaff && session.supportingStaff.length > 0 && (
                                 <>
-                                    <Divider sx={{ my: 1 }} />
-                                    <ListItem>
+                                    <Divider sx={{ my: 1.5 }} />
+                                    <ListItem sx={{
+                                        borderRadius: 1.5,
+                                        bgcolor: (theme) => theme.palette.mode === 'dark' 
+                                            ? 'rgba(76, 175, 80, 0.08)' 
+                                            : 'rgba(76, 175, 80, 0.05)',
+                                        border: '1px solid',
+                                        borderColor: 'success.main',
+                                    }}>
                                         <ListItemIcon><SupportAgentIcon color="success" /></ListItemIcon>
                                         <ListItemText 
-                                            primary={<b>{session.supportingStaff.map(staff => staff.name).join(', ')}</b>} 
+                                            primary={<Typography sx={{ fontWeight: 600 }}>{session.supportingStaff.map(staff => staff.name).join(', ')}</Typography>} 
                                             secondary="Supporting Staff" 
                                         />
                                     </ListItem>
@@ -128,8 +182,19 @@ const SessionModal = ({ session, onClose }) => {
                         </List>
                     </DialogContent>
 
-                    <DialogActions sx={{ px: 3, pb: 2, pt: 1 }}>
-                        <Button onClick={onClose} variant="contained" color="primary" sx={{ borderRadius: 2, fontWeight: 600 }}>
+                    <DialogActions sx={{ px: 3, pb: 2.5, pt: 1.5 }}>
+                        <Button 
+                            onClick={onClose} 
+                            variant="contained" 
+                            color="primary" 
+                            sx={{ 
+                                borderRadius: 2, 
+                                fontWeight: 600,
+                                px: 3,
+                                py: 1,
+                                textTransform: 'none',
+                            }}
+                        >
                             Close
                         </Button>
                     </DialogActions>
