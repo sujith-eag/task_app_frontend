@@ -1,73 +1,104 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import {
-    Box, Stack, Paper, TextField, IconButton, Avatar, Typography,
-    List, ListItem, ListItemText, Divider, CircularProgress
-} from '@mui/material';
+import { Box, Stack, Paper, IconButton, Avatar, Typography, Badge, Chip } from '@mui/material';
 import { v4 as uuidv4 } from 'uuid';
-import DOMPurify from 'dompurify';
 import { toast } from 'react-toastify';
-import SendIcon from '@mui/icons-material/Send';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import CircleIcon from '@mui/icons-material/Circle';
 
 import { useSocket } from '../../../context/SocketContext.jsx';
 import { addOptimisticMessage, 
         reconcileMessage,
         selectActiveConversation,
         clearActiveConversation } from '../chatSlice.js';
+import MessageList from './message/MessageList.jsx';
+import MessageInput from './message/MessageInput.jsx';
 
 const ChatWindow = () => {
     const dispatch = useDispatch();
-    const socket = useSocket();
-    const messagesEndRef = useRef(null);
-    const [newMessage, setNewMessage] = useState('');
-
+    const { socket } = useSocket();
     const { user } = useSelector((state) => state.auth);
-
+    const { onlineUsers } = useSelector((state) => state.chat);
     const activeConversation = useSelector(selectActiveConversation);
-    const { messages, status } = useSelector((state) => state.chat);
-
-    // --- Derive data from the active conversation object ---
-    const otherParticipant = activeConversation?.participants.find(p => p._id !== user._id);
-    const messageList = activeConversation ? messages[activeConversation._id] || [] : [];
-
-    // Auto-scrolling effect
-    useEffect(() => {
-		// Scroll instantly on initial load, smoothly for new messages
-        const behavior = messageList.length > 1 ? 'smooth' : 'auto';
-        messagesEndRef.current?.scrollIntoView({ behavior });
-    }, [messageList]);
-
-    useEffect(() => {
-        if (socket && activeConversation) {
-            // Find the last message that was not sent by the current user
-            const lastReceivedMessage = messageList.slice().reverse().find(msg => msg.sender._id !== user._id);
-
-            // If the last received message is not yet read, emit the event
-            if (lastReceivedMessage && lastReceivedMessage.status !== 'read') {
-                socket.emit('messagesRead', { 
-                    conversationId: activeConversation._id,
-                    readerId: user._id 
-                });
-            }
-        }
-    }, [socket, activeConversation, messageList, user._id]);
-
     
+    const [isTyping, setIsTyping] = useState(false);
+    const [typingTimeout, setTypingTimeout] = useState(null);
+
+    // Derive data from the active conversation object
+    const otherParticipant = activeConversation?.participants.find(p => p._id !== user._id);
+    const isOnline = otherParticipant ? onlineUsers.includes(otherParticipant._id) : false;
+
+    // Listen for typing events
+    useEffect(() => {
+        if (!socket || !activeConversation) return;
+
+        const handleTyping = ({ conversationId, from }) => {
+            if (conversationId === activeConversation._id && from !== user._id) {
+                setIsTyping(true);
+                
+                // Clear any existing timeout
+                if (typingTimeout) clearTimeout(typingTimeout);
+                
+                // Set new timeout to stop typing indicator
+                const timeout = setTimeout(() => {
+                    setIsTyping(false);
+                }, 3000);
+                
+                setTypingTimeout(timeout);
+            }
+        };
+
+        const handleStopTyping = ({ conversationId, from }) => {
+            if (conversationId === activeConversation._id && from !== user._id) {
+                setIsTyping(false);
+                if (typingTimeout) clearTimeout(typingTimeout);
+            }
+        };
+
+        socket.on('typing', handleTyping);
+        socket.on('stopTyping', handleStopTyping);
+
+        return () => {
+            socket.off('typing', handleTyping);
+            socket.off('stopTyping', handleStopTyping);
+            if (typingTimeout) clearTimeout(typingTimeout);
+        };
+    }, [socket, activeConversation, user._id, typingTimeout]);
+
     const handleBackClick = () => {
         dispatch(clearActiveConversation());
-    };    
-    
-    const handleSendMessage = (e) => {
-        e.preventDefault();
-        if (!newMessage.trim() || !socket || !otherParticipant) return;
+    };
+
+    const handleTypingStart = () => {
+        if (socket && otherParticipant && activeConversation) {
+            socket.emit('startTyping', {
+                recipientId: otherParticipant._id,
+                conversationId: activeConversation._id,
+            });
+        }
+    };
+
+    const handleTypingStop = () => {
+        if (socket && otherParticipant && activeConversation) {
+            socket.emit('stopTyping', {
+                recipientId: otherParticipant._id,
+                conversationId: activeConversation._id,
+            });
+        }
+    };
+
+    const handleSendMessage = (content) => {
+        if (!socket || !otherParticipant) {
+            toast.error('Unable to send message. Please try again.');
+            return;
+        }
 
         // Create an optimistic message with a temporary ID and 'sending' status
         const optimisticMessage = {
             tempId: uuidv4(),
             sender: { _id: user._id, name: user.name, avatar: user.avatar },
-            content: newMessage,
-            conversation: activeConversation._id, // <-- FIX: Use the ID from the object
+            content,
+            conversation: activeConversation._id,
             createdAt: new Date().toISOString(),
             status: 'sending',
         };
@@ -75,18 +106,16 @@ const ChatWindow = () => {
         // Immediately add the optimistic message to the UI
         dispatch(addOptimisticMessage(optimisticMessage));
 
-
         // Emit the message to the server with an acknowledgment callback
         socket.emit('sendMessage', 
             { 
                 recipientId: otherParticipant._id, 
-                content: newMessage,
+                content,
                 tempId: optimisticMessage.tempId
             },  
             (ack) => {
                 if (ack.success) {
                     // When the server confirms, reconcile the message in the state
-                    // ack.message will have the tempId back from the server
                     dispatch(reconcileMessage(ack.message));
                 } else {
                     toast.error('Message failed to send.');
@@ -94,96 +123,130 @@ const ChatWindow = () => {
                 }
             }
         );
-        setNewMessage('');
     };
-    
+
     if (!activeConversation || !otherParticipant) {
         return <Box />; // Safety check
     }
 
     return (
         <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-            {/* --- Chat Header --- */}
-            <Paper elevation={2} sx={{ flexShrink: 0 }}>
-                <Stack direction="row" alignItems="center" spacing={2} sx={{ p: 2 }}>
-
-                    {/* BACK BUTTON */}
+            {/* Premium Header */}
+            <Paper
+                elevation={3}
+                sx={{
+                    flexShrink: 0,
+                    background: (theme) => theme.palette.mode === 'dark'
+                        ? 'linear-gradient(180deg, #1e1e1e 0%, #1a1a1a 100%)'
+                        : 'linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%)',
+                    borderBottom: '2px solid',
+                    borderColor: (theme) => theme.palette.mode === 'dark' 
+                        ? 'rgba(33, 150, 243, 0.3)' 
+                        : 'rgba(33, 150, 243, 0.2)',
+                    boxShadow: (theme) => theme.palette.mode === 'dark'
+                        ? '0 4px 12px rgba(0, 0, 0, 0.5)'
+                        : '0 2px 8px rgba(0, 0, 0, 0.08)',
+                    position: 'relative',
+                    zIndex: 10,
+                }}
+            >
+                <Stack direction="row" alignItems="center" spacing={1.5} sx={{ p: { xs: 1.5, sm: 2 } }}>
+                    {/* Back Button (Mobile only) */}
                     <IconButton
                         onClick={handleBackClick}
+                        size="small"
                         sx={{ 
-                            display: { xs: 'inline-flex', md: 'none' }, // Only show on mobile
-                            mr: 1 
-                        }}>
-                        <ArrowBackIcon />
-                    </IconButton>                    
-                    
-                    <Avatar src={otherParticipant.avatar} />
-                    <Typography variant="h6">{otherParticipant.name}</Typography>
+                            display: { xs: 'inline-flex', md: 'none' },
+                            transition: 'all 0.2s ease',
+                            '&:hover': {
+                                transform: 'translateX(-2px)',
+                                bgcolor: 'action.hover',
+                            }
+                        }}
+                    >
+                        <ArrowBackIcon fontSize="small" />
+                    </IconButton>
+
+                    {/* Avatar with Online Status */}
+                    <Badge
+                        overlap="circular"
+                        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                        badgeContent={
+                            isOnline && (
+                                <Box
+                                    sx={{
+                                        width: 12,
+                                        height: 12,
+                                        borderRadius: '50%',
+                                        bgcolor: 'success.main',
+                                        border: '2px solid',
+                                        borderColor: 'background.paper',
+                                        boxShadow: '0 0 0 2px rgba(76, 175, 80, 0.2)',
+                                    }}
+                                />
+                            )
+                        }
+                    >
+                        <Avatar 
+                            src={otherParticipant.avatar}
+                            alt={otherParticipant.name}
+                            sx={{ 
+                                width: { xs: 40, sm: 44 }, 
+                                height: { xs: 40, sm: 44 },
+                                border: '2px solid',
+                                borderColor: (theme) => theme.palette.mode === 'dark' 
+                                    ? 'rgba(255, 255, 255, 0.1)' 
+                                    : 'rgba(0, 0, 0, 0.08)',
+                                boxShadow: 1,
+                            }}
+                        />
+                    </Badge>
+
+                    {/* User Info */}
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                        <Typography 
+                            variant="h6" 
+                            sx={{ 
+                                fontWeight: 700,
+                                fontSize: { xs: '0.95rem', sm: '1.1rem' },
+                                color: 'text.primary',
+                                letterSpacing: 0.2,
+                            }}
+                        >
+                            {otherParticipant.name}
+                        </Typography>
+                        <Stack direction="row" spacing={0.5} alignItems="center">
+                            {isOnline ? (
+                                <>
+                                    <CircleIcon sx={{ fontSize: 8, color: 'success.main' }} />
+                                    <Typography variant="caption" sx={{ color: 'success.main', fontWeight: 600, fontSize: '0.7rem' }}>
+                                        Online
+                                    </Typography>
+                                </>
+                            ) : (
+                                <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.7rem' }}>
+                                    Offline
+                                </Typography>
+                            )}
+                        </Stack>
+                    </Box>
                 </Stack>
             </Paper>
-            <Divider />
 
-            {/* --- Message List --- */}
-            <Box sx={{ flexGrow: 1, overflowY: 'auto', p: 2 }}>
-    {status.getMessages === 'loading' ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
-            <CircularProgress />
-        </Box>
-            ) : (
-                <List>
-                    {messageList.map((msg) => {
-                        const isSender = msg.sender._id === user._id;
-                        return (
-                            <ListItem 
-                                key={msg._id || msg.tempId} 
-                                sx={{ 
-                                    justifyContent: isSender ? 'flex-end' : 'flex-start',
-                                    opacity: msg.status === 'sending' ? 0.7 : 1,
-                                }}
-                            >
-                                <Paper
-                                    variant="outlined"
-                                    sx={{
-                                        p: 1.5,
-                                        bgcolor: isSender ? 'primary.main' : 'background.default',
-                                        color: isSender ? 'primary.contrastText' : 'text.primary',
-                                        borderRadius: 4,
-                                        borderTopRightRadius: isSender ? 0 : 4,
-                                        borderTopLeftRadius: isSender ? 4 : 0,
-                                    }}
-                                >
-		                            {/* Sanitize content before rendering */}
-                                    <ListItemText 
-                                        primary={<div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(msg.content) }} />} 
-                                    />
-                                </Paper>
-                            </ListItem>
-                        );
-                    })}
-                    {/* Empty div to which we will scroll */}
-                    <div ref={messagesEndRef} />
-                </List>
-            )}
-            </Box>
+            {/* Message List */}
+            <MessageList
+                conversationId={activeConversation._id}
+                isTyping={isTyping}
+                typingUserName={otherParticipant.name}
+            />
 
-            <Divider />
-
-            {/* --- Message Input Form --- */}
-            <Box component="form" onSubmit={handleSendMessage} 
-	            sx={{ p: 2, flexShrink: 0, bgcolor: 'background.default' }}>
-                <Stack direction="row" spacing={2}>
-                    <TextField
-                        fullWidth
-                        variant="outlined"
-                        placeholder="Type a message..."
-                        value={newMessage}
-                        onChange={(e) => setNewMessage(e.target.value)}
-                    />
-                    <IconButton type="submit" color="primary" disabled={!newMessage.trim()}>
-                        <SendIcon />
-                    </IconButton>
-                </Stack>
-            </Box>
+            {/* Message Input */}
+            <MessageInput
+                onSendMessage={handleSendMessage}
+                onTypingStart={handleTypingStart}
+                onTypingStop={handleTypingStop}
+                disabled={!socket}
+            />
         </Box>
     );
 };
