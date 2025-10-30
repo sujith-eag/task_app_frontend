@@ -124,17 +124,44 @@ export const teacherSlice = createSlice({
 
         updateRosterOnSocketEvent: (state, action) => {
             // action.payload should be the student record updated by the server
-            if (state.activeSession) {
-                const studentId = action.payload.student;
+            if (state.activeSession && state.activeSession.attendanceRecords) {
+                console.log('🔄 Updating roster with socket data:', action.payload);
+                
+                // Handle different payload structures
+                // Could be: { student: "id" } or { student: { _id: "id" } } or just "id"
+                let studentId;
+                if (typeof action.payload === 'string') {
+                    studentId = action.payload;
+                } else if (action.payload.student) {
+                    studentId = typeof action.payload.student === 'string' 
+                        ? action.payload.student 
+                        : action.payload.student._id;
+                } else if (action.payload.studentId) {
+                    studentId = action.payload.studentId;
+                } else if (action.payload._id) {
+                    studentId = action.payload._id;
+                }
+
+                console.log('🔍 Looking for student ID:', studentId);
+                console.log('📋 Current roster:', state.activeSession.attendanceRecords.map(r => ({
+                    id: r.student._id,
+                    name: r.student.name,
+                    status: r.status
+                })));
 
                 const recordIndex = state.activeSession.attendanceRecords.findIndex(
                     (rec) => rec.student._id.toString() === studentId.toString()
                 );
 
                 if (recordIndex !== -1) {
+                    console.log('✅ Found student at index:', recordIndex, 'Marking as present');
                     // Update the specific student's status to 'present'
                     state.activeSession.attendanceRecords[recordIndex].status = true;
+                } else {
+                    console.warn('⚠️ Student not found in roster:', studentId);
                 }
+            } else {
+                console.warn('⚠️ No active session or attendance records');
             }
         },
         // Reducer for manual toggles
