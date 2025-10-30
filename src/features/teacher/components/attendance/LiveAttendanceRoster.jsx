@@ -44,7 +44,9 @@ const LiveAttendanceRoster = ({ session }) => {
     // Fetch roster when component mounts if activeSession exists but no attendanceRecords
     useEffect(() => {
         if (session?._id && (!activeSession?.attendanceRecords || activeSession.attendanceRecords.length === 0)) {
-            console.log('📋 Fetching initial roster for session:', session._id);
+            if (import.meta.env.DEV) {
+                console.log('📋 Fetching initial roster for session:', session._id);
+            }
             dispatch(getSessionRoster(session._id));
         }
     }, [session?._id, activeSession?.attendanceRecords, dispatch]);
@@ -56,21 +58,27 @@ const LiveAttendanceRoster = ({ session }) => {
             return;
         }
         
-        console.log('🔌 Setting up socket listeners for session:', session._id);
-        console.log('📋 Current attendance records:', activeSession?.attendanceRecords?.length || 0);
+        if (import.meta.env.DEV) {
+            console.log('🔌 Setting up socket listeners for session:', session._id);
+            console.log('📋 Current attendance records:', activeSession?.attendanceRecords?.length || 0);
+        }
         
         // Have the teacher's client join a private "room" for this session
         socket.emit('join-session-room', session._id);
 
         // Define the handler for incoming check-in events
         const handleStudentCheckIn = (studentData) => {
-            console.log('👤 Student checked in via socket:', studentData);
+            if (import.meta.env.DEV) {
+                console.log('👤 Student checked in via socket:', studentData);
+            }
             
             // Only process if we have the roster loaded
             if (activeSession?.attendanceRecords && activeSession.attendanceRecords.length > 0) {
                 dispatch(updateRosterOnSocketEvent(studentData));
             } else {
-                console.warn('⚠️ Received check-in but roster not loaded yet. Fetching roster...');
+                if (import.meta.env.DEV) {
+                    console.warn('⚠️ Received check-in but roster not loaded yet. Fetching roster...');
+                }
                 // Trigger roster fetch if not already loading
                 if (!isRosterLoading) {
                     dispatch(getSessionRoster(session._id));
@@ -83,7 +91,9 @@ const LiveAttendanceRoster = ({ session }) => {
 
         // Cleanup: Leave the room, remove the listener on component unmount
         return () => {
-            console.log('🔌 Cleaning up socket listeners for session:', session._id);
+            if (import.meta.env.DEV) {
+                console.log('🔌 Cleaning up socket listeners for session:', session._id);
+            }
             socket.off('student-checked-in', handleStudentCheckIn);
             socket.emit('leave-session-room', session._id);
         };

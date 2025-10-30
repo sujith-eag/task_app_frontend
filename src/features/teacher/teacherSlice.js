@@ -125,7 +125,9 @@ export const teacherSlice = createSlice({
         updateRosterOnSocketEvent: (state, action) => {
             // action.payload should be the student record updated by the server
             if (state.activeSession && state.activeSession.attendanceRecords) {
-                console.log('🔄 Updating roster with socket data:', action.payload);
+                if (import.meta.env.DEV) {
+                    console.log('🔄 Updating roster with socket data:', action.payload);
+                }
                 
                 // Handle different payload structures
                 // Could be: { student: "id" } or { student: { _id: "id" } } or just "id"
@@ -142,26 +144,34 @@ export const teacherSlice = createSlice({
                     studentId = action.payload._id;
                 }
 
-                console.log('🔍 Looking for student ID:', studentId);
-                console.log('📋 Current roster:', state.activeSession.attendanceRecords.map(r => ({
-                    id: r.student._id,
-                    name: r.student.name,
-                    status: r.status
-                })));
+                if (import.meta.env.DEV) {
+                    console.log('🔍 Looking for student ID:', studentId);
+                    console.log('📋 Current roster:', state.activeSession.attendanceRecords.map(r => ({
+                        id: r.student._id,
+                        name: r.student.name,
+                        status: r.status
+                    })));
+                }
 
                 const recordIndex = state.activeSession.attendanceRecords.findIndex(
                     (rec) => rec.student._id.toString() === studentId.toString()
                 );
 
                 if (recordIndex !== -1) {
-                    console.log('✅ Found student at index:', recordIndex, 'Marking as present');
+                    if (import.meta.env.DEV) {
+                        console.log('✅ Found student at index:', recordIndex, 'Marking as present');
+                    }
                     // Update the specific student's status to 'present'
                     state.activeSession.attendanceRecords[recordIndex].status = true;
                 } else {
-                    console.warn('⚠️ Student not found in roster:', studentId);
+                    if (import.meta.env.DEV) {
+                        console.warn('⚠️ Student not found in roster:', studentId);
+                    }
                 }
             } else {
-                console.warn('⚠️ No active session or attendance records');
+                if (import.meta.env.DEV) {
+                    console.warn('⚠️ No active session or attendance records');
+                }
             }
         },
         // Reducer for manual toggles
