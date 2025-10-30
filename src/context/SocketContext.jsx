@@ -44,7 +44,8 @@ export const SocketContextProvider = ({ children }) => {
                 setIsReconnecting(false);
                 hasShownDisconnectToast.current = false;
                 
-                // Show success toast on reconnection (not on initial connection)
+                // Dismiss disconnect toast and show success toast on reconnection (not on initial connection)
+                toast.dismiss('socket-disconnected');
                 if (socketRef.current.recovered) {
                     toast.success('Connection restored', {
                         position: 'bottom-right',
@@ -58,12 +59,16 @@ export const SocketContextProvider = ({ children }) => {
                 console.log('🔌 Socket.IO disconnected:', reason);
                 setIsConnected(false);
                 
+                // Dismiss any existing connection toasts first
+                toast.dismiss('socket-reconnected');
+                toast.dismiss('socket-disconnected');
+                
                 // Only show toast for unexpected disconnections (not manual logout)
                 if (reason !== 'io client disconnect' && !hasShownDisconnectToast.current) {
                     hasShownDisconnectToast.current = true;
                     toast.error('Connection lost. Attempting to reconnect...', {
                         position: 'bottom-right',
-                        autoClose: false,
+                        autoClose: 3000, // Auto-dismiss after 10 seconds
                         toastId: 'socket-disconnected'
                     });
                 }
