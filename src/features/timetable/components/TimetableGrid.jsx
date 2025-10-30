@@ -223,18 +223,17 @@ const TimetableGrid = ({ sessions, viewType, onCellClick }) => {
         elevation={3}
         sx={{ 
           overflowX: 'auto',
+          overflowY: 'auto',
           position: 'relative',
           width: '100%',
+          // Set max height to enable vertical scrolling on mobile
+          maxHeight: { xs: '70vh', md: '85vh' },
           borderRadius: { xs: 2, sm: 2.5 },
           border: '2px solid',
           borderColor: 'divider',
           boxShadow: (theme) => theme.palette.mode === 'dark'
             ? '0 8px 32px rgba(0, 0, 0, 0.6), 0 2px 8px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05)'
             : '0 8px 32px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.7)',
-          '@media (min-height: 900px)': {
-            maxHeight: '85vh',
-            overflowY: 'auto',
-          },
           // Enhanced scrollbar styling
           '&::-webkit-scrollbar': {
             width: '10px',
@@ -287,8 +286,8 @@ const TimetableGrid = ({ sessions, viewType, onCellClick }) => {
                   backdropFilter: 'blur(10px)',
                   backgroundColor: (theme) => 
                     theme.palette.mode === 'dark'
-                      ? 'rgba(26, 31, 58, 0.9)'
-                      : 'rgba(255, 255, 255, 0.9)',
+                      ? 'rgba(26, 31, 58, 0.95)'
+                      : 'rgba(255, 255, 255, 0.95)',
                   color: (theme) => 
                     theme.palette.mode === 'dark' 
                       ? 'primary.light' 
@@ -298,6 +297,10 @@ const TimetableGrid = ({ sessions, viewType, onCellClick }) => {
                   borderColor: 'divider',
                   p: { xs: 1, md: 2 },
                   fontWeight: 700,
+                  // Critical for mobile sticky behavior
+                  position: 'sticky',
+                  top: 0,
+                  zIndex: 3,
                 }}
               >
                 Day
@@ -315,8 +318,8 @@ const TimetableGrid = ({ sessions, viewType, onCellClick }) => {
                     backdropFilter: 'blur(10px)',
                     backgroundColor: (theme) => 
                       theme.palette.mode === 'dark'
-                        ? 'rgba(26, 31, 58, 0.9)'
-                        : 'rgba(255, 255, 255, 0.9)',
+                        ? 'rgba(26, 31, 58, 0.95)'
+                        : 'rgba(255, 255, 255, 0.95)',
                     color: (theme) => 
                       theme.palette.mode === 'dark' 
                         ? 'primary.light' 
@@ -328,6 +331,10 @@ const TimetableGrid = ({ sessions, viewType, onCellClick }) => {
                     width: `${100 / TIME_SLOTS.length}%`,
                     lineHeight: 1.3,
                     whiteSpace: 'nowrap',
+                    // Critical for mobile sticky behavior
+                    position: 'sticky',
+                    top: 0,
+                    zIndex: 2,
                   }}
                 >
                   {time}
