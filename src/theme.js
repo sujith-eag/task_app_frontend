@@ -1,5 +1,3 @@
-import { createTheme } from '@mui/material/styles';
-
 const getDesignTokens = (mode) => ({
   palette: {
     mode,

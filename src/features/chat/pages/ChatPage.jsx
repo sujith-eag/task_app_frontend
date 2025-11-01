@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Container, Paper, Box, Typography, Stack } from '@mui/material';
-import { motion } from 'framer-motion';
+// framer-motion was imported previously but not used in this module
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 
 import { getConversations, selectActiveConversation } from '../chatSlice.js';

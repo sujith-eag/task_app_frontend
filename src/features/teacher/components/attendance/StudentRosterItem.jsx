@@ -4,7 +4,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 
-const StudentRosterItem = ({ student, status, onToggle, isWindowOpen, index }) => {
+const StudentRosterItem = ({ student, status, onToggle, isWindowOpen }) => {
     // Generate consistent avatar color based on student name
     const getAvatarColor = (name) => {
         const colors = [

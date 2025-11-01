@@ -1,5 +1,4 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
 import { Container, Alert } from '@mui/material';
 import Timetable from '../Timetable.jsx';
 

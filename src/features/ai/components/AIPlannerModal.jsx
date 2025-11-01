@@ -8,8 +8,6 @@ import {
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import { v4 as uuidv4 } from 'uuid';
-
 import { getAIPlanPreview, saveAIPlan, discardAIPlan } from '../aiTaskSlice.js';
 
 

@@ -179,8 +179,8 @@ const TimetableGrid = ({ sessions, viewType, onCellClick }) => {
       timeSlotGrid[key].push(session);
     });
     
-    // Check if any time slot has sessions with different durations
-    for (const [key, sessionsInSlot] of Object.entries(timeSlotGrid)) {
+      // Check if any time slot has sessions with different durations
+      for (const sessionsInSlot of Object.values(timeSlotGrid)) {
       if (sessionsInSlot.length > 1) {
         const durations = new Set();
         sessionsInSlot.forEach(s => {
@@ -459,7 +459,7 @@ const TimetableGrid = ({ sessions, viewType, onCellClick }) => {
         </Table>
       </TableContainer>
     );
-  } catch (err) {
+  } catch {
     return (
       <Box sx={{ color: 'error.main', textAlign: 'center', my: 4 }}>
         Error rendering timetable grid. Please check your data or try a different view.

@@ -22,7 +22,6 @@ const Timetable = ({ data, currentUser }) => {
     view,
     handleViewChange,
     facultyList,
-    sectionList,
     semesterList,
     sectionLetterList,
     filteredSessions
