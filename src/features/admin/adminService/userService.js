@@ -2,6 +2,8 @@ import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const API_URL = `${API_BASE_URL}/admin/`;
+const MANAGEMENT_API_URL = `${API_BASE_URL}/admin/management`;
+const APPLICATIONS_API_URL = `${API_BASE_URL}/admin/applications`;
 
 
 
@@ -15,7 +17,7 @@ const API_URL = `${API_BASE_URL}/admin/`;
  */
 const getPendingApplications = async (token) => {
     const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.get(API_URL + 'applications', config);
+    const response = await axios.get(`${APPLICATIONS_API_URL}`, config);
     return response.data;
 };
 
@@ -31,14 +33,14 @@ const getPendingApplications = async (token) => {
 const reviewApplication = async (userId, action, token) => {
     const config = { headers: { Authorization: `Bearer ${token}` } };
     const body = { action };
-    const response = await axios.patch(`${API_URL}applications/${userId}/review`, body, config);
+    const response = await axios.patch(`${APPLICATIONS_API_URL}/${userId}/review`, body, config);
     return response.data;
 };
 
 
 /**
  * Retrieves a list of users, filtered by their role.
- * @route GET /api/admin/users
+ * @route GET /api/admin/management/users
  * @param {string} role - The role to filter by (e.g., 'student', 'user').
  * @param {string} token - The JWT for authentication.
  * @returns {Promise<Array<object>>} An array of user objects matching the role.
@@ -48,14 +50,14 @@ const getUsersByRole = async (role, token) => {
         headers: { Authorization: `Bearer ${token}` },
         params: { role }
     };
-    const response = await axios.get(API_URL + 'users', config);
+    const response = await axios.get(`${MANAGEMENT_API_URL}/users`, config);
     return response.data;
 };
 
 
 /**
  * Promotes a regular user to a faculty (teacher) role.
- * @route PATCH /api/admin/users/:userId/promote
+ * @route PATCH /api/admin/management/users/:userId/promote
  * @param {string} userId - The ID of the user to be promoted.
  * @param {object} facultyData - The new faculty details for the user.
  * @param {string} token - The JWT for authentication.
@@ -63,14 +65,14 @@ const getUsersByRole = async (role, token) => {
  */
 const promoteToFaculty = async (userId, facultyData, token) => {
     const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.patch(`${API_URL}users/${userId}/promote`, facultyData, config);
+    const response = await axios.patch(`${MANAGEMENT_API_URL}/users/${userId}/promote`, facultyData, config);
     return response.data;
 };
 
 
 /**
  * Updates the profile details for a specific student.
- * @route PUT /api/admin/students/:studentId
+ * @route PUT /api/admin/management/students/:studentId
  * @param {string} studentId - The ID of the student to update.
  * @param {object} studentData - The student fields to be updated.
  * @param {string} token - The JWT for authentication.
@@ -78,14 +80,14 @@ const promoteToFaculty = async (userId, facultyData, token) => {
  */
 const updateStudentDetails = async (studentId, studentData, token) => {
     const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.put(`${API_URL}students/${studentId}`, studentData, config);
+    const response = await axios.put(`${MANAGEMENT_API_URL}/students/${studentId}`, studentData, config);
     return response.data;
 };
 
 
 /**
  * Overwrites the list of subjects a student is enrolled in.
- * @route PUT /api/admin/students/:studentId/enrollment
+ * @route PUT /api/admin/management/students/:studentId/enrollment
  * @param {string} studentId - The ID of the student.
  * @param {Array<string>} subjectIds - An array of subject IDs for enrollment.
  * @param {string} token - The JWT for authentication.
@@ -93,7 +95,7 @@ const updateStudentDetails = async (studentId, studentData, token) => {
  */
 const updateStudentEnrollment = async (studentId, subjectIds, token) => {
     const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.put(`${API_URL}students/${studentId}/enrollment`, { subjectIds }, config);
+    const response = await axios.put(`${MANAGEMENT_API_URL}/students/${studentId}/enrollment`, { subjectIds }, config);
     return response.data;
 };
 

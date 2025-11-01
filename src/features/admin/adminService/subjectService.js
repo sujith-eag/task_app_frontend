@@ -1,14 +1,15 @@
 import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const SUBJECTS_API_URL = `${API_BASE_URL}/college/subjects/`;
+// Admin-managed subjects base URL (Phase 0 refactor moved admin subject management under /api/admin/subjects)
+const SUBJECTS_API_URL = `${API_BASE_URL}/admin/subjects/`;
 
 
 // --- Subject Management ---
 
 /**
  * Retrieves a list of all academic subjects. with optional semester filter
- * @route GET /api/college/subjects/
+ * @route GET /api/admin/subjects/
  * @param {string} token - The JWT for authentication.
  * @returns {Promise<Array<object>>} An array of subject objects.
  */
@@ -24,7 +25,7 @@ const getSubjects = async (token, params={}) => {
 
 /**
  * Creates a new subject.
- * @route POST /api/college/subjects/
+ * @route POST /api/admin/subjects/
  * @param {object} subjectData - The data for the new subject { name, code, ... }.
  * @param {string} token - The JWT for authentication.
  * @returns {Promise<object>} The newly created subject object.
@@ -38,7 +39,7 @@ const createSubject = async (subjectData, token) => {
 
 /**
  * Updates an existing subject's details.
- * @route PUT /api/college/subjects/:id
+ * @route PUT /api/admin/subjects/:id
  * @param {object} subjectData - The subject data to update, including its 'id'.
  * @param {string} token - The JWT for authentication.
  * @returns {Promise<object>} The updated subject object.
@@ -53,7 +54,7 @@ const updateSubject = async (subjectData, token) => {
 
 /**
  * Deletes a subject by its ID.
- * @route DELETE /api/college/subjects/:subjectId
+ * @route DELETE /api/admin/subjects/:subjectId
  * @param {string} subjectId - The ID of the subject to delete.
  * @param {string} token - The JWT for authentication.
  * @returns {Promise<object>} A success confirmation object.
