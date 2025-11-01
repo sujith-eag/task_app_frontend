@@ -77,4 +77,14 @@ Where to find backend API specs
 Contact / ownership
 - Developers maintaining these files: check git history for `src/features/admin/adminService/*.js` to identify recent authors.
 
+Verification
+- Verified endpoints: The `reportingService.js` functions (`getAttendanceStats`, `getFeedbackSummary`, `getFeedbackReport`, `getTeacherReport`, `getStudentReport`) were checked against the backend routes mounted at `/api/admin/reports` and match the following controller routes:
+  - `GET /api/admin/reports/attendance-stats` -> `reports.controller.getAttendanceStats`
+  - `GET /api/admin/reports/feedback-summary` -> `reports.controller.getFeedbackSummary`
+  - `GET /api/admin/reports/feedback-report/:classSessionId` -> `reports.controller.getFeedbackReport`
+  - `GET /api/admin/reports/teacher/:teacherId` -> `reports.controller.getTeacherReport`
+  - `GET /api/admin/reports/student/:studentId` -> `reports.controller.getStudentReport`
+
+  Verification date: 2025-11-01
+
 This README is a reference document; keep it current when adding new service functions or when the backend routes change.

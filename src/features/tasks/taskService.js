@@ -125,6 +125,44 @@ const deleteSubTask = async (taskId, subTaskId, token) => {
     return response.data;
 };
 
+/**
+ * Retrieves a single task by ID.
+ * @route GET /api/tasks/:id
+ * @param {string} taskId - The ID of the task to retrieve.
+ * @param {string} token - The user's JWT for authentication.
+ * @returns {Promise<object>} The task object.
+ */
+const getTask = async (taskId, token) => {
+    const config = { headers: { Authorization: `Bearer ${token}` } };
+    const response = await axios.get(`${API_URL}${taskId}`, config);
+    return response.data;
+};
+
+/**
+ * Retrieves task statistics for the authenticated user.
+ * @route GET /api/tasks/stats
+ * @param {string} token - The user's JWT for authentication.
+ * @returns {Promise<object>} An object containing task stats (counts by status, etc.).
+ */
+const getTaskStats = async (token) => {
+    const config = { headers: { Authorization: `Bearer ${token}` } };
+    const response = await axios.get(`${API_URL}stats`, config);
+    return response.data;
+};
+
+/**
+ * Retrieves subtask completion statistics for a specific task.
+ * @route GET /api/tasks/:id/subtasks/stats
+ * @param {string} taskId - The task id to fetch subtask stats for.
+ * @param {string} token - The user's JWT for authentication.
+ * @returns {Promise<object>} An object containing subtask counts and completion percentage.
+ */
+const getSubTaskStats = async (taskId, token) => {
+    const config = { headers: { Authorization: `Bearer ${token}` } };
+    const response = await axios.get(`${API_URL}${taskId}/subtasks/stats`, config);
+    return response.data;
+};
+
 
 const taskService = {
     createTask,
@@ -135,6 +173,9 @@ const taskService = {
     addSubTask,
     updateSubTask,
     deleteSubTask
+    ,getTask,
+    getTaskStats,
+    getSubTaskStats
 };
 
 export default taskService;

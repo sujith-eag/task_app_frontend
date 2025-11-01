@@ -89,12 +89,38 @@ const getDiscoverableUsers = async (token) => {
     return response.data;
 };
 
+/**
+ * Retrieves the full profile of the authenticated user.
+ * @route GET /api/users/me
+ * @param {string} token - The user's JWT for authentication.
+ * @returns {Promise<object>} The current user's full profile object.
+ */
+const getCurrentUser = async (token) => {
+    const config = { headers: { Authorization: `Bearer ${token}` } };
+    const response = await axios.get(API_URL + 'me', config);
+    return response.data;
+};
+
+/**
+ * Retrieves the authenticated user's storage usage and quota information.
+ * @route GET /api/users/me/storage
+ * @param {string} token - The user's JWT for authentication.
+ * @returns {Promise<object>} An object containing used/limit and any per-role quotas.
+ */
+const getStorageUsage = async (token) => {
+    const config = { headers: { Authorization: `Bearer ${token}` } };
+    const response = await axios.get(API_URL + 'me/storage', config);
+    return response.data;
+};
+
 const profileService = {
     updateProfile,
     changePassword,
     updateAvatar,
     getDiscoverableUsers,
     applyAsStudent,
+    getCurrentUser,
+    getStorageUsage,
 };
 
 export default profileService;
