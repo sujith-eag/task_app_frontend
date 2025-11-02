@@ -7,10 +7,9 @@ import {
 } from '@mui/material';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { toast } from 'react-toastify';
-import { createPublicShare } from '../../fileSlice.js';
+import { useCreatePublicShare } from '../../useFileQueries.js';
 
 const PublicShareModal = ({ open, onClose, file }) => {
-    const dispatch = useDispatch();
     const [duration, setDuration] = useState('1-hour');
     const [shareData, setShareData] = useState(null);
 
@@ -20,14 +19,16 @@ const PublicShareModal = ({ open, onClose, file }) => {
         }
     }, [open, file]);
 
-    const handleCreateShare = () => {
-        dispatch(createPublicShare({ fileId: file._id, duration }))
-            .unwrap()
-            .then((payload) => {
-                setShareData(payload);
-                toast.success('Public share link created!');
-            })
-            .catch((err) => toast.error(err || 'Failed to create link.'));
+    const { mutateAsync: createPublicShareMutate } = useCreatePublicShare();
+
+    const handleCreateShare = async () => {
+        try {
+            const payload = await createPublicShareMutate({ fileId: file._id, duration });
+            setShareData(payload);
+            // success toast is handled by the mutation hook
+        } catch (err) {
+            // error toast handled by mutation
+        }
     };
 
     const handleCopyToClipboard = () => {

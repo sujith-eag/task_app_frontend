@@ -1,49 +1,70 @@
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
-import { 
-    deleteFile, 
-    deleteFolder, 
-    bulkDeleteFiles, 
-    getFiles,
-    manageShareAccess, 
-    revokePublicShare, 
-    bulkRemoveAccess,
-    renameFolder,
-    moveItem
- } from '../fileSlice.js';
+import { setCurrentParentId } from '../fileSlice.js';
 import fileService from '../fileService.js';
+import {
+    useDeleteFile,
+    useDeleteFolder,
+    useBulkDelete,
+    useRenameItem,
+    useMoveItem,
+    useRevokePublicShare,
+    useBulkRemoveAccess,
+    useShareFile,
+    useManageShareAccess,
+} from '../useFileQueries.js';
+import { useFileOperations } from './FileOperationContext.jsx';
 
 export const useFileActions = () => {
     const dispatch = useDispatch();
 
+    const { startOperation, stopOperation } = useFileOperations();
+
     const navigateToFolder = (folderId) => {
-        dispatch(getFiles(folderId));
+        // Keep current folder in Redux (client UI state). Server state comes from React Query.
+        dispatch(setCurrentParentId(folderId));
     };
 
     /**
      * Deletes a single item, dispatching the correct thunk
      * based on whether it's a file or a folder.
      */
-    const deleteSingleItem = (item) => {
-        const thunkToDispatch = item.isFolder 
-            ? deleteFolder(item._id) 
-            : deleteFile(item._1d || item._id);
+    // Mutations from React Query (use mutateAsync so callers can await)
+    const { mutateAsync: deleteFileMutate } = useDeleteFile();
+    const { mutateAsync: deleteFolderMutate } = useDeleteFolder();
+    const { mutateAsync: bulkDeleteMutate } = useBulkDelete();
+    const { mutateAsync: renameItemMutate } = useRenameItem();
+    const { mutateAsync: moveItemMutate } = useMoveItem();
+    const { mutateAsync: revokePublicShareMutate } = useRevokePublicShare();
+    const { mutateAsync: bulkRemoveAccessMutate } = useBulkRemoveAccess();
+    const { mutateAsync: shareFileMutate } = useShareFile();
+    const { mutateAsync: manageShareAccessMutate } = useManageShareAccess();
 
-        dispatch(thunkToDispatch)
-            .unwrap()
-            .then(() => toast.success(`"${item.fileName}" moved to trash.`))
-            .catch((err) => toast.error(err || 'Failed to delete item.'));
+    const deleteSingleItem = async (item) => {
+        startOperation(item._id, 'deleting');
+        const id = item._id;
+        try {
+            if (item.isFolder) {
+                return await deleteFolderMutate(id);
+            }
+            return await deleteFileMutate(id);
+        } finally {
+            stopOperation(id);
+        }
     };
 
     /**
      * Deletes multiple items (files or folders).
      * The backend soft-delete service handles both.
      */
-    const deleteBulkItems = (fileIds) => {
-        dispatch(bulkDeleteFiles(fileIds))
-            .unwrap()
-            .then(() => toast.success(`${fileIds.length} items moved to trash.`))
-            .catch((err) => toast.error(err || 'Failed to delete items.'));
+    const deleteBulkItems = async (fileIds) => {
+        // Mark all items as deleting
+        fileIds.forEach(id => startOperation(id, 'deleting'));
+        try {
+            return await bulkDeleteMutate(fileIds);
+        } finally {
+            fileIds.forEach(id => stopOperation(id));
+        }
     };
 
 	/**
@@ -83,53 +104,53 @@ export const useFileActions = () => {
     /**
      * Renames a file or folder.
      */
-    const renameItem = (itemId, newName) => {
-        return dispatch(renameFolder({ folderId: itemId, newName }))
-            .unwrap()
-            .then(() => toast.success('Item renamed.'))
-            .catch((err) => {
-                toast.error(err || 'Failed to rename item.');
-                throw new Error(err);
-            });
+    const renameItem = async (itemId, newName) => {
+        startOperation(itemId, 'renaming');
+        try {
+            return await renameItemMutate({ folderId: itemId, newName });
+        } finally {
+            stopOperation(itemId);
+        }
     };
 
     /**
      * Moves an item to a new parent folder.
      */
-    const moveItemToFolder = (itemId, newParentId) => {
-        return dispatch(moveItem({ itemId, newParentId }))
-            .unwrap()
-            .then(() => toast.success('Item moved.'))
-            .catch((err) => {
-                toast.error(err || 'Failed to move item.');
-                throw new Error(err);
-            });
+    const moveItemToFolder = async (itemId, newParentId, oldParentId = null) => {
+        startOperation(itemId, 'moving');
+        try {
+            return await moveItemMutate({ itemId, newParentId, oldParentId });
+        } finally {
+            stopOperation(itemId);
+        }
     };
 
-    const revokePublicLink = (fileId) => {
-        dispatch(revokePublicShare(fileId))
-            .unwrap()
-            .then(() => toast.success('Public link has been revoked!'))
-            .catch((err) => toast.error(err || 'Failed to revoke link.'));
+    const revokePublicLink = async (fileId) => {
+        startOperation(fileId, 'revoking');
+        try {
+            return await revokePublicShareMutate(fileId);
+        } finally {
+            stopOperation(fileId);
+        }
     };
     
 
-    const removeSharedAccess = (fileId) => {
-        dispatch(manageShareAccess({ fileId, userIdToRemove: null }))
-            .unwrap()
-            .then(() => toast.success('File removed from your list.'))
-            .catch((err) => toast.error(err || 'Failed to remove access.'));
+    const removeSharedAccess = async (fileId) => {
+        startOperation(fileId, 'removing-access');
+        try {
+            return await manageShareAccessMutate({ fileId, userIdToRemove: null });
+        } finally {
+            stopOperation(fileId);
+        }
     };
         
-    const removeBulkSharedAccess = (fileIds) => {
-        return dispatch(bulkRemoveAccess(fileIds))
-            .unwrap()
-            .then(() => {
-                toast.info(`${fileIds.length} file(s) removed from your list.`);
-            })
-            .catch((err) => {
-                toast.error(err || 'Failed to remove files.');
-            });
+    const removeBulkSharedAccess = async (fileIds) => {
+        fileIds.forEach(id => startOperation(id, 'removing-access'));
+        try {
+            return await bulkRemoveAccessMutate(fileIds);
+        } finally {
+            fileIds.forEach(id => stopOperation(id));
+        }
     };
     
     return { 

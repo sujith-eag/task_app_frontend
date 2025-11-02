@@ -5,45 +5,44 @@ import {
 } from '@mui/material';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 
-import { getFiles, createFolder, getStorageUsage } from '../fileSlice.js';
 import FileTable from '../features/FileList/FileTable.jsx';
 import FileUpload from '../features/FileUpload/FileUpload.jsx'
 import StorageQuota from '../components/ui/StorageQuota.jsx';
 import CreateFolderModal from '../components/modals/CreateFolderModal.jsx'
+import { FileOperationProvider } from '../hooks/FileOperationContext.jsx';
+import { useGetFiles, useCreateFolder, useGetStorageUsage } from '../useFileQueries.js';
 
 const FilesPage = () => {
-    const dispatch = useDispatch();
-    const { files, status, message, currentParentId } = useSelector((state) => state.files);
+    const { currentParentId } = useSelector((state) => state.files);
+    const filesQuery = useGetFiles(currentParentId);
+    const createFolderMutation = useCreateFolder();
     const [isCreateFolderModalOpen, setCreateFolderModalOpen] = useState(false);
 
     // State to manage the visibility of the uploader
     const [isUploaderOpen, setIsUploaderOpen] = useState(false);
 
-    useEffect(() => {
-        dispatch(getFiles(currentParentId));
-        // dispatch(getStorageUsage()); // Fetch Files and quota on page load
-    }, [currentParentId, dispatch]);
-
-    useEffect(() => {
-        dispatch(getStorageUsage()); // Fetch Files and quota on page load
-    }, [dispatch]);
+    // React Query handles fetching; no manual dispatch required.
 
     
-    const handleCreateFolder = (folderName) => {
-        dispatch(createFolder({ folderName, parentId: currentParentId }));
+    const handleCreateFolder = async (folderName) => {
+        try {
+            await createFolderMutation.mutateAsync({ folderName, parentId: currentParentId });
+        } catch (err) {
+            // mutateAsync will surface errors; toast handled in mutation hook
+        }
     };
     
     let content;
-    if (status === 'loading' && files.length === 0) {
+    if (filesQuery.isLoading && (filesQuery.data?.files || []).length === 0) {
         content = (
             <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
                 <CircularProgress />
             </Box>
         );
-    } else if (status === 'failed') {
-        content = <Alert severity="error">{message}</Alert>;
+    } else if (filesQuery.isError) {
+        content = <Alert severity="error">{filesQuery.error?.message || 'Failed to load files.'}</Alert>;
     } else {
-        content = <FileTable files={files} />;
+        content = <FileTable files={filesQuery.data?.files || []} />;
     }
 
     return (
@@ -84,8 +83,10 @@ const FilesPage = () => {
                         <FileUpload />
                     </Paper>
                 </Collapse>
-                
-                {content}
+
+                <FileOperationProvider>
+                    {content}
+                </FileOperationProvider>
                 
             <CreateFolderModal
                 open={isCreateFolderModalOpen}

@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Box, TableContainer, Table, TableHead, 
 	TableRow, TableCell, Checkbox, TableBody, 
 	Paper, Typography } from '@mui/material';
 
 // Import selectors and hooks
-import { selectMyFiles, selectSharedFiles, selectMySharedFiles, getFilesSharedWithMe, getMySharedFiles } from '../../fileSlice.js';
 import { useFileActions } from '../../hooks/useFileActions.js';
+import { useGetFiles, useGetSharedWithMe, useGetMySharedFiles } from '../../useFileQueries.js';
 
 import FileTableRow from './FileTableRow.jsx';
 import ConfirmationDialog from '../../../../components/ConfirmationDialog.jsx';
@@ -16,12 +16,6 @@ import FileListTabs from './FileListTabs.jsx';
 import ShareModal from '../../components/modals/ShareModal.jsx';
 import PublicShareModal from '../../components/modals/PublicShareModal.jsx';
 import ManageShareModal from '../../components/modals/ManageShareModal.jsx';
-
-const fileSelectors = {
-    myFiles: selectMyFiles,
-    sharedWithMe: selectSharedFiles,
-    myShares: selectMySharedFiles,
-};
 
 const FileTable = () => {
     // auth user is intentionally not used for token forwarding anymore
@@ -36,8 +30,20 @@ const FileTable = () => {
 	    onConfirm: () => {} 
 	});
 
-    // Use the selector for the current tab to get the correct list of files
-    const currentList = useSelector(fileSelectors[tabValue]);
+    // Client state
+    const currentParentId = useSelector((state) => state.files.currentParentId);
+
+    // Server state via React Query
+    const filesQuery = useGetFiles(currentParentId);
+    const sharedWithMeQuery = useGetSharedWithMe();
+    const mySharedQuery = useGetMySharedFiles();
+
+    const currentList = (() => {
+        if (tabValue === 'myFiles') return filesQuery.data?.files || [];
+        if (tabValue === 'sharedWithMe') return sharedWithMeQuery.data || [];
+        if (tabValue === 'myShares') return mySharedQuery.data || [];
+        return [];
+    })();
 
     // Hook for actions
     const { navigateToFolder, deleteSingleItem, 
@@ -50,22 +56,10 @@ const FileTable = () => {
     const openModal = (type, fileId) => setActiveModal({ type, fileId });
     const closeModal = () => setActiveModal({ type: null, fileId: null });
     
-    const dispatch = useDispatch();
-
     // Clear selection when the tab or the data list changes
     useEffect(() => {
         setSelectedFiles([]);
     }, [tabValue, currentList]);
-
-    // Fetch data when switching to the shared-with-me tab
-    useEffect(() => {
-        if (tabValue === 'sharedWithMe') {
-            try { dispatch(getFilesSharedWithMe()); } catch (e) { /* ignore */ }
-        }
-        if (tabValue === 'myShares') {
-            try { dispatch(getMySharedFiles()); } catch (e) { /* ignore */ }
-        }
-    }, [tabValue, dispatch]);
 
     const handleSelectAll = (event) => {
         if (event.target.checked) {
@@ -138,9 +132,9 @@ const FileTable = () => {
             <FileListTabs
                 tabValue={tabValue}
                 onTabChange={(e, newValue) => setTabValue(newValue)}
-                myFilesCount={useSelector(selectMyFiles).length}
-                sharedFilesCount={useSelector(selectSharedFiles).length}
-                mySharesCount={useSelector(selectMySharedFiles).length}
+                myFilesCount={filesQuery.data?.files?.length || 0}
+                sharedFilesCount={sharedWithMeQuery.data?.length || 0}
+                mySharesCount={mySharedQuery.data?.length || 0}
             />
 
             <Box sx={{ mt: 2 }}>

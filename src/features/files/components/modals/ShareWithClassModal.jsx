@@ -5,7 +5,7 @@ import {
     Button, TextField, MenuItem, CircularProgress, Box
 } from '@mui/material';
 import { toast } from 'react-toastify';
-import { shareWithClass } from '../../fileSlice.js';
+import { useShareWithClass } from '../../useFileQueries.js';
 import { getClassCreationData } from '../../../teacher/teacherSlice.js';
 
 const ShareWithClassModal = ({ open, handleClose, fileId }) => {
@@ -32,6 +32,8 @@ const ShareWithClassModal = ({ open, handleClose, fileId }) => {
         }
     }, [open, dispatch]);
 
+    const { mutateAsync: shareWithClassMutate } = useShareWithClass();
+
     const handleSubmit = async () => {
         // Basic validation
         if (!selectedSubject || !batch || !section) {
@@ -40,7 +42,7 @@ const ShareWithClassModal = ({ open, handleClose, fileId }) => {
         }
 
         setIsSubmitting(true);
-        
+
         const subjectDetails = assignedSubjects.find(s => s._id === selectedSubject);
         const classData = {
             subject: subjectDetails._id,
@@ -50,11 +52,11 @@ const ShareWithClassModal = ({ open, handleClose, fileId }) => {
         };
 
         try {
-            const res = await dispatch(shareWithClass({ fileId, classData })).unwrap();
-            toast.success(res.message);
+            const res = await shareWithClassMutate({ fileId, classData });
+            // success toast handled by the mutation
             handleClose();
         } catch (err) {
-            toast.error(err || "Failed to share file.");
+            // error toast handled by the mutation
         } finally {
             setIsSubmitting(false);
         }

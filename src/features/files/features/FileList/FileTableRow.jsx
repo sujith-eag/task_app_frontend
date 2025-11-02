@@ -6,11 +6,14 @@ import FolderIcon from '@mui/icons-material/Folder';
 import { useFileActions } from '../../hooks/useFileActions.js';
 import FileActionMenu from './FileActionMenu.jsx';
 import { getFileIcon, getFileColor } from '../../components/ui/fileUtils.jsx';
+import { useFileOperations } from '../../hooks/FileOperationContext.jsx';
 
 const FileTableRow = ({ file, isSelected, onSelectFile, onDeleteClick, onNavigate, context, onOpenShare, onOpenPublicShare, onOpenManageShare }) => {
 
-    const { status, itemStatus } = useSelector((state) => state.files); // Granular status
-    const isProcessing = itemStatus && itemStatus[file._id]; // Check if THIS specific file is processing
+    // Read per-file processing status from the FileOperationContext
+    const { operationStatus } = useFileOperations();
+    const status = operationStatus[file._id]; // e.g., 'deleting', 'moving'
+    const isProcessing = Boolean(status);
 
     // Get all action handlers from our clean hook
     const { downloadItems, removeSharedAccess, revokePublicLink } = useFileActions();
@@ -56,12 +59,12 @@ const FileTableRow = ({ file, isSelected, onSelectFile, onDeleteClick, onNavigat
                     }
                 }}
                 onClick={file.isFolder ? () => onNavigate(file._id) : undefined}
-                sx={{
+                    sx={{
                     '&:hover': { backgroundColor: 'action.hover' },
                     cursor: file.isFolder ? 'pointer' : 'default',
                     // Add a visual indicator when selected
                     backgroundColor: isSelected ? 'action.selected' : 'transparent',
-                    // Dim the row when it's being processed
+                    // Dim the row when it's being processed (disabled until per-file mutation wiring)
                     opacity: isProcessing ? 0.6 : 1,
                     transition: 'all 0.2s ease-in-out',
                 }}
@@ -118,12 +121,12 @@ const FileTableRow = ({ file, isSelected, onSelectFile, onDeleteClick, onNavigat
                 </TableCell>
 
                 <TableCell align="right">
-                    {isProcessing ? (
-                        <Chip size="small" variant="outlined" icon={<CircularProgress size={16} />} label="Processing" />
-                    ) : (
-                        // Prevent opening menu from triggering row navigation
-                        <Box onClick={(e) => e.stopPropagation()}>
-                                <FileActionMenu
+                    {/* Prevent opening menu from triggering row navigation */}
+                    <Box onClick={(e) => e.stopPropagation()}>
+                        {status ? (
+                            <Chip label={`${status}...`} size="small" />
+                        ) : (
+                            <FileActionMenu
                                 file={file}
                                 onManageShare={() => onOpenManageShare && onOpenManageShare(file._id)}
                                 onDelete={() => onDeleteClick(file)}
@@ -133,8 +136,8 @@ const FileTableRow = ({ file, isSelected, onSelectFile, onDeleteClick, onNavigat
                                 onRevokePublic={() => revokePublicLink(file._id)}
                                 onDownload={() => downloadItems([file])}
                             />
-                        </Box>
-                    )}
+                        )}
+                    </Box>
                 </TableCell>
             </TableRow>
 

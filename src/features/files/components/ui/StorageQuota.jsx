@@ -1,5 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
+import { useGetStorageUsage } from '../../useFileQueries.js';
 import { Box, Typography, LinearProgress, Paper, useTheme, Chip } from '@mui/material';
 import StorageIcon from '@mui/icons-material/Storage';
 
@@ -15,7 +16,7 @@ const formatBytes = (bytes, decimals = 2) => {
 
 const StorageQuota = () => {
     const theme = useTheme();
-    const { storageUsage } = useSelector((state) => state.files);
+    const { data: storageUsage, isLoading } = useGetStorageUsage();
     const { usageBytes = 0, quotaBytes = null, fileCount = 0, fileLimit = null } = storageUsage || {};
 
     const percentUsed = quotaBytes !== null && quotaBytes > 0 ? Math.min(100, (usageBytes / quotaBytes) * 100) : 0;

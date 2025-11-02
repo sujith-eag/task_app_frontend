@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import {
     Box,
     Typography,
@@ -19,7 +19,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 
 import { toast } from 'react-toastify';
-import { uploadFiles } from '../../fileSlice.js';
+import { useQueryClient } from '@tanstack/react-query';
+import fileService from '../../fileService.js';
 
 const MAX_FILES = 8;
 const MAX_SIZE = 20 * 1024 * 1024; // 20 MB
@@ -41,8 +42,13 @@ const formatRejections = (rejections) => {
 };
 
 const FileUpload = () => {
-    const dispatch = useDispatch();
-    const { status, uploadProgress, uploadProgressOverall, currentParentId } = useSelector(state => state.files);
+    const { currentParentId } = useSelector(state => state.files);
+
+    // Local upload state (per-file progress etc.)
+    const [perFileProgress, setPerFileProgress] = useState({});
+    const [uploadProgressOverallLocal, setUploadProgressOverallLocal] = useState(0);
+    const [isUploading, setIsUploading] = useState(false);
+    const queryClient = useQueryClient();
 
     // Store items as { id, file, preview }
     const [items, setItems] = useState([]);
@@ -122,29 +128,58 @@ const FileUpload = () => {
             return;
         }
 
-        const formData = new FormData();
-            items.forEach(i => {
-                formData.append('files', i.file);
-                // include the upload key so the backend/ slice can map progress back to the UI
-                formData.append('uploadKeys', i.id);
-            });
+        // Upload each file in parallel, keeping per-file progress local to this component.
+        setPerFileProgress({});
+        setUploadProgressOverallLocal(0);
+        setIsUploading(true);
 
         try {
-            await dispatch(uploadFiles({ filesFormData: formData, parentId: currentParentId })).unwrap();
-            toast.success(`${items.length} file(s) uploaded successfully!`);
-            // clear on success
+            const uploadPromises = items.map((item) => {
+                const fd = new FormData();
+                fd.append('files', item.file);
+                // keep the upload key so the backend can associate progress if needed
+                fd.append('uploadKeys', item.id);
+
+                const onUploadProgress = (progressEvent) => {
+                    try {
+                        const percentCompleted = progressEvent.total ? Math.round((progressEvent.loaded * 100) / progressEvent.total) : 0;
+                        setPerFileProgress(prev => ({ ...prev, [item.id]: percentCompleted }));
+
+                        // compute simple overall average progress
+                        setUploadProgressOverallLocal(prev => {
+                            const next = { ...perFileProgress, [item.id]: percentCompleted };
+                            const values = Object.values(next);
+                            if (values.length === 0) return 0;
+                            const sum = values.reduce((a, b) => a + (Number(b) || 0), 0);
+                            return Math.round(sum / values.length);
+                        });
+                    } catch (e) {
+                        // ignore per-file progress calc errors
+                    }
+                };
+
+                return fileService.uploadFiles(fd, onUploadProgress);
+            });
+
+            await Promise.all(uploadPromises);
+
+            // Invalidate the folder query so the new files appear
+            await queryClient.invalidateQueries(['files', currentParentId || 'root']);
+
+            toast.success(`${items.length} file(s) uploaded`);
             cancelAll();
         } catch (err) {
-            toast.error(err || 'Upload failed.');
+            console.error('Upload error', err);
+            toast.error(err?.message || 'Upload failed');
+        } finally {
+            setUploadProgressOverallLocal(0);
+            setPerFileProgress({});
+            setIsUploading(false);
         }
     };
 
     // Map uploadProgress: support both number and object keyed by filename or item id
-    const perFileProgress = useMemo(() => {
-        if (!uploadProgress) return {};
-        if (typeof uploadProgress === 'number') return {};
-        return uploadProgress;
-    }, [uploadProgress]);
+    const perFileProgressMemo = useMemo(() => perFileProgress, [perFileProgress]);
 
     // Cleanup previews on unmount
     useEffect(() => {
@@ -188,15 +223,15 @@ const FileUpload = () => {
 
                         <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
                             {/* Compact upload indicator on the side when uploading */}
-                            {status === 'loading' && (
+                            {isUploading && (
                                 <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mr: 1 }}>
-                                    {typeof uploadProgressOverall === 'number' && uploadProgressOverall > 0 ? (
-                                        <Typography variant="caption">{uploadProgressOverall}%</Typography>
+                                    {typeof uploadProgressOverallLocal === 'number' && uploadProgressOverallLocal > 0 ? (
+                                        <Typography variant="caption">{uploadProgressOverallLocal}%</Typography>
                                     ) : (
                                         <Typography variant="caption">Uploading</Typography>
                                     )}
                                     <Box sx={{ width: 120, mt: 0.5 }}>
-                                        <LinearProgress variant={typeof uploadProgressOverall === 'number' ? 'determinate' : 'indeterminate'} value={typeof uploadProgressOverall === 'number' ? uploadProgressOverall : undefined} sx={{ height: 8, borderRadius: 1 }} />
+                                        <LinearProgress variant={typeof uploadProgressOverallLocal === 'number' ? 'determinate' : 'indeterminate'} value={typeof uploadProgressOverallLocal === 'number' ? uploadProgressOverallLocal : undefined} sx={{ height: 8, borderRadius: 1 }} />
                                     </Box>
                                 </Box>
                             )}
@@ -220,7 +255,7 @@ const FileUpload = () => {
                     <Typography variant="subtitle1" sx={{ mb: 1 }}>{items.length} file(s) ready</Typography>
                     <List dense>
                         {items.map(item => {
-                            const progress = perFileProgress[item.file.name] ?? perFileProgress[item.id] ?? 0;
+                            const progress = perFileProgressMemo[item.file.name] ?? perFileProgressMemo[item.id] ?? 0;
                             return (
                                 <ListItem key={item.id} secondaryAction={
                                     <IconButton edge="end" aria-label={`remove ${item.file.name}`} onClick={() => removeItem(item.id)}>
@@ -236,7 +271,7 @@ const FileUpload = () => {
                                     <ListItemText primary={item.file.name} secondary={humanFileSize(item.file.size)} sx={{ mr: 2 }} />
 
                                     <Box sx={{ width: 160, ml: 2 }}>
-                                        {status === 'loading' && progress > 0 ? (
+                                        {isUploading && progress > 0 ? (
                                             <>
                                                 <Typography variant="caption">{`${progress}%`}</Typography>
                                                 <LinearProgress variant="determinate" value={progress} sx={{ height: 6, borderRadius: 1 }} />
@@ -249,7 +284,7 @@ const FileUpload = () => {
                     </List>
 
                     <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
-                        <Button variant="contained" onClick={handleUpload} disabled={status === 'loading'} startIcon={<UploadFileIcon />}> {status === 'loading' ? 'Uploading...' : `Upload ${items.length}`}</Button>
+                        <Button variant="contained" onClick={handleUpload} disabled={isUploading} startIcon={<UploadFileIcon />}> {isUploading ? 'Uploading...' : `Upload ${items.length}`}</Button>
                         <Button variant="outlined" onClick={cancelAll}>Cancel</Button>
                     </Box>
                 </>

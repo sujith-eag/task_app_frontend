@@ -7,12 +7,11 @@ import {
 } from '@mui/material';
 
 import profileService from '../../../profile/profileService.js';
-import { shareFile } from '../../fileSlice.js';
 import { toast } from 'react-toastify';
 import fileService from '../../fileService.js';
+import { useShareFile } from '../../useFileQueries.js';
 
 const ShareModal = ({ isOpen, onClose, file }) => {
-    const dispatch = useDispatch();
     const { user } = useSelector((state) => state.auth);
 
     const [users, setUsers] = useState([]);
@@ -61,20 +60,20 @@ const ShareModal = ({ isOpen, onClose, file }) => {
         }
     }, [isOpen, user?._id]);
 
-    const handleShare = () => {
+    const { mutateAsync: shareFileMutate } = useShareFile();
+
+    const handleShare = async () => {
         if (!selectedUserId) {
             toast.error('Please select a user to share with.');
             return;
         }
-        dispatch(shareFile({ fileId: file._id, userIdToShareWith: selectedUserId }))
-            .unwrap()
-            .then(() => {
-                toast.success('File successfully shared!');
-                onClose();
-            })
-            .catch((error) => {
-                toast.error(error || 'Failed to share file.');
-            });
+        try {
+            await shareFileMutate({ fileId: file._id, userIdToShareWith: selectedUserId });
+            // success toast is provided by the mutation hook
+            onClose();
+        } catch (err) {
+            // mutation hook shows toast on error already
+        }
     };
 
     // Filter out users the file is already shared with (use fetched shares)

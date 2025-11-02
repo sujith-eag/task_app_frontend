@@ -82,14 +82,16 @@ export const useRenameItem = () => {
 
 export const useMoveItem = () => {
   const queryClient = useQueryClient();
+  const currentParentId = useSelector((state) => state.files.currentParentId);
+
   return useMutation({
     mutationFn: ({ itemId, newParentId }) => fileService.moveItem(itemId, { newParentId }),
     onSuccess: (data, variables) => {
-      const { itemId, newParentId } = variables;
-      // NOTE: the oldParentId must be provided by the caller (component) if available.
-      // As a fallback we invalidate the root view and the new parent.
+      const { newParentId } = variables;
+
+      // Invalidate BOTH the current (old) folder and the destination folder so both lists refresh
+      queryClient.invalidateQueries(['files', currentParentId || 'root']);
       queryClient.invalidateQueries(['files', newParentId || 'root']);
-      queryClient.invalidateQueries(['files', 'root']);
       toast.success('Item moved.');
     },
     onError: (err) => toast.error(err.message || 'Failed to move item.'),
@@ -172,6 +174,73 @@ export const useRevokePublicShare = () => {
     },
     onError: (err) => toast.error(err.message || 'Failed to revoke link.'),
   });
+};
+
+export const useShareWithClass = () => {
+  const mutation = useFileMutation(fileService.shareWithClass);
+  return {
+    ...mutation,
+    mutate: (data, options) =>
+      mutation.mutate(data, {
+        ...options,
+        onSuccess: (res) => {
+          toast.success(res?.message || 'Shared with class successfully.');
+        },
+        onError: (err) => toast.error(err.message || 'Failed to share with class.'),
+      }),
+  };
+};
+
+// --- Upload Mutation ---
+// Note: upload is handled locally in FileUpload.jsx to provide per-file progress tracking.
+
+// --- Direct share / access mutations ---
+
+export const useShareFile = () => {
+  const queryClient = useQueryClient();
+  const currentParentId = useSelector((state) => state.files.currentParentId);
+
+  return useMutation({
+    mutationFn: ({ fileId, userIdToShareWith }) => fileService.shareFile(fileId, userIdToShareWith),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['files', currentParentId || 'root']);
+      queryClient.invalidateQueries(['files', 'mySharedFiles']);
+      toast.success('File shared successfully.');
+    },
+    onError: (err) => toast.error(err.message || 'Failed to share file.'),
+  });
+};
+
+export const useManageShareAccess = () => {
+  const queryClient = useQueryClient();
+  const currentParentId = useSelector((state) => state.files.currentParentId);
+
+  return useMutation({
+    mutationFn: ({ fileId, userIdToRemove }) => fileService.manageShareAccess(fileId, userIdToRemove),
+    onSuccess: () => {
+      // Invalidate both recipient and owner lists to refresh UI
+      queryClient.invalidateQueries(['files', currentParentId || 'root']);
+      queryClient.invalidateQueries(['files', 'sharedWithMe']);
+      queryClient.invalidateQueries(['files', 'mySharedFiles']);
+      toast.success('Share access updated.');
+    },
+    onError: (err) => toast.error(err.message || 'Failed to update share access.'),
+  });
+};
+
+export const useBulkRemoveAccess = () => {
+  const mutation = useFileMutation(fileService.bulkRemoveAccess);
+  return {
+    ...mutation,
+    mutate: (fileIds, options) =>
+      mutation.mutate(fileIds, {
+        ...options,
+        onSuccess: (data) => {
+          toast.info(`${(data && data.ids && data.ids.length) || fileIds.length} file(s) removed from your list.`);
+        },
+        onError: (err) => toast.error(err.message || 'Failed to remove files.'),
+      }),
+  };
 };
 
 // Export other lightweight wrappers as needed in future
