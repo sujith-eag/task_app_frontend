@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     Modal, Box, Typography, Button, CircularProgress, Alert,
-    Stack, TextField, Paper, Divider, Chip, Dialog, DialogActions,
-    DialogContent, DialogContentText, DialogTitle,
+    Stack, TextField, Paper, Divider, Chip,
 } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import { getAIPlanPreview, saveAIPlan, discardAIPlan } from '../aiTaskSlice.js';
+import ConfirmationDialog from '../../../components/ConfirmationDialog.jsx';
 
 
 const modalStyle = {
@@ -34,6 +34,8 @@ const AIPlannerModal = ({ isOpen, onClose }) => {
     // Local state to allow users to edit the plan before saving
     const [editableTasks, setEditableTasks] = useState([]);
     const [isDiscardConfirmOpen, setDiscardConfirmOpen] = useState(false);
+    // When a generation/refinement is in-flight and user tries to close, show confirm
+    const [isCloseConfirmOpen, setCloseConfirmOpen] = useState(false);
 
     // Sync Redux state to local editable state when a new preview is generated
     useEffect(() => {
@@ -53,6 +55,20 @@ const AIPlannerModal = ({ isOpen, onClose }) => {
             onClose(); // And close the modal
         }
     }, [status, dispatch, onClose]);
+
+    const isLoading = status === 'generating' || status === 'refining' || status === 'saving';
+
+    // Intercept modal close events so we can conditionally show a confirmation
+    const handleModalClose = (event, reason) => {
+        // If a generation/refinement is in-flight and the user clicked the backdrop or pressed Escape,
+        // show a confirmation dialog instead of closing immediately.
+        if ((reason === 'backdropClick' || reason === 'escapeKeyDown') && (status === 'generating' || status === 'refining')) {
+            setCloseConfirmOpen(true);
+            return;
+        }
+        // Otherwise, allow normal close
+        onClose();
+    };
 
     
     // const handleEditableChange = (index, field, value) => {
@@ -98,7 +114,6 @@ const handleEditableChange = (index, field, value) => {
         onClose();
     };
 
-    const isLoading = status === 'generating' || status === 'refining' || status === 'saving';
     const canRefine = refinementCount < refinementLimit;
 
 const renderContent = () => {
@@ -175,7 +190,7 @@ const renderContent = () => {
 // This is the main return statement for the AIPlannerModal component
 return (
     <>
-        <Modal open={isOpen} onClose={onClose}>
+        <Modal open={isOpen} onClose={handleModalClose} disableEscapeKeyDown={isCloseConfirmOpen}>
             <Box sx={modalStyle}>
                 
                 {/* --- 1. NON-SCROLLABLE HEADER --- */}
@@ -214,17 +229,19 @@ return (
                             </Button>
                         </Box>
                     )}
-                    <Stack direction="row" justifyContent="space-between">
+                    <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} justifyContent="space-between" alignItems="center">
                         <Button 
                             variant="text" color="error" 
                             startIcon={<DeleteForeverIcon />} 
                             onClick={() => setDiscardConfirmOpen(true)} 
-                            disabled={isLoading}>
+                            disabled={isLoading}
+                            sx={{ width: { xs: '100%', sm: 'auto' }, fontSize: { xs: '0.85rem' } }}>
                             Discard Plan
                         </Button>
                         <Button variant="contained" color="primary" 
                             startIcon={status === 'saving' ? <CircularProgress size={20} /> : <CheckCircleIcon />} 
-                            onClick={handleSave} disabled={isLoading || editableTasks.length === 0}>
+                            onClick={handleSave} disabled={isLoading || editableTasks.length === 0}
+                            sx={{ width: { xs: '100%', sm: 'auto' } }}>
                             {status === 'saving' ? 'Saving...' : 'Confirm & Create Tasks'}
                         </Button>
                     </Stack>
@@ -233,15 +250,32 @@ return (
             </Box>
         </Modal>
 
-        {/* --- Discard Confirmation Dialog (no changes needed here) --- */}
-        <Dialog open={isDiscardConfirmOpen} onClose={() => setDiscardConfirmOpen(false)}>
-            <DialogTitle>Discard Plan?</DialogTitle>
-            <DialogContent><DialogContentText>Are you sure you want to discard this plan? This action cannot be undone and will count as one AI usage credit.</DialogContentText></DialogContent>
-            <DialogActions>
-                <Button onClick={() => setDiscardConfirmOpen(false)}>Cancel</Button>
-                <Button onClick={handleDiscard} color="error">Discard</Button>
-            </DialogActions>
-        </Dialog>
+        {/* --- Close confirmation shown when attempting to close while generating/refining (global dialog) --- */}
+        <ConfirmationDialog
+            open={isCloseConfirmOpen}
+            onClose={() => setCloseConfirmOpen(false)}
+            onConfirm={() => { setCloseConfirmOpen(false); onClose(); }}
+            title="Generation in progress"
+            message="A generation or refinement is currently in progress. Closing now will keep the session so you can resume later, but you may lose the immediate progress in the modal. Close anyway?"
+            variant="info"
+            confirmText="Close anyway"
+            cancelText="Resume"
+            maxWidth="xs"
+            disableBackdropClick={true}
+        />
+
+        {/* --- Discard Confirmation Dialog (uses global ConfirmationDialog) --- */}
+        <ConfirmationDialog
+            open={isDiscardConfirmOpen}
+            onClose={() => setDiscardConfirmOpen(false)}
+            onConfirm={() => { handleDiscard(); }}
+            title="Discard Plan?"
+            message="Are you sure you want to discard this plan? This action cannot be undone and will count as one AI usage credit."
+            variant="delete"
+            confirmText="Discard"
+            cancelText="Cancel"
+            maxWidth="xs"
+        />
     </>
 );      
 };

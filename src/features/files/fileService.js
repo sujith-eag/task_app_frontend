@@ -8,22 +8,11 @@ const SHARES_API_URL = '/shares';
 
 
 /**
- * Creates a temporary, code-based public share link for a file.
- * @route /api/files/shares/:id/public-share
- * @param {object} shareData - The data required for creating the share.
- * @param {string} shareData.fileId - The ID of the file to share.
- * @param {string} shareData.duration - The duration for which the link will be valid (e.g., '1-hour').
- * @param {string} token - The user's JWT for authorization.
- * @returns {Promise<object>} A promise that resolves to the public share data (code, expiresAt).
- */
-/**
- * Creates a temporary, code-based public share link for a file.
- * @route POST /api/shares/:fileId/public
- * @param {object} shareData - The data required for creating the share.
- * @param {string} shareData.fileId - The ID of the file to share.
- * @param {string} shareData.duration - The duration for which the link will be valid (e.g., '1-hour').
- * @param {string} token - The user's JWT for authorization.
- * @returns {Promise<object>} A promise that resolves to the public share data (code, expiresAt).
+ * Create a temporary public share for a file.
+ * Route: POST /api/shares/:fileId/public
+ * Auth: Browser clients use the httpOnly `jwt` cookie (apiClient uses withCredentials).
+ * @param {object} shareData - { fileId, duration }
+ * @returns {Promise<object>} { code, expiresAt }
  */
 const createPublicShare = async ({ fileId, duration }) => {
     const response = await apiClient.post(`${SHARES_API_URL}/${fileId}/public`, { duration });
@@ -32,18 +21,11 @@ const createPublicShare = async ({ fileId, duration }) => {
 
 
 /**
- * Revokes an active public share link for a file.
- * @route /api/files/shares/:id/public-share
- * @param {string} fileId - The ID of the file to revoke the share for.
- * @param {string} token - The user's JWT for authorization.
- * @returns {Promise<object>} A promise that resolves to the server's success message.
- */
-/**
- * Revokes an active public share link for a file.
- * @route DELETE /api/shares/:fileId/public
- * @param {string} fileId - The ID of the file to revoke the share for.
- * @param {string} token - The user's JWT for authorization.
- * @returns {Promise<object>} A promise that resolves to the server's success message.
+ * Revoke a public share for a file.
+ * Route: DELETE /api/shares/:fileId/public
+ * Auth: protected
+ * @param {string} fileId
+ * @returns {Promise<object>} server response
  */
 const revokePublicShare = async (fileId) => {
     const response = await apiClient.delete(`${SHARES_API_URL}/${fileId}/public`);
@@ -52,11 +34,12 @@ const revokePublicShare = async (fileId) => {
 
 
 /**
- * Uploads one or more files to the server.
- * @route POST /api/files/uploads
- * @param {FormData} filesFormData - A FormData object containing the file(s).
- * @param {string} token - The user's JWT for authentication.
- * @returns {Promise<Array<object>>} A promise that resolves to an array of the newly created file objects.
+ * Upload one or more files.
+ * Route: POST /api/files/upload
+ * Content-Type: multipart/form-data
+ * Auth: protected (cookie-based)
+ * @param {FormData} filesFormData
+ * @returns {Promise<Array<Object>>} created file documents
  */
 const uploadFiles = async (filesFormData, onUploadProgress) => {
     const config = {
@@ -68,11 +51,11 @@ const uploadFiles = async (filesFormData, onUploadProgress) => {
 };
 
 /**
- * Retrieves all files and folders for the current user within a specific parent folder (owned and shared).
- * @route GET /api/files/items
- * @param {string | null} parentId - The ID of the parent folder, or null for the root directory.
- * @param {string} token - The user's JWT for authorization.
- * @returns {Promise<Array<object>>} A promise that resolves to an array of file/folder objects.
+ * List files/folders for the current user in a directory.
+ * Route: GET /api/files?parentId={id}
+ * Auth: protected
+ * @param {string|null} parentId
+ * @returns {Promise<Object>} { files, currentFolder, breadcrumbs }
  */
 const getFiles = async (parentId) => {
     const response = await apiClient.get(`${API_URL}`, { params: parentId ? { parentId } : {} });
@@ -81,18 +64,11 @@ const getFiles = async (parentId) => {
 
 
 /**
- * Gets a temporary, secure pre-signed URL for downloading a file from S3.
- * @route GET /api/files/downloads/:fileId/download
- * @param {string} fileId - The ID of the file to download.
- * @param {string} token - The user's JWT for authentication.
- * @returns {Promise<object>} A promise that resolves to an object containing the download URL.
- */
-/**
- * Gets a temporary, secure pre-signed URL for downloading a file from S3.
- * @route GET /api/files/:fileId/download
- * @param {string} fileId - The ID of the file to download.
- * @param {string} token - The user's JWT for authentication.
- * @returns {Promise<object>} A promise that resolves to an object containing the download URL.
+ * Get a pre-signed S3 download URL for a file.
+ * Route: GET /api/files/:fileId/download
+ * Auth: protected (must have read access)
+ * @param {string} fileId
+ * @returns {Promise<object>} { url }
  */
 const getDownloadLink = async (fileId) => {
     const response = await apiClient.get(`${API_URL}/${fileId}/download`);
@@ -102,11 +78,12 @@ const getDownloadLink = async (fileId) => {
 
 
 /**
- * Triggers a bulk download of files as a zip archive by submitting a hidden form.
- * This function does not use axios and is intended to trigger a native browser download.
- * @route POST /api/files/downloads/bulk-download
- * @param {string[]} fileIds - An array of file IDs to download.
- * @param {string} token - The user's JWT for authorization.
+ * Trigger a bulk download (ZIP) for multiple files.
+ * Preferred: call POST /api/files/bulk-download with JSON { fileIds } and responseType 'blob'.
+ * Fallback: submits a hidden form POST to /api/files/bulk-download with a JSON-stringified `fileIds` field so browsers send cookies.
+ * Route: POST /api/files/bulk-download
+ * Auth: protected
+ * @param {string[]} fileIds
  */
 const bulkDownloadFiles = async (fileIds) => {
     // Try to download via XHR (axios) first so we can stream blob and control filename.
@@ -153,18 +130,11 @@ const bulkDownloadFiles = async (fileIds) => {
 
 
 /**
- * Deletes a file owned by the authenticated user.
- * @route DELETE /api/files/delete/:fileId
- * @param {string} fileId - The ID of the file to delete.
- * @param {string} token - The user's JWT for authentication.
- * @returns {Promise<object>} A promise that resolves to an object containing the ID of the deleted file.
- */
-/**
- * Deletes a file owned by the authenticated user.
- * @route DELETE /api/files/:id
- * @param {string} fileId - The ID of the file to delete.
- * @param {string} token - The user's JWT for authentication.
- * @returns {Promise<object>} A promise that resolves to an object containing the ID of the deleted file.
+ * Delete a single file.
+ * Route: DELETE /api/files/:id
+ * Auth: protected, owner-only
+ * @param {string} fileId
+ * @returns {Promise<object>} { fileId }
  */
 const deleteFile = async (fileId) => {
     await apiClient.delete(`${API_URL}/${fileId}`);
@@ -173,11 +143,11 @@ const deleteFile = async (fileId) => {
 
 
 /**
- * Deletes multiple files by their IDs.
- * @route DELETE /api/files/delete
- * @param {string[]} fileIds - An array of file IDs to be deleted.
- * @param {string} token - The user's JWT for authorization.
- * @returns {Promise<object>} A promise that resolves to an object containing the server's success message and the array of deleted file IDs.
+ * Bulk delete files (owner-only).
+ * Route: DELETE /api/files
+ * Auth: protected
+ * @param {string[]} fileIds
+ * @returns {Promise<object>} server response
  */
 const bulkDeleteFiles = async (fileIds) => {
     const response = await apiClient.delete(`${API_URL}`, { data: { fileIds } });
@@ -186,20 +156,13 @@ const bulkDeleteFiles = async (fileIds) => {
 
 
 /**
- * Shares a file with another registered user.
- * @route POST /api/files/shares/:fileId/share
- * @param {string} fileId - The ID of the file to share.
- * @param {string} userIdToShareWith - The ID of the user to share the file with.
- * @param {string} token - The user's JWT for authentication.
- * @returns {Promise<object>} A promise that resolves to the updated file object.
- */
-/**
- * Shares a file with another registered user.
- * @route POST /api/shares/:fileId/user
- * @param {string} fileId - The ID of the file to share.
- * @param {string} userIdToShareWith - The ID of the user to share the file with.
- * @param {string} token - The user's JWT for authentication.
- * @returns {Promise<object>} A promise that resolves to the updated file object.
+ * Share a file with a specific user.
+ * Route: POST /api/shares/:fileId/user
+ * Auth: protected
+ * @param {string} fileId
+ * @param {string} userIdToShareWith
+ * @param {string|null} expiresAt
+ * @returns {Promise<object>} updated file/share info
  */
 const shareFile = async (fileId, userIdToShareWith, expiresAt = null) => {
     const body = { userIdToShareWith };
@@ -210,20 +173,12 @@ const shareFile = async (fileId, userIdToShareWith, expiresAt = null) => {
 
 
 /**
- * Manages share access to a file (e.g., owner revokes access or a user removes their own access).
- * @route DELETE /api/files/shares/:fileId/share
- * @param {string} fileId - The ID of the file.
- * @param {string | null} userIdToRemove - The ID of the user to remove access for, or null if removing self.
- * @param {string} token - The user's JWT for authentication.
- * @returns {Promise<object>} A promise that resolves to the updated file object.
- */
-/**
- * Manages share access to a file (owner revokes access or a user removes their own access).
- * @route DELETE /api/shares/:fileId/user
- * @param {string} fileId - The ID of the file.
- * @param {string | null} userIdToRemove - The ID of the user to remove access for, or null if removing self.
- * @param {string} token - The user's JWT for authentication.
- * @returns {Promise<object>} A promise that resolves to the updated file object.
+ * Remove a user's access to a file (or remove self).
+ * Route: DELETE /api/shares/:fileId/user
+ * Auth: protected
+ * @param {string} fileId
+ * @param {string|null} userIdToRemove
+ * @returns {Promise<object>} server response
  */
 const manageShareAccess = async (fileId, userIdToRemove) => {
     const response = await apiClient.delete(`${SHARES_API_URL}/${fileId}/user`, { data: userIdToRemove ? { userIdToRemove } : {} });
@@ -232,18 +187,11 @@ const manageShareAccess = async (fileId, userIdToRemove) => {
 
 
 /**
- * Removes the current user's access from multiple shared files.
- * @route DELETE /api/files/shares/bulk-remove
- * @param {string[]} fileIds - An array of file IDs to remove access from.
- * @param {string} token - The user's JWT for authorization.
- * @returns {Promise<object>} A promise that resolves to the server's success message.
- */
-/**
- * Removes the current user's access from multiple shared files.
- * @route POST /api/shares/bulk-remove
- * @param {string[]} fileIds - An array of file IDs to remove access from.
- * @param {string} token - The user's JWT for authorization.
- * @returns {Promise<object>} A promise that resolves to the server's success message.
+ * Bulk remove access from multiple shared files.
+ * Route: POST /api/shares/bulk-remove
+ * Auth: protected
+ * @param {string[]} fileIds
+ * @returns {Promise<object>} server response
  */
 const bulkRemoveAccess = async (fileIds) => {
     const response = await apiClient.post(`${SHARES_API_URL}/bulk-remove`, { fileIds });
@@ -252,18 +200,11 @@ const bulkRemoveAccess = async (fileIds) => {
 
 
 /**
- * Shares a file with an entire class based on subject, batch, and section.
- * @route POST /api/college/files/:fileId/share-class
- * @param {object} data - The data payload, including { fileId, classData }.
- * @param {string} token - The user's JWT for authentication.
- * @returns {Promise<object>} A promise that resolves to the updated file object.
- */
-/**
- * Shares a file with an entire class based on subject, batch, and section.
- * @route POST /api/shares/:fileId/class
- * @param {object} data - The data payload, including { fileId, classData }.
- * @param {string} token - The user's JWT for authentication.
- * @returns {Promise<object>} A promise that resolves to the updated file object.
+ * Share a file with a whole class (batch/section/semester).
+ * Route: POST /api/shares/:fileId/class
+ * Auth: protected
+ * @param {object} data - { fileId, classData }
+ * @returns {Promise<object>} server response
  */
 const shareWithClass = async (data) => {
     const { fileId, classData } = data;
@@ -272,8 +213,9 @@ const shareWithClass = async (data) => {
 };
 
 /**
- * Get all shares for a specific file.
- * @route GET /api/shares/:fileId
+ * Get all shares for a file.
+ * Route: GET /api/shares/:fileId
+ * Auth: protected
  */
 const getFileShares = async (fileId) => {
     const response = await apiClient.get(`${SHARES_API_URL}/${fileId}`);
@@ -282,9 +224,9 @@ const getFileShares = async (fileId) => {
 
 /**
  * Get files shared with the current user.
- * @route GET /api/shares/shared-with-me
- * @param {string} token
- * @returns {Promise<Array>} list of files
+ * Route: GET /api/shares/shared-with-me
+ * Auth: protected
+ * @returns {Promise<Array>} list of file/share objects
  */
 const getFilesSharedWithMe = async () => {
     const response = await apiClient.get(`${SHARES_API_URL}/shared-with-me`);
@@ -293,11 +235,11 @@ const getFilesSharedWithMe = async () => {
 
 
 /**
- * Creates a new folder.
- * @param {object} folderData - The folder data, including folderName and parentId.
- * @route POST /api/folders/
- * @param {string} token - The user's JWT for authorization.
- * @returns {Promise<object>} A promise that resolves to the newly created folder object.
+ * Create a new folder.
+ * Route: POST /api/folders
+ * Auth: protected
+ * @param {object} folderData - { folderName, parentId }
+ * @returns {Promise<object>} created folder
  */
 const createFolder = async (folderData) => {
     const response = await apiClient.post(FOLDER_API_URL, folderData);
@@ -305,8 +247,9 @@ const createFolder = async (folderData) => {
 };
 
 /**
- * Get folder details with statistics.
- * @route GET /api/folders/:id
+ * Get folder details and stats.
+ * Route: GET /api/folders/:id
+ * Auth: protected
  */
 const getFolderDetails = async (folderId) => {
     const response = await apiClient.get(`${FOLDER_API_URL}/${folderId}`);
@@ -314,8 +257,9 @@ const getFolderDetails = async (folderId) => {
 };
 
 /**
- * Move an item (file or folder) into another folder.
- * @route PATCH /api/folders/:id/move
+ * Move an item into another folder.
+ * Route: PATCH /api/folders/:id/move
+ * Auth: protected, owner-only where applicable
  */
 const moveItem = async (folderId, moveData) => {
     const response = await apiClient.patch(`${FOLDER_API_URL}/${folderId}/move`, moveData);
@@ -324,7 +268,8 @@ const moveItem = async (folderId, moveData) => {
 
 /**
  * Rename a folder.
- * @route PATCH /api/folders/:id/rename
+ * Route: PATCH /api/folders/:id/rename
+ * Auth: protected, owner-only
  */
 const renameFolder = async (folderId, renameData) => {
     const response = await apiClient.patch(`${FOLDER_API_URL}/${folderId}/rename`, renameData);
@@ -333,7 +278,8 @@ const renameFolder = async (folderId, renameData) => {
 
 /**
  * Delete a folder and its contents.
- * @route DELETE /api/folders/:id
+ * Route: DELETE /api/folders/:id
+ * Auth: protected, owner-only
  */
 const deleteFolder = async (folderId) => {
     const response = await apiClient.delete(`${FOLDER_API_URL}/${folderId}`);
@@ -342,10 +288,9 @@ const deleteFolder = async (folderId) => {
 
 
 /**
- * Fetches the current user's storage usage statistics from the API.
- * @param {string} token - The user's JWT for authorization.
- * @returns {Promise<object>} A promise that resolves to an object containing the user's storage data,
- * including usageBytes, quotaBytes, fileCount, and fileLimit.
+ * Get current user's storage usage: GET /api/users/me/storage
+ * Auth: protected
+ * @returns {Promise<object>} { usageBytes, quotaBytes, fileCount, fileLimit }
  */
 const getStorageUsage = async () => {
     // Fix: ensure slash between USER_API_URL and "me" so we call /users/me/storage

@@ -25,9 +25,17 @@ export const createTask = createAsyncThunk(
     try {
       return await taskService.createTask(taskData)
     } catch (error) {
-      const message =(
-	      error.response?.data?.message || error.message || error.toString() )
-      return thunkAPI.rejectWithValue(message)
+      // Prefer Joi-style errors (error.response.data.errors) or backend message
+      const errData = error.response?.data;
+      let message;
+      if (errData?.message) {
+        message = errData.message;
+      } else if (Array.isArray(errData?.errors)) {
+        message = errData.errors.map(e => e.message).join('; ');
+      } else {
+        message = error.response?.statusText || error.message || String(error);
+      }
+      return thunkAPI.rejectWithValue(message);
     }
   }
 )

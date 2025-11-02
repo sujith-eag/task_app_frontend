@@ -12,10 +12,15 @@ const AI_API_URL = '/ai';
  */
 const fetchAIPlanPreview = async (requestData) => {
     try {
+        // Debug: log the outgoing AI preview request data so it's easier to trace
+        // whether the UI is dispatching the call and what payload it sends.
+        // This will appear in the browser console when running locally.
+        try { console.debug('AI preview request:', requestData); } catch (e) { /* ignore */ }
         const response = await apiClient.post(`${AI_API_URL}/tasks/preview`, requestData);
         return response.data;
     } catch (err) {
-        throw err.response?.data?.message || err.message;
+        // Normalize to an Error so createAsyncThunk and callers can access .message
+        throw new Error(err.response?.data?.message || err.message || 'AI preview failed');
     }
 };
 
@@ -29,10 +34,11 @@ const fetchAIPlanPreview = async (requestData) => {
  */
 const generateTasksWithAI = async (requestData) => {
     try {
+        try { console.debug('AI generate request:', requestData); } catch (e) { /* ignore */ }
         const response = await apiClient.post(`${AI_API_URL}/tasks/generate`, requestData);
         return response.data;
     } catch (err) {
-        throw err.response?.data?.message || err.message;
+        throw new Error(err.response?.data?.message || err.message || 'AI generation failed');
     }
 };
 

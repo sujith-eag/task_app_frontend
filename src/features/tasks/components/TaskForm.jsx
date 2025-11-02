@@ -91,18 +91,44 @@ const TaskForm = () => {
       .filter(tag => tag.length > 0 && tag.length <= 20)
       .slice(0, 6);
 
-    const taskData = { 
-        title, 
-        description, 
-        dueDate: dueDate ? dueDate.toISOString() : null,
-        priority,
-        status,
-        tags: sanitizedTags 
-    };
+  const taskData = {
+    title,
+    description,
+    priority,
+    status,
+    tags: sanitizedTags,
+  };
+  // Only include dueDate when the user selected one. Sending `null` caused
+  // Joi date validation to fail on the backend (date schema doesn't accept null).
+  if (dueDate) {
+    taskData.dueDate = dueDate.toISOString();
+  }
 
+    // Optimistic UI: add a temporary task so list updates immediately
     dispatch(addTaskOptimistic({ taskData, user }));
-    dispatch(createTask(taskData));
-    toast.success('Task created successfully!');
+
+    // Dispatch the async create action and wait for result so we can show
+    // the appropriate success/error toast and rely on the thunk to clean up
+    // the optimistic entry on failure.
+    (async () => {
+      try {
+        await dispatch(createTask(taskData)).unwrap();
+        toast.success('Task created successfully!');
+      } catch (err) {
+        // createTask rejected -> the slice removes the temp task.
+        // Let the global TaskList error handler display the toast to avoid duplicates.
+        // Log full error details for debugging: status, body, message
+        try {
+          console.error('createTask failed', {
+            status: err.response?.status,
+            data: err.response?.data,
+            message: err.message,
+          });
+        } catch (e) {
+          console.error('createTask failed (unknown error)', err);
+        }
+      }
+    })();
 
     setFormData({ 
         title: '', 
