@@ -108,24 +108,46 @@ const getDownloadLink = async (fileId) => {
  * @param {string[]} fileIds - An array of file IDs to download.
  * @param {string} token - The user's JWT for authorization.
  */
-const bulkDownloadFiles = (fileIds) => {
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = `${API_URL}/downloads/bulk-download`; // backend endpoint
-    form.style.display = 'none'; // Makes it invisible
+const bulkDownloadFiles = async (fileIds) => {
+    // Try to download via XHR (axios) first so we can stream blob and control filename.
+    try {
+        const response = await apiClient.post(`${API_URL}/bulk-download`, { fileIds }, { responseType: 'blob' });
 
-    // Create an input for the file IDs
-    const fileIdsInput = document.createElement('input');
-    fileIdsInput.type = 'hidden';
-    fileIdsInput.name = 'fileIds';
-    fileIdsInput.value = JSON.stringify(fileIds); // IDs as JSON string
+        // Create a blob and trigger a download
+        const blob = new Blob([response.data], { type: 'application/zip' });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'EagleCampus-Files.zip');
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(url);
+        return;
+    } catch (err) {
+        // If XHR download fails (CORS, older browsers, or server returned non-blob), fall back to form POST
+        // (Form POST will include httpOnly cookies automatically.)
+        console.warn('Bulk download via API failed, falling back to form submit.', err?.message || err);
 
-    // Create an input for the file IDs
-    form.appendChild(fileIdsInput);
-    document.body.appendChild(form);
+        const form = document.createElement('form');
+        form.method = 'POST';
+        // Correct backend endpoint: /files/bulk-download
+        form.action = `${API_URL}/bulk-download`;
+        form.style.display = 'none'; // Makes it invisible
 
-    form.submit();
-    document.body.removeChild(form);
+        // Create a hidden input for the file IDs
+        const fileIdsInput = document.createElement('input');
+        fileIdsInput.type = 'hidden';
+        fileIdsInput.name = 'fileIds';
+        fileIdsInput.value = JSON.stringify(fileIds); // IDs as JSON string
+
+        form.appendChild(fileIdsInput);
+        document.body.appendChild(form);
+
+        form.submit();
+        document.body.removeChild(form);
+        return;
+    }
 };
 
 
