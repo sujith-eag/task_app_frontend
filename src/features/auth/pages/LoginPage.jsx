@@ -35,19 +35,6 @@ const Login = () => {
     (state) => state.auth
   );
 
-  // Listen for session expiration event
-  useEffect(() => {
-    const handleSessionExpired = (event) => {
-      toast.error(event.detail.message, {
-        autoClose: 5000,
-        position: 'top-center',
-      });
-    };
-    window.addEventListener('auth:sessionExpired', handleSessionExpired);
-    return () => {
-      window.removeEventListener('auth:sessionExpired', handleSessionExpired);
-    };
-  }, []);
 
   useEffect(() => {
     if (isError) {

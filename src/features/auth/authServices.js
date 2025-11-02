@@ -27,9 +27,9 @@ const register = async (userData) => {
 const login = async (userData) => {
     const deviceId = getDeviceId();
     const response = await apiClient.post(AUTH_API_URL + 'login', userData, { headers: { 'x-device-id': deviceId } });
-    // Backend now sets httpOnly cookie; response.data contains user profile
-    // Do not persist user profile in localStorage anymore; app will rely on fetchMe
-    return response.data
+    // Backend sets an httpOnly cookie and returns an envelope { message, user }
+    // Return only the user object so reducers receive a consistent payload (same shape as /auth/me)
+    return response.data?.user || response.data;
 }
 
 /**
@@ -87,7 +87,8 @@ const resetPassword = async (resetData) => {
 
 // Get currently authenticated user (reads server cookie)
 const getMe = async () => {
-    const response = await apiClient.get(AUTH_API_URL + 'me');
+    // Skip emitting the global sessionExpired event for the regular app startup probe.
+    const response = await apiClient.get(AUTH_API_URL + 'me', { headers: { 'x-skip-session-expired-toast': '1' }, skipAuthEvent: true });
     return response.data;
 }
 

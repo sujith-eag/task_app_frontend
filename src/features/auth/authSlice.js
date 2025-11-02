@@ -122,6 +122,14 @@ export const authSlice = createSlice({
       state.isError = false
       state.message = ''
     },
+    // Force a client-side logout (clear user and flags) without calling the API.
+    forceLogout: (state) => {
+      state.user = null;
+      state.isLoading = false;
+      state.isSuccess = false;
+      state.isError = false;
+      state.message = '';
+    },
   },
   // To handle all the async thunk lifecycle actions: Fulfilled, Rejected, Pending 
   extraReducers: (builder) => {
@@ -240,5 +248,5 @@ export const authSlice = createSlice({
   ;},
 })
 
-export const { reset } = authSlice.actions
+export const { reset, forceLogout } = authSlice.actions
 export default authSlice.reducer
