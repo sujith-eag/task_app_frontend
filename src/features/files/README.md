@@ -86,7 +86,3 @@ All protected requests should rely on the server-set httpOnly cookie `jwt` in br
 Testing notes
 - Unit tests that import ESM frontend modules may require running Jest with Node's `--experimental-vm-modules` flag or using a transform (Babel) because the frontend is ESM (Vite). See repository testing notes for the project's preferred approach.
 
-If you'd like, I can:
-- Add unit tests that assert the updated URLs and headers for these functions (using axios-mock-adapter).
-- Add small integration mock examples showing how to call bulkDownloadFiles from the UI.
-

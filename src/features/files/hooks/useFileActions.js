@@ -1,49 +1,109 @@
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
-import { deleteFile, bulkDeleteFiles, getFiles,
-    manageShareAccess, revokePublicShare, bulkRemoveAccess
+import { 
+    deleteFile, 
+    deleteFolder, 
+    bulkDeleteFiles, 
+    getFiles,
+    manageShareAccess, 
+    revokePublicShare, 
+    bulkRemoveAccess,
+    renameFolder,
+    moveItem
  } from '../fileSlice.js';
 import fileService from '../fileService.js';
 
 export const useFileActions = () => {
     const dispatch = useDispatch();
 
-    // We no longer rely on a client-side token; apiClient sends cookies (withCredentials)
-
     const navigateToFolder = (folderId) => {
         dispatch(getFiles(folderId));
     };
 
-    const deleteSingleFile = (file) => {
-        dispatch(deleteFile(file._id))
+    /**
+     * Deletes a single item, dispatching the correct thunk
+     * based on whether it's a file or a folder.
+     */
+    const deleteSingleItem = (item) => {
+        const thunkToDispatch = item.isFolder 
+            ? deleteFolder(item._id) 
+            : deleteFile(item._1d || item._id);
+
+        dispatch(thunkToDispatch)
             .unwrap()
-            .then(() => toast.success(`"${file.fileName}" deleted.`))
-            .catch((err) => toast.error(err || 'Failed to delete file.'));
+            .then(() => toast.success(`"${item.fileName}" moved to trash.`))
+            .catch((err) => toast.error(err || 'Failed to delete item.'));
     };
 
-    const deleteBulkFiles = (fileIds) => {
+    /**
+     * Deletes multiple items (files or folders).
+     * The backend soft-delete service handles both.
+     */
+    const deleteBulkItems = (fileIds) => {
         dispatch(bulkDeleteFiles(fileIds))
             .unwrap()
-            .then(() => toast.success(`${fileIds.length} files deleted.`))
-            .catch((err) => toast.error(err || 'Failed to delete files.'));
+            .then(() => toast.success(`${fileIds.length} items moved to trash.`))
+            .catch((err) => toast.error(err || 'Failed to delete items.'));
     };
 
-	// --- Main Handler for Download to dispatch different calls ---
-    const downloadFiles = (selectedIds) => {
-        if (selectedIds.length === 1) {
-            fileService.getDownloadLink(selectedIds[0])
-                .then(({ url }) => window.open(url, '_blank')) // Trigger download in a new tab
-                .catch(() => toast.error('Could not get download link.'));
-        } else if (selectedIds.length > 1) {
-            // bulkDownloadFiles triggers a form submit for native download
-            fileService.bulkDownloadFiles(selectedIds);
+	/**
+     * Main handler for downloading selected items.
+     * Handles single file, single folder, or bulk file downloads.
+     */
+    const downloadItems = (selectedItems) => {
+        if (!selectedItems || selectedItems.length === 0) return;
+
+        if (selectedItems.length === 1) {
+            const item = selectedItems[0];
+            if (item.isFolder) {
+                // Single Folder Download
+                toast.info(`Preparing download for "${item.fileName}"...`);
+                fileService.downloadFolderAsZip(item._id)
+                    .catch(() => toast.error('Folder download failed.'));
+            } else {
+                // Single File Download
+                fileService.getDownloadLink(item._id)
+                    .then(({ url }) => window.open(url, '_blank'))
+                    .catch(() => toast.error('Could not get download link.'));
+            }
+        } else {
+            // Bulk Download (Files Only)
+            const fileIds = selectedItems
+                .filter(item => !item.isFolder)
+                .map(item => item._id);
+            
+            if (fileIds.length > 0) {
+                fileService.bulkDownloadFiles(fileIds);
+            } else {
+                toast.info('Bulk download is only available for files.');
+            }
         }
     };
 
-    const downloadSingleFile = (fileId) => {
-        fileService.getDownloadLink(fileId)
-            .then(({ url }) => window.open(url, '_blank'))
-            .catch(() => toast.error('Could not get download link.'));
+    /**
+     * Renames a file or folder.
+     */
+    const renameItem = (itemId, newName) => {
+        return dispatch(renameFolder({ folderId: itemId, newName }))
+            .unwrap()
+            .then(() => toast.success('Item renamed.'))
+            .catch((err) => {
+                toast.error(err || 'Failed to rename item.');
+                throw new Error(err);
+            });
+    };
+
+    /**
+     * Moves an item to a new parent folder.
+     */
+    const moveItemToFolder = (itemId, newParentId) => {
+        return dispatch(moveItem({ itemId, newParentId }))
+            .unwrap()
+            .then(() => toast.success('Item moved.'))
+            .catch((err) => {
+                toast.error(err || 'Failed to move item.');
+                throw new Error(err);
+            });
     };
 
     const revokePublicLink = (fileId) => {
@@ -55,7 +115,6 @@ export const useFileActions = () => {
     
 
     const removeSharedAccess = (fileId) => {
-        // Assuming removing self, so userIdToRemove is null
         dispatch(manageShareAccess({ fileId, userIdToRemove: null }))
             .unwrap()
             .then(() => toast.success('File removed from your list.'))
@@ -73,9 +132,15 @@ export const useFileActions = () => {
             });
     };
     
-    return { navigateToFolder, deleteSingleFile, deleteBulkFiles, 
-        downloadFiles, downloadSingleFile, 
-        removeSharedAccess, removeBulkSharedAccess, 
+    return { 
+        navigateToFolder, 
+        deleteSingleItem, 
+        deleteBulkItems, 
+        downloadItems, 
+        renameItem,
+        moveItemToFolder,
+        removeSharedAccess, 
+        removeBulkSharedAccess, 
         revokePublicLink
      };
 };

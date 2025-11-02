@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { Box, TableContainer, Table, TableHead, 
 	TableRow, TableCell, Checkbox, TableBody, 
 	Paper, Typography } from '@mui/material';
 
 // Import selectors and hooks
-import { selectMyFiles, selectSharedFiles, selectMySharedFiles } from '../../fileSlice.js';
+import { selectMyFiles, selectSharedFiles, selectMySharedFiles, getFilesSharedWithMe, getMySharedFiles } from '../../fileSlice.js';
 import { useFileActions } from '../../hooks/useFileActions.js';
 
 import FileTableRow from './FileTableRow.jsx';
@@ -40,8 +40,8 @@ const FileTable = () => {
     const currentList = useSelector(fileSelectors[tabValue]);
 
     // Hook for actions
-    const { navigateToFolder, deleteSingleFile, 
-        deleteBulkFiles, downloadFiles, removeBulkSharedAccess } = useFileActions();
+    const { navigateToFolder, deleteSingleItem, 
+        deleteBulkItems, downloadItems, removeBulkSharedAccess } = useFileActions();
 
     // Centralized modal state to avoid mounting per-row modals
     // activeModal.file will store the fileId (not the object) so we can derive the latest file
@@ -50,10 +50,22 @@ const FileTable = () => {
     const openModal = (type, fileId) => setActiveModal({ type, fileId });
     const closeModal = () => setActiveModal({ type: null, fileId: null });
     
+    const dispatch = useDispatch();
+
     // Clear selection when the tab or the data list changes
     useEffect(() => {
         setSelectedFiles([]);
     }, [tabValue, currentList]);
+
+    // Fetch data when switching to the shared-with-me tab
+    useEffect(() => {
+        if (tabValue === 'sharedWithMe') {
+            try { dispatch(getFilesSharedWithMe()); } catch (e) { /* ignore */ }
+        }
+        if (tabValue === 'myShares') {
+            try { dispatch(getMySharedFiles()); } catch (e) { /* ignore */ }
+        }
+    }, [tabValue, dispatch]);
 
     const handleSelectAll = (event) => {
         if (event.target.checked) {
@@ -78,7 +90,7 @@ const FileTable = () => {
             open: true,
             title: 'Confirm Deletion',
             message: `You want to permanently delete "${file.fileName}"?`,
-            onConfirm: () => deleteSingleFile(file)
+            onConfirm: () => deleteSingleItem(file)
         });
     };
     
@@ -87,8 +99,8 @@ const FileTable = () => {
             open: true,
             title: 'Confirm Bulk Deletion',
             message: `You want to permanently delete these ${selectedFiles.length} files?`,
-            onConfirm: () => {
-                deleteBulkFiles(selectedFiles);
+                onConfirm: () => {
+                deleteBulkItems(selectedFiles);
                 setSelectedFiles([]);
             }
         });
@@ -113,10 +125,10 @@ const FileTable = () => {
     return (
         <Box>
 			{/* Conditionally rendered bulk action bar */}
-            <BulkActionBar
+                <BulkActionBar
                 selectedFiles={selectedFiles}
                 currentTab={tabValue}
-                onDownload={() => downloadFiles(selectedFiles)}
+                onDownload={() => downloadItems(currentList.filter(f => selectedFiles.includes(f._id)))}
                 onDelete={openBulkDeleteDialog}
                 onRemove={openBulkRemoveDialog}
             />
@@ -175,9 +187,9 @@ const FileTable = () => {
                                             onDeleteClick={openSingleDeleteDialog}
                                             onNavigate={navigateToFolder}
                                             context={tabValue}
-                                            onOpenShare={(f) => openModal('share', f)}
-                                            onOpenPublicShare={(f) => openModal('public', f)}
-                                            onOpenManageShare={(f) => openModal('manage', f)}
+                                            onOpenShare={() => openModal('share', file._id)}
+                                            onOpenPublicShare={() => openModal('public', file._id)}
+                                            onOpenManageShare={() => openModal('manage', file._id)}
                                         />
                                 ))}
                             </TableBody>

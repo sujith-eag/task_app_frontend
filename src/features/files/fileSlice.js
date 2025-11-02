@@ -8,6 +8,8 @@ import { createSelector } from '@reduxjs/toolkit';
 
 const initialState = {
     files: [],
+    sharedWithMe: [],
+    mySharedFiles: [],
     status: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
                     // This ONLY tracks list-level actions like getFiles
     itemStatus: {}, // Tracks status of individual files, 
@@ -39,24 +41,14 @@ export const selectMyFiles = createSelector(
 );
 
 export const selectSharedFiles = createSelector(
-  [selectFiles, selectUserId],
-  (files, userId) => files.filter(file => file.user && file.user._id !== userId)
+    [(state) => state.files.sharedWithMe, selectUserId],
+    (sharedWithMe, userId) => sharedWithMe || []
 );
 
 export const selectMySharedFiles = createSelector(
-  [selectFiles, selectUserId],
-  (files, userId) => files.filter(f =>
-    f.user && f.user._id === userId &&
-        ( (Array.isArray(f.sharedWith) && f.sharedWith.length > 0) || 
-            (f.publicShare && f.publicShare.isActive && (
-                    // if expiresAt exists, only include if it's in the future
-                    !f.publicShare.expiresAt || new Date(f.publicShare.expiresAt) > new Date()
-            ))
-        )
-  )
+    [(state) => state.files.mySharedFiles, selectUserId],
+    (mySharedFiles, userId) => mySharedFiles || []
 );
-
-
 
 
 export const createPublicShare = createAsyncThunk(
@@ -102,6 +94,24 @@ export const getStorageUsage = createAsyncThunk('files/getUsage', async (_, thun
 export const getFiles = createAsyncThunk('files/getAll', async (parentId, thunkAPI) => {
     try {
         return await fileService.getFiles(parentId);
+    } catch (error) {
+        const message = (error.response?.data?.message) || error.message || error.toString();
+        return thunkAPI.rejectWithValue(message);
+    }
+});
+
+export const getFilesSharedWithMe = createAsyncThunk('files/getSharedWithMe', async (_, thunkAPI) => {
+    try {
+        return await fileService.getFilesSharedWithMe();
+    } catch (error) {
+        const message = (error.response?.data?.message) || error.message || error.toString();
+        return thunkAPI.rejectWithValue(message);
+    }
+});
+
+export const getMySharedFiles = createAsyncThunk('files/getMyShared', async (_, thunkAPI) => {
+    try {
+        return await fileService.getFilesIShared();
     } catch (error) {
         const message = (error.response?.data?.message) || error.message || error.toString();
         return thunkAPI.rejectWithValue(message);
@@ -163,6 +173,37 @@ export const uploadFiles = createAsyncThunk('files/upload', async ({ filesFormDa
 export const deleteFile = createAsyncThunk('files/delete', async (fileId, thunkAPI) => {
     try {
         return await fileService.deleteFile(fileId);
+    } catch (error) {
+        const message = (error.response?.data?.message) || error.message || error.toString();
+        return thunkAPI.rejectWithValue(message);
+    }
+});
+
+export const deleteFolder = createAsyncThunk('files/deleteFolder', async (folderId, thunkAPI) => {
+    try {
+        return await fileService.deleteFolder(folderId);
+    } catch (error) {
+        const message = (error.response?.data?.message) || error.message || error.toString();
+        return thunkAPI.rejectWithValue(message);
+    }
+});
+
+export const moveItem = createAsyncThunk('files/move', async ({ itemId, newParentId }, thunkAPI) => {
+    try {
+        // fileService.moveItem expects (itemId, { newParentId })
+        await fileService.moveItem(itemId, { newParentId });
+        return { itemId };
+    } catch (error) {
+        const message = (error.response?.data?.message) || error.message || error.toString();
+        return thunkAPI.rejectWithValue(message);
+    }
+});
+
+export const renameFolder = createAsyncThunk('files/rename', async ({ folderId, newName }, thunkAPI) => {
+    try {
+        // fileService.renameFolder expects (folderId, { newName })
+        const updatedFolder = await fileService.renameFolder(folderId, { newName });
+        return updatedFolder;
     } catch (error) {
         const message = (error.response?.data?.message) || error.message || error.toString();
         return thunkAPI.rejectWithValue(message);
@@ -280,13 +321,20 @@ export const fileSlice = createSlice({
             .addCase(revokePublicShare.fulfilled, (state, action) => {
                 delete state.itemStatus[action.meta.arg]; // clear status on success
                 const fileId = action.meta.arg;
-                const index = state.files.findIndex(f => f._id === fileId);
-                if (index !== -1) {
-                    state.files[index].publicShare.isActive = false;
-                    // clear the whole object for cleanliness
-                    state.files[index].publicShare.code = null;
-                    state.files[index].publicShare.expiresAt = null;
-                }
+                const updatePublicInactive = (arr) => {
+                    const idx = arr.findIndex(f => f._id === fileId);
+                    if (idx !== -1) {
+                        arr[idx].publicShare = arr[idx].publicShare || {};
+                        arr[idx].publicShare.isActive = false;
+                        arr[idx].publicShare.code = null;
+                        arr[idx].publicShare.expiresAt = null;
+                    }
+                };
+
+                // Update main files list, mySharedFiles (owner view) and sharedWithMe (recipient view) if present
+                updatePublicInactive(state.files);
+                updatePublicInactive(state.mySharedFiles || []);
+                updatePublicInactive(state.sharedWithMe || []);
             })
             .addCase(revokePublicShare.pending, (state, action) => {
                 state.itemStatus[action.meta.arg] = 'revoking';
@@ -304,6 +352,21 @@ export const fileSlice = createSlice({
 
                 // Set the parentId from the action metadata for consistency
                 state.currentParentId = action.meta.arg || null;
+            })
+
+            // Files shared with me
+            .addCase(getFilesSharedWithMe.fulfilled, (state, action) => {
+                state.sharedWithMe = action.payload || [];
+            })
+            .addCase(getFilesSharedWithMe.rejected, (state, action) => {
+                state.sharedWithMe = [];
+            })
+            // Files I shared (owner view)
+            .addCase(getMySharedFiles.fulfilled, (state, action) => {
+                state.mySharedFiles = action.payload || [];
+            })
+            .addCase(getMySharedFiles.rejected, (state, action) => {
+                state.mySharedFiles = [];
             })
             .addCase(getFiles.rejected, (state, action) => {
                 state.status = 'failed';
@@ -349,6 +412,49 @@ export const fileSlice = createSlice({
                 // Optionally set a specific error message for this item
                 state.itemStatus[action.meta.arg] = 'error'; 
             })
+            // Delete Folder (soft-delete -> trash)
+            .addCase(deleteFolder.fulfilled, (state, action) => {
+                // action.payload should contain { fileId } or the deleted file
+                const fileId = action.payload?.fileId || (action.payload && action.payload._id) || action.meta.arg;
+                delete state.itemStatus[fileId];
+                state.files = state.files.filter((file) => file._id !== fileId);
+            })
+            .addCase(deleteFolder.pending, (state, action) => {
+                state.itemStatus[action.meta.arg] = 'deleting';
+            })
+            .addCase(deleteFolder.rejected, (state, action) => {
+                delete state.itemStatus[action.meta.arg];
+                state.itemStatus[action.meta.arg] = 'error';
+            })
+            // Move Item
+            .addCase(moveItem.fulfilled, (state, action) => {
+                delete state.itemStatus[action.payload.itemId];
+                state.files = state.files.filter((file) => file._id !== action.payload.itemId);
+            })
+            .addCase(moveItem.pending, (state, action) => {
+                state.itemStatus[action.meta.arg.itemId] = 'moving';
+            })
+            .addCase(moveItem.rejected, (state, action) => {
+                delete state.itemStatus[action.meta.arg.itemId];
+                state.itemStatus[action.meta.arg.itemId] = 'error';
+            })
+
+            // Rename Folder/File
+            .addCase(renameFolder.fulfilled, (state, action) => {
+                // action.payload is the updated folder object
+                delete state.itemStatus[action.payload._id];
+                const index = state.files.findIndex((file) => file._id === action.payload._id);
+                if (index !== -1) {
+                    state.files[index] = action.payload;
+                }
+            })
+            .addCase(renameFolder.pending, (state, action) => {
+                state.itemStatus[action.meta.arg.folderId] = 'renaming';
+            })
+            .addCase(renameFolder.rejected, (state, action) => {
+                delete state.itemStatus[action.meta.arg.folderId];
+                state.itemStatus[action.meta.arg.folderId] = 'error';
+            })
             
             
             // Deleting multiple files
@@ -372,6 +478,14 @@ export const fileSlice = createSlice({
                 if (index !== -1) {
                     state.files[index] = action.payload;
                 }
+                // Also ensure owner-view list reflects this newly-shared file
+                const ownerIdx = state.mySharedFiles.findIndex(f => f._id === action.payload._id);
+                if (ownerIdx !== -1) {
+                    state.mySharedFiles[ownerIdx] = action.payload;
+                } else if ((action.payload.sharedWith && action.payload.sharedWith.length > 0) || (action.payload.publicShare && action.payload.publicShare.isActive)) {
+                    // Add to owner list if it now has shares
+                    state.mySharedFiles.unshift(action.payload);
+                }
             })
             .addCase(shareFile.rejected, (state, action) => {
                 delete state.itemStatus[action.meta.arg.fileId];
@@ -387,12 +501,23 @@ export const fileSlice = createSlice({
                 delete state.itemStatus[action.meta.arg.fileId];
                 // For a user removing their own access, the file disappears from their list
                 if (action.meta.arg.userIdToRemove === null) {
+                    // user removed self: remove from sharedWithMe and main files list
+                    state.sharedWithMe = state.sharedWithMe.filter((file) => file._id !== action.payload._id);
                     state.files = state.files.filter((file) => file._id !== action.payload._id);
                 } else {
-                    // If an owner is managing access, the file is just updated
+                    // Owner revoked someone: update owner-view and main list
                     const index = state.files.findIndex((file) => file._id === action.payload._id);
                     if (index !== -1) {
                         state.files[index] = action.payload;
+                    }
+                    const ownerIdx = state.mySharedFiles.findIndex((file) => file._id === action.payload._id);
+                    if (ownerIdx !== -1) {
+                        // If it no longer has any shares, remove from mySharedFiles
+                        if (!action.payload.sharedWith || action.payload.sharedWith.length === 0) {
+                            state.mySharedFiles.splice(ownerIdx, 1);
+                        } else {
+                            state.mySharedFiles[ownerIdx] = action.payload;
+                        }
                     }
                 }
             })
@@ -422,7 +547,8 @@ export const fileSlice = createSlice({
 
             
             .addCase(bulkRemoveAccess.fulfilled, (state, action) => {
-                // Filter out the files that were just removed from the user's view
+                // Remove from recipient view (sharedWithMe) and main files list
+                state.sharedWithMe = state.sharedWithMe.filter(file => !action.payload.ids.includes(file._id));
                 state.files = state.files.filter(file => !action.payload.ids.includes(file._id));
             })
 

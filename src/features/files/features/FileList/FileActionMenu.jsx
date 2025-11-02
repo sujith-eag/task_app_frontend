@@ -14,7 +14,9 @@ import PeopleIcon from '@mui/icons-material/People';
 const FileActionMenu = ({ file, onDelete, onShare, onManageShare, onPublicShare, onRemove, onRevokePublic, onDownload }) => {
     const [anchorEl, setAnchorEl] = useState(null);
     const { user } = useSelector((state) => state.auth);
-    const isOwner = file.user._id === user._id;
+    // Normalize id comparison to strings to avoid mismatches between ObjectId and string
+    const fileOwnerId = file?.user?._id || file?.user || null;
+    const isOwner = fileOwnerId && user && String(fileOwnerId) === String(user._id);
 
     const handleClick = (event) => {
         event.stopPropagation(); // Prevent row click event
@@ -59,7 +61,7 @@ const FileActionMenu = ({ file, onDelete, onShare, onManageShare, onPublicShare,
                     </MenuItem>
                 )}
                 {/* menu item to remove shared people */}
-                {isOwner && file.sharedWith.length > 0 && (
+                {isOwner && Array.isArray(file.sharedWith) && file.sharedWith.length > 0 && (
                     <MenuItem onClick={handleAction(onManageShare)}>
                         <ListItemIcon>
                             <PeopleIcon fontSize="small" />

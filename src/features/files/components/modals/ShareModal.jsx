@@ -9,6 +9,7 @@ import {
 import profileService from '../../../profile/profileService.js';
 import { shareFile } from '../../fileSlice.js';
 import { toast } from 'react-toastify';
+import fileService from '../../fileService.js';
 
 const ShareModal = ({ isOpen, onClose, file }) => {
     const dispatch = useDispatch();
@@ -18,6 +19,7 @@ const ShareModal = ({ isOpen, onClose, file }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [selectedUserId, setSelectedUserId] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
+    const [sharedUserIdsSet, setSharedUserIdsSet] = useState(new Set());
 
     // Effect to fetch discoverable users when the modal opens
     const didFetchRef = useRef(false);
@@ -35,6 +37,19 @@ const ShareModal = ({ isOpen, onClose, file }) => {
                 setIsLoading(false);
             };
             fetchUsers();
+        }
+        // When modal opens, fetch current shares for this file so we can filter
+        if (isOpen && file?._id) {
+            (async () => {
+                try {
+                    const shares = await fileService.getFileShares(file._id);
+                    // shares may be array of { userId/user } depending on backend; normalize to ids
+                    const ids = shares.map(s => (s.user?._id || s.userId || s.user || s._id || s.id)).filter(Boolean).map(String);
+                    setSharedUserIdsSet(new Set(ids));
+                } catch (e) {
+                    // ignore errors; we can still show all users
+                }
+            })();
         }
 
         if (!isOpen) {
@@ -62,9 +77,8 @@ const ShareModal = ({ isOpen, onClose, file }) => {
             });
     };
 
-    // Filter out users the file is already shared with
-    const sharedUserIds = new Set(file?.sharedWith.map(share => share.user._id));
-    const discoverableUsers = users.filter(u => !sharedUserIds.has(u._id));
+    // Filter out users the file is already shared with (use fetched shares)
+    const discoverableUsers = users.filter(u => !sharedUserIdsSet.has(u._id));
     
     // Filter based on the search term
     const filteredUsers = discoverableUsers.filter(u => 

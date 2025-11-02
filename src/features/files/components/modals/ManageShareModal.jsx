@@ -7,6 +7,7 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 import { toast } from 'react-toastify';
 import { manageShareAccess, getFiles } from '../../fileSlice.js';
+import fileService from '../../fileService.js';
 
 // A simple styled box for the modal
 const style = {
@@ -18,12 +19,25 @@ const style = {
 const ManageShareModal = ({ open, onClose, file }) => {
     const dispatch = useDispatch();
     const [revokingUserId, setRevokingUserId] = useState(null);
+    const [sharedList, setSharedList] = useState([]);
     // local retry tracker to avoid infinite retry loops
     const [retriedFor, setRetriedFor] = useState(null);
     const currentParentId = useSelector((state) => state.files.currentParentId);
 
     const handleRevoke = (userIdToRevoke) => {
         setRevokingUserId(userIdToRevoke);
+        // Guard: ensure we have a valid userId and it's not the owner themself
+        if (!userIdToRevoke) {
+            toast.error('Invalid user selected for revoke.');
+            setRevokingUserId(null);
+            return;
+        }
+        if (String(userIdToRevoke) === String(file?.user?._id)) {
+            toast.error('Cannot revoke access for file owner.');
+            setRevokingUserId(null);
+            return;
+        }
+
         dispatch(manageShareAccess({ fileId: file._id, userIdToRemove: userIdToRevoke }))
             .unwrap()
             .then(() => {
@@ -68,6 +82,26 @@ const ManageShareModal = ({ open, onClose, file }) => {
         }
     }, [open, currentParentId, dispatch]);
 
+    // Fetch current shares for the file when modal opens
+    useEffect(() => {
+        let mounted = true;
+        if (open && file?._id) {
+            (async () => {
+                try {
+                    const shares = await fileService.getFileShares(file._id);
+                    // Normalize shares into a list of user objects where possible
+                    const normalized = shares.map(s => s.user || s.userId || s);
+                    if (mounted) setSharedList(normalized);
+                } catch (e) {
+                    if (mounted) setSharedList([]);
+                }
+            })();
+        } else if (!open) {
+            setSharedList([]);
+        }
+        return () => { mounted = false; };
+    }, [open, file?._id]);
+
     // Clean up local state on close
     const handleClose = () => {
         setRevokingUserId(null);
@@ -83,10 +117,9 @@ const ManageShareModal = ({ open, onClose, file }) => {
                     <CloseIcon />
                 </IconButton>
                 <Box sx={{ maxHeight: 300, overflow: 'auto', my: 2 }}>
-                    {Array.isArray(file?.sharedWith) && file.sharedWith.length > 0 ? (
+                    {Array.isArray(sharedList) && sharedList.length > 0 ? (
                         <List>
-                            {file.sharedWith.map((entry, idx) => {
-                                // entry can be { user } or a user object or just an id/string
+                            {sharedList.map((entry, idx) => {
                                 const user = entry?.user ?? entry;
                                 const key = user?._id ?? user?.id ?? user?.email ?? `shared-${idx}`;
                                 const avatar = user?.avatar || undefined;

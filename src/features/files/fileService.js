@@ -4,6 +4,7 @@ const API_URL = '/files';
 const FOLDER_API_URL = '/folders';
 const USER_API_URL = '/users';
 const SHARES_API_URL = '/shares';
+const TRASH_API_URL = '/trash';
 
 
 
@@ -108,8 +109,10 @@ const bulkDownloadFiles = async (fileIds) => {
 
         const form = document.createElement('form');
         form.method = 'POST';
-        // Correct backend endpoint: /files/bulk-download
-        form.action = `${API_URL}/bulk-download`;
+    // Correct backend endpoint: /files/bulk-download
+    // Use the apiClient baseURL so the form posts to the correct API prefix (e.g. '/api')
+    const apiBase = apiClient.defaults && apiClient.defaults.baseURL ? apiClient.defaults.baseURL : '';
+    form.action = `${apiBase}${API_URL}/bulk-download`;
         form.style.display = 'none'; // Makes it invisible
 
         // Create a hidden input for the file IDs
@@ -137,7 +140,9 @@ const bulkDownloadFiles = async (fileIds) => {
  * @returns {Promise<object>} { fileId }
  */
 const deleteFile = async (fileId) => {
-    await apiClient.delete(`${API_URL}/${fileId}`);
+    // Call the new trash service endpoint (soft-delete)
+    await apiClient.delete(`${TRASH_API_URL}/soft-delete/${fileId}`);
+    // The fileSlice expects { fileId } to remove it from the UI
     return { fileId };
 };
 
@@ -150,8 +155,72 @@ const deleteFile = async (fileId) => {
  * @returns {Promise<object>} server response
  */
 const bulkDeleteFiles = async (fileIds) => {
-    const response = await apiClient.delete(`${API_URL}`, { data: { fileIds } });
+    // Use the Trash bulk soft-delete endpoint (POST)
+    const response = await apiClient.post(`${TRASH_API_URL}/soft-delete/bulk`, { fileIds });
     return { ...response.data, ids: fileIds };
+};
+
+/**
+ * List all items in trash
+ * Route: GET /api/trash
+ */
+const listTrash = async () => {
+    const response = await apiClient.get(`${TRASH_API_URL}`);
+    return response.data;
+};
+
+/**
+ * Get trash statistics
+ * Route: GET /api/trash/stats
+ */
+const getTrashStats = async () => {
+    const response = await apiClient.get(`${TRASH_API_URL}/stats`);
+    return response.data;
+};
+
+/**
+ * Restore a file/folder from trash
+ * Route: POST /api/trash/restore/:fileId
+ */
+const restoreFile = async (fileId) => {
+    const response = await apiClient.post(`${TRASH_API_URL}/restore/${fileId}`);
+    return response.data;
+};
+
+/**
+ * Permanently delete a file/folder from trash
+ * Route: DELETE /api/trash/purge/:fileId
+ */
+const purgeFile = async (fileId) => {
+    const response = await apiClient.delete(`${TRASH_API_URL}/purge/${fileId}`);
+    return response.data;
+};
+
+/**
+ * Empty the entire trash
+ * Route: DELETE /api/trash/empty
+ */
+const emptyTrash = async () => {
+    const response = await apiClient.delete(`${TRASH_API_URL}/empty`);
+    return response.data;
+};
+
+/**
+ * Bulk restore files/folders
+ * Route: POST /api/trash/restore/bulk
+ */
+const bulkRestore = async (fileIds) => {
+    const response = await apiClient.post(`${TRASH_API_URL}/restore/bulk`, { fileIds });
+    return response.data;
+};
+
+/**
+ * Bulk purge files/folders
+ * Route: POST /api/trash/purge/bulk
+ */
+const bulkPurge = async (fileIds) => {
+    const response = await apiClient.post(`${TRASH_API_URL}/purge/bulk`, { fileIds });
+    return response.data;
 };
 
 
@@ -233,6 +302,15 @@ const getFilesSharedWithMe = async () => {
     return response.data;
 };
 
+/**
+ * Get files the current user has shared with others
+ * Route: GET /api/shares/my-shares
+ */
+const getFilesIShared = async () => {
+    const response = await apiClient.get(`${SHARES_API_URL}/my-shares`);
+    return response.data;
+};
+
 
 /**
  * Create a new folder.
@@ -282,8 +360,41 @@ const renameFolder = async (folderId, renameData) => {
  * Auth: protected, owner-only
  */
 const deleteFolder = async (folderId) => {
-    const response = await apiClient.delete(`${FOLDER_API_URL}/${folderId}`);
-    return response.data;
+    // Re-route to the trash service's soft-delete endpoint
+    const response = await apiClient.delete(`${TRASH_API_URL}/soft-delete/${folderId}`);
+
+    // If backend returns the deleted file info, return it; otherwise return an object with fileId
+    return response.data?.file ? response.data.file : { fileId: folderId };
+};
+
+
+/**
+ * Trigger a synchronous download for a single folder as a ZIP.
+ * Route: POST /api/files/folders/:id/download
+ * Auth: protected
+ * @param {string} folderId
+ */
+const downloadFolderAsZip = async (folderId) => {
+    try {
+        const response = await apiClient.post(
+            `${API_URL}/folders/${folderId}/download`,
+            {},
+            { responseType: 'blob' }
+        );
+
+        const blob = new Blob([response.data], { type: 'application/zip' });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'EagleCampus-Folder.zip');
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(url);
+    } catch (err) {
+        console.error('Folder download via API failed:', err?.message || err);
+        throw err;
+    }
 };
 
 
@@ -311,6 +422,25 @@ const fileService = {
     createFolder,
     createPublicShare,
     revokePublicShare,
+    // Shares listing
+    getFileShares,
+    getFilesSharedWithMe,
+    getFilesIShared,
+    // Trash
+    listTrash,
+    getTrashStats,
+    restoreFile,
+    purgeFile,
+    emptyTrash,
+    bulkRestore,
+    bulkPurge,
+    // Folder functions
+    getFolderDetails,
+    moveItem,
+    renameFolder,
+
+    // Folder download
+    downloadFolderAsZip,
 
 };
 

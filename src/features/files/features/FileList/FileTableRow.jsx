@@ -13,17 +13,19 @@ const FileTableRow = ({ file, isSelected, onSelectFile, onDeleteClick, onNavigat
     const isProcessing = itemStatus && itemStatus[file._id]; // Check if THIS specific file is processing
 
     // Get all action handlers from our clean hook
-    const { downloadSingleFile, removeSharedAccess, revokePublicLink } = useFileActions();
+    const { downloadItems, removeSharedAccess, revokePublicLink } = useFileActions();
 
     const { user } = useSelector((state) => state.auth);
-    const isOwner = file.user._id === user._id;
+    // Use string comparison and guard missing owner to handle mixed shapes
+    const fileOwnerId = file?.user?._id || file?.user || null;
+    const isOwner = fileOwnerId && user && String(fileOwnerId) === String(user._id);
 
     // --- Function to render the share status ---
     const renderShareStatus = () => {
-        const shareCount = file.sharedWith.length;
+        const shareCount = Array.isArray(file.sharedWith) ? file.sharedWith.length : 0;
         const isPublic = file.publicShare?.isActive;
 
-        if (isPublic && shareCount > 0) {
+                if (isPublic && shareCount > 0) {
             return `Publicly & with ${shareCount} user(s)`;
         }
         if (isPublic) {
@@ -121,7 +123,7 @@ const FileTableRow = ({ file, isSelected, onSelectFile, onDeleteClick, onNavigat
                     ) : (
                         // Prevent opening menu from triggering row navigation
                         <Box onClick={(e) => e.stopPropagation()}>
-                            <FileActionMenu
+                                <FileActionMenu
                                 file={file}
                                 onManageShare={() => onOpenManageShare && onOpenManageShare(file._id)}
                                 onDelete={() => onDeleteClick(file)}
@@ -129,7 +131,7 @@ const FileTableRow = ({ file, isSelected, onSelectFile, onDeleteClick, onNavigat
                                 onPublicShare={() => onOpenPublicShare && onOpenPublicShare(file._id)}
                                 onRemove={() => removeSharedAccess(file._id)}
                                 onRevokePublic={() => revokePublicLink(file._id)}
-                                onDownload={() => downloadSingleFile(file._id)}
+                                onDownload={() => downloadItems([file])}
                             />
                         </Box>
                     )}

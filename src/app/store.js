@@ -9,6 +9,7 @@ import aiReducer from '../features/ai/aiTaskSlice.js';
 import authReducer from '../features/auth/authSlice.js';
 import chatReducer from '../features/chat/chatSlice.js';
 import filesReducer from '../features/files/fileSlice.js';
+import trashReducer from '../features/trash/trashSlice.js';
 import profileReducer from '../features/profile/profileSlice.js';
 import studentReducer from '../features/student/studentSlice.js';
 import taskReducer from '../features/tasks/taskSlice.js';
@@ -25,9 +26,10 @@ export const store = configureStore({
     ai: aiReducer,
     auth: authReducer,
     chat: chatReducer,
-    files: filesReducer,    
-    profile: profileReducer,    
-    student: studentReducer,    
+    files: filesReducer,
+    trash: trashReducer,
+    profile: profileReducer,
+    student: studentReducer,
     tasks: taskReducer,
     teacher: teacherReducer,
     public: publicReducer,
