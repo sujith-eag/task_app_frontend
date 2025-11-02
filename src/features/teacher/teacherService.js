@@ -1,7 +1,7 @@
-import axios from 'axios';
+import apiClient from '../../app/apiClient.js';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const API_URL = `${API_BASE_URL}/college/teachers/`;
+// Use relative endpoints; apiClient.baseURL supplies the API root
+const API_URL = '/college/teachers/';
 
 
 /**
@@ -11,10 +11,8 @@ const API_URL = `${API_BASE_URL}/college/teachers/`;
  * @param   {string} token - The teacher's JWT for authentication.
  * @returns {Promise<object>} A promise that resolves to the created/updated reflection object.
  */
-const upsertSessionReflection = async (reflectionData, token) => {
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-    // Change axios.post to axios.put to match the updated route
-    const response = await axios.put(API_URL + 'session-reflection', reflectionData, config);
+const upsertSessionReflection = async (reflectionData) => {
+    const response = await apiClient.put(API_URL + 'session-reflection', reflectionData);
     return response.data;
 };
 
@@ -26,9 +24,8 @@ const upsertSessionReflection = async (reflectionData, token) => {
  * @param   {string} token - The teacher's JWT for authentication.
  * @returns {Promise<object>} A promise that resolves to an object containing the student feedback summary and the teacher's own reflection.
  */
-const getFeedbackSummaryForSession = async (sessionId, token) => {
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.get(`${API_URL}feedback-summary/${sessionId}`, config);
+const getFeedbackSummaryForSession = async (sessionId) => {
+    const response = await apiClient.get(`${API_URL}feedback-summary/${sessionId}`);
     return response.data;
 };
 
@@ -39,9 +36,8 @@ const getFeedbackSummaryForSession = async (sessionId, token) => {
  * @param {string} token - The user's JWT for authentication.
  * @returns {Promise<object>} A promise that resolves to an object containing class creation data.
  */
-const getClassCreationData = async (token) => {
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.get(API_URL + 'class-creation-data', config);
+const getClassCreationData = async () => {
+    const response = await apiClient.get(API_URL + 'class-creation-data');
     return response.data;
 };
 
@@ -53,9 +49,8 @@ const getClassCreationData = async (token) => {
  * @param {string} token - The user's JWT for authentication.
  * @returns {Promise<object>} A promise that resolves to the newly created class session object.
  */
-const createClassSession = async (sessionData, token) => {
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.post(API_URL + 'class-sessions', sessionData, config);
+const createClassSession = async (sessionData) => {
+    const response = await apiClient.post(API_URL + 'class-sessions', sessionData);
     return response.data;
 };
 
@@ -66,9 +61,8 @@ const createClassSession = async (sessionData, token) => {
  * @param {string} token - The user's JWT for authentication.
  * @returns {Promise<Array<object>>} A promise that resolves to an array of past session objects.
  */
-const getTeacherSessionsHistory = async (token) => {
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.get(API_URL + 'class-sessions', config);
+const getTeacherSessionsHistory = async () => {
+    const response = await apiClient.get(API_URL + 'class-sessions');
     return response.data;
 };
 
@@ -80,9 +74,8 @@ const getTeacherSessionsHistory = async (token) => {
  * @param {string} token - The user's JWT for authentication.
  * @returns {Promise<Array<object>>} A promise that resolves to the session's attendance roster.
  */
-const getSessionRoster = async (sessionId, token) => {
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.get(`${API_URL}class-sessions/${sessionId}/roster`, config);
+const getSessionRoster = async (sessionId) => {
+    const response = await apiClient.get(`${API_URL}class-sessions/${sessionId}/roster`);
     return response.data;
 };
 
@@ -94,10 +87,9 @@ const getSessionRoster = async (sessionId, token) => {
  * @param {string} token - The user's JWT for authentication.
  * @returns {Promise<object>} A promise that resolves to a success confirmation message.
  */
-const finalizeAttendance = async (data, token) => {
+const finalizeAttendance = async (data) => {
     const { sessionId, updatedRoster } = data;
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.patch(`${API_URL}class-sessions/${sessionId}/roster`, { updatedRoster }, config);
+    const response = await apiClient.patch(`${API_URL}class-sessions/${sessionId}/roster`, { updatedRoster });
     return response.data;
 };
 

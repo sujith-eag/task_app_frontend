@@ -1,9 +1,7 @@
-import axios from 'axios';
+import apiClient from '../../../app/apiClient.js';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const API_URL = `${API_BASE_URL}/admin/`;
-const MANAGEMENT_API_URL = `${API_BASE_URL}/admin/management`;
-const APPLICATIONS_API_URL = `${API_BASE_URL}/admin/applications`;
+const MANAGEMENT_API_URL = '/admin/management';
+const APPLICATIONS_API_URL = '/admin/applications';
 
 
 
@@ -15,9 +13,8 @@ const APPLICATIONS_API_URL = `${API_BASE_URL}/admin/applications`;
  * @param {string} token - The JWT for authentication.
  * @returns {Promise<Array<object>>} An array of user objects with application data.
  */
-const getPendingApplications = async (token) => {
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.get(`${APPLICATIONS_API_URL}`, config);
+const getPendingApplications = async () => {
+    const response = await apiClient.get(`${APPLICATIONS_API_URL}`);
     return response.data;
 };
 
@@ -30,10 +27,9 @@ const getPendingApplications = async (token) => {
  * @param {string} token - The JWT for authentication.
  * @returns {Promise<object>} A success confirmation message.
  */
-const reviewApplication = async (userId, action, token) => {
-    const config = { headers: { Authorization: `Bearer ${token}` } };
+const reviewApplication = async (userId, action) => {
     const body = { action };
-    const response = await axios.patch(`${APPLICATIONS_API_URL}/${userId}/review`, body, config);
+    const response = await apiClient.patch(`${APPLICATIONS_API_URL}/${userId}/review`, body);
     return response.data;
 };
 
@@ -45,12 +41,8 @@ const reviewApplication = async (userId, action, token) => {
  * @param {string} token - The JWT for authentication.
  * @returns {Promise<Array<object>>} An array of user objects matching the role.
  */
-const getUsersByRole = async (role, token) => {
-    const config = {
-        headers: { Authorization: `Bearer ${token}` },
-        params: { role }
-    };
-    const response = await axios.get(`${MANAGEMENT_API_URL}/users`, config);
+const getUsersByRole = async (role) => {
+    const response = await apiClient.get(`${MANAGEMENT_API_URL}/users`, { params: { role } });
     return response.data;
 };
 
@@ -63,9 +55,8 @@ const getUsersByRole = async (role, token) => {
  * @param {string} token - The JWT for authentication.
  * @returns {Promise<object>} The updated user object.
  */
-const promoteToFaculty = async (userId, facultyData, token) => {
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.patch(`${MANAGEMENT_API_URL}/users/${userId}/promote`, facultyData, config);
+const promoteToFaculty = async (userId, facultyData) => {
+    const response = await apiClient.patch(`${MANAGEMENT_API_URL}/users/${userId}/promote`, facultyData);
     return response.data;
 };
 
@@ -78,9 +69,8 @@ const promoteToFaculty = async (userId, facultyData, token) => {
  * @param {string} token - The JWT for authentication.
  * @returns {Promise<object>} The updated student user object.
  */
-const updateStudentDetails = async (studentId, studentData, token) => {
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.put(`${MANAGEMENT_API_URL}/students/${studentId}`, studentData, config);
+const updateStudentDetails = async (studentId, studentData) => {
+    const response = await apiClient.put(`${MANAGEMENT_API_URL}/students/${studentId}`, studentData);
     return response.data;
 };
 
@@ -93,9 +83,8 @@ const updateStudentDetails = async (studentId, studentData, token) => {
  * @param {string} token - The JWT for authentication.
  * @returns {Promise<object>} The updated student object with new enrollments.
  */
-const updateStudentEnrollment = async (studentId, subjectIds, token) => {
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.put(`${MANAGEMENT_API_URL}/students/${studentId}/enrollment`, { subjectIds }, config);
+const updateStudentEnrollment = async (studentId, subjectIds) => {
+    const response = await apiClient.put(`${MANAGEMENT_API_URL}/students/${studentId}/enrollment`, { subjectIds });
     return response.data;
 };
 

@@ -20,8 +20,7 @@ const initialState = {
 // Get data for the class creation form (teacher's subjects)
 export const getClassCreationData = createAsyncThunk('teacher/getClassCreationData', async (_, thunkAPI) => {
     try {
-        const token = thunkAPI.getState().auth.user.token;
-        return await teacherService.getClassCreationData(token);
+        return await teacherService.getClassCreationData();
     } catch (error) {
         const message = (error.response?.data?.message) || error.message || error.toString();
         return thunkAPI.rejectWithValue(message);
@@ -31,8 +30,7 @@ export const getClassCreationData = createAsyncThunk('teacher/getClassCreationDa
 // Create a new class session
 export const createClassSession = createAsyncThunk('teacher/createSession', async (sessionData, thunkAPI) => {
     try {
-        const token = thunkAPI.getState().auth.user.token;
-        return await teacherService.createClassSession(sessionData, token);
+        return await teacherService.createClassSession(sessionData);
     } catch (error) {
         const message = (error.response?.data?.message) || error.message || error.toString();
         return thunkAPI.rejectWithValue(message);
@@ -42,8 +40,7 @@ export const createClassSession = createAsyncThunk('teacher/createSession', asyn
 // Get history of past sessions
 export const getTeacherSessionsHistory = createAsyncThunk('teacher/getHistory', async (_, thunkAPI) => {
     try {
-        const token = thunkAPI.getState().auth.user.token;
-        return await teacherService.getTeacherSessionsHistory(token);
+        return await teacherService.getTeacherSessionsHistory();
     } catch (error) {
         const message = (error.response?.data?.message) || error.message || error.toString();
         return thunkAPI.rejectWithValue(message);
@@ -53,8 +50,7 @@ export const getTeacherSessionsHistory = createAsyncThunk('teacher/getHistory', 
 // --- Get the roster for an active session ---
 export const getSessionRoster = createAsyncThunk('teacher/getRoster', async (sessionId, thunkAPI) => {
     try {
-        const token = thunkAPI.getState().auth.user.token;
-        return await teacherService.getSessionRoster(sessionId, token);
+        return await teacherService.getSessionRoster(sessionId);
     } catch (error) {
         const message = (error.response?.data?.message) || error.message || error.toString();
         return thunkAPI.rejectWithValue(message);
@@ -64,8 +60,7 @@ export const getSessionRoster = createAsyncThunk('teacher/getRoster', async (ses
 // --- Finalize attendance for a session ---
 export const finalizeAttendance = createAsyncThunk('teacher/finalize', async (data, thunkAPI) => {
     try {
-        const token = thunkAPI.getState().auth.user.token;
-        return await teacherService.finalizeAttendance(data, token);
+        return await teacherService.finalizeAttendance(data);
     } catch (error) {
         const message = (error.response?.data?.message) || error.message || error.toString();
         return thunkAPI.rejectWithValue(message);
@@ -77,9 +72,7 @@ export const upsertSessionReflection = createAsyncThunk(
     'teacher/upsertReflection', 
     async (reflectionData, thunkAPI) => {
         try {
-            const token = thunkAPI.getState().auth.user.token;
-
-            const response = await teacherService.upsertSessionReflection(reflectionData, token);
+            const response = await teacherService.upsertSessionReflection(reflectionData);
             // After success, dispatch an action to refresh the history list
             thunkAPI.dispatch(getTeacherSessionsHistory());
             return response;
@@ -93,8 +86,7 @@ export const upsertSessionReflection = createAsyncThunk(
 
 export const getFeedbackSummaryForSession = createAsyncThunk('teacher/getSummary', async (sessionId, thunkAPI) => {
     try {
-        const token = thunkAPI.getState().auth.user.token;
-        return await teacherService.getFeedbackSummaryForSession(sessionId, token);
+        return await teacherService.getFeedbackSummaryForSession(sessionId);
     } catch (error) {
         const message = (error.response?.data?.message) || error.message || error.toString();
         return thunkAPI.rejectWithValue(message);

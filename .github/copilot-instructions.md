@@ -180,21 +180,20 @@ import axios from 'axios';
 
 const API_URL = '/api/feature';
 
-const getData = async (token) => {
-  const config = {
-    headers: { Authorization: `Bearer ${token}` }
-  };
-  const response = await axios.get(API_URL, config);
+// Prefer a central apiClient that sends cookies automatically.
+// Example: const apiClient = axios.create({ baseURL: '/api', withCredentials: true });
+const getData = async () => {
+  const response = await apiClient.get(API_URL);
   return response.data;
 };
 
 export default { getData };
 ```
 
-**Authentication:**
-- JWT token stored in Redux auth state
-- Include in all API requests: `headers: { Authorization: 'Bearer ${token}' }`
-- Token passed from slice to service functions
+**Authentication (cookie-first):**
+- Browser sessions use an httpOnly cookie named `jwt` set by the server. Do NOT read or forward the cookie value from client-side JS.
+- Use a central `apiClient` configured with `withCredentials: true` so the browser sends the cookie automatically.
+- For non-browser clients (scripts, curl), send the cookie header: `Cookie: jwt=YOUR_TOKEN` or use an Authorization header as a fallback for API clients.
 
 ### Cross-Component Communication
 

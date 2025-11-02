@@ -52,7 +52,7 @@ Subtasks
   - Returns counts of completed/pending subtasks and completion percentage.
 
 Notes & implementation details
-- All routes are protected and require an `Authorization: Bearer <token>` header.
+All routes are protected. Browser clients should rely on the server-set httpOnly cookie `jwt` and use a central `apiClient` configured with `withCredentials: true`. For non-browser clients, send `Cookie: jwt=YOUR_TOKEN` or an Authorization header as a fallback.
 - The frontend `getTasks` helper passes `filterData` as axios `params` to construct query strings properly.
 - Validation is performed server-side; client should follow the validators in `backend/src/api/tasks/validators/tasks.validator.js` when constructing request payloads.
 

@@ -7,8 +7,7 @@ import adminService from '../adminService';
 // Get pending student applications
 export const getPendingApplications = createAsyncThunk('adminUsers/getPending', async (_, thunkAPI) => {
     try {
-        const token = thunkAPI.getState().auth.user.token;
-        return await adminService.getPendingApplications(token);
+        return await adminService.getPendingApplications();
     } catch (error) {
         const message = (error.response?.data?.message) || error.message || error.toString();
         return thunkAPI.rejectWithValue(message);
@@ -19,8 +18,7 @@ export const getPendingApplications = createAsyncThunk('adminUsers/getPending', 
 export const reviewApplication = createAsyncThunk('adminUsers/reviewApp', async (reviewData, thunkAPI) => {
     // reviewData = { userId, action: 'approve'/'reject' }
     try {
-        const token = thunkAPI.getState().auth.user.token;
-        return await adminService.reviewApplication(reviewData.userId, reviewData.action, token);
+        return await adminService.reviewApplication(reviewData.userId, reviewData.action);
     } catch (error) {
         const message = (error.response?.data?.message) || error.message || error.toString();
         return thunkAPI.rejectWithValue(message);
@@ -30,8 +28,7 @@ export const reviewApplication = createAsyncThunk('adminUsers/reviewApp', async 
 // Get users by their role
 export const getUsersByRole = createAsyncThunk('adminUsers/getByRole', async (role, thunkAPI) => {
     try {
-        const token = thunkAPI.getState().auth.user.token;
-        return await adminService.getUsersByRole(role, token);
+        return await adminService.getUsersByRole(role);
     } catch (error) {
         const message = (error.response?.data?.message) || error.message || error.toString();
         return thunkAPI.rejectWithValue(message);
@@ -42,8 +39,7 @@ export const getUsersByRole = createAsyncThunk('adminUsers/getByRole', async (ro
 export const promoteToFaculty = createAsyncThunk('adminUsers/promote', async (data, thunkAPI) => {
     // data = { userId, facultyData }
     try {
-        const token = thunkAPI.getState().auth.user.token;
-        return await adminService.promoteToFaculty(data.userId, data.facultyData, token);
+        return await adminService.promoteToFaculty(data.userId, data.facultyData);
     } catch (error) {
         const message = (error.response?.data?.message) || error.message || error.toString();
         return thunkAPI.rejectWithValue(message);
@@ -54,8 +50,7 @@ export const promoteToFaculty = createAsyncThunk('adminUsers/promote', async (da
 export const updateStudentDetails = createAsyncThunk('adminUsers/updateStudent', async (data, thunkAPI) => {
     // data = { studentId, studentData }
     try {
-        const token = thunkAPI.getState().auth.user.token;
-        return await adminService.updateStudentDetails(data.studentId, data.studentData, token);
+        return await adminService.updateStudentDetails(data.studentId, data.studentData);
     } catch (error) {
         const message = (error.response?.data?.message) || error.message || error.toString();
         return thunkAPI.rejectWithValue(message);
@@ -66,8 +61,7 @@ export const updateStudentDetails = createAsyncThunk('adminUsers/updateStudent',
 export const updateStudentEnrollment = createAsyncThunk('adminUsers/updateEnrollment', async (data, thunkAPI) => { 
     // data = { studentId, subjectIds }
     try {
-        const token = thunkAPI.getState().auth.user.token;
-        return await adminService.updateStudentEnrollment(data.studentId, data.subjectIds, token);
+        return await adminService.updateStudentEnrollment(data.studentId, data.subjectIds);
     } catch (error) {
         const message = (error.response?.data?.message) || error.message || error.toString();
         return thunkAPI.rejectWithValue(message);

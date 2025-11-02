@@ -43,7 +43,7 @@ Files in this directory
     - `getStudentReport(studentId, token)` — GET `/api/admin/reports/student/:studentId`
 
 Common conventions
-- All service functions accept a `token` parameter; they pass it in an `Authorization: Bearer <token>` header in the axios config.
+Service functions should use a central `apiClient` configured with `withCredentials: true` and must not manually read or forward the httpOnly `jwt` cookie. For non-browser clients, pass `Cookie: jwt=YOUR_TOKEN` or an Authorization header as a fallback.
 - `API_BASE_URL` is obtained from `import.meta.env.VITE_API_BASE_URL` and includes the `/api` prefix (e.g. `https://api.example.com/api`).
 - Service files define section-specific constants to build final endpoint URLs (examples below).
 

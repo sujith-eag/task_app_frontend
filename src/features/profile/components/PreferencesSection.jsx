@@ -9,6 +9,8 @@ import { updateProfile } from '../profileSlice.js';
 
 const PreferencesSection = ({ preferences }) => {
     const dispatch = useDispatch();
+        // Guard against undefined preferences when the user object is not yet loaded.
+        const prefs = preferences || {};
 
     // This single handler manages all preference toggles dynamically.
     const handlePreferenceChange = (e) => {
@@ -62,15 +64,15 @@ const PreferencesSection = ({ preferences }) => {
                         sx={{ 
                             p: 2.5,
                             transition: 'all 0.3s',
-                            borderColor: preferences[item.name] 
-                                ? `${item.color}.main` 
+                            borderColor: prefs[item.name]
+                                ? `${item.color}.main`
                                 : 'divider',
                             backgroundColor: (theme) => 
-                                preferences[item.name]
-                                    ? theme.palette.mode === 'dark'
-                                        ? `rgba(${item.color === 'primary' ? '144, 202, 249' : item.color === 'secondary' ? '206, 147, 216' : '102, 187, 106'}, 0.08)`
-                                        : `rgba(${item.color === 'primary' ? '25, 118, 210' : item.color === 'secondary' ? '156, 39, 176' : '46, 125, 50'}, 0.04)`
-                                    : 'transparent',
+                                    prefs[item.name]
+                                        ? theme.palette.mode === 'dark'
+                                            ? `rgba(${item.color === 'primary' ? '144, 202, 249' : item.color === 'secondary' ? '206, 147, 216' : '102, 187, 106'}, 0.08)`
+                                            : `rgba(${item.color === 'primary' ? '25, 118, 210' : item.color === 'secondary' ? '156, 39, 176' : '46, 125, 50'}, 0.04)`
+                                        : 'transparent',
                             '&:hover': {
                                 boxShadow: 2,
                                 borderColor: `${item.color}.main`,
@@ -94,7 +96,7 @@ const PreferencesSection = ({ preferences }) => {
                                     color: `${item.color}.main`,
                                     flexShrink: 0,
                                     transition: 'all 0.3s',
-                                    ...(preferences[item.name] && {
+                                    ...(prefs[item.name] && {
                                         transform: 'scale(1.05)',
                                         boxShadow: 2,
                                     }),
@@ -108,7 +110,7 @@ const PreferencesSection = ({ preferences }) => {
                                 <FormControlLabel
                                     control={
                                         <Switch 
-                                            checked={preferences[item.name]} 
+                                            checked={!!prefs[item.name]} 
                                             onChange={handlePreferenceChange} 
                                             name={item.name}
                                             color={item.color}
@@ -126,7 +128,7 @@ const PreferencesSection = ({ preferences }) => {
                                             variant="subtitle1" 
                                             sx={{ 
                                                 fontWeight: 600,
-                                                color: preferences[item.name] 
+                                                color: prefs[item.name] 
                                                     ? 'text.primary' 
                                                     : 'text.secondary',
                                             }}

@@ -526,17 +526,20 @@ navigate(returnUrl);
 // Could add explicit check here for expired tokens
 
 useEffect(() => {
-  const checkTokenExpiry = () => {
-    if (user?.token) {
-      const decoded = jwtDecode(user.token);
-      if (decoded.exp * 1000 < Date.now()) {
-        toast.error('Your session has expired. Please log in again.');
-        dispatch(logout());
-      }
+  // Do not rely on client-visible JWTs (httpOnly cookies are not readable).
+  // Periodically verify the session with the server or handle 401 responses centrally.
+  const interval = setInterval(async () => {
+    try {
+      // apiClient is a central axios instance configured with `withCredentials: true`.
+      await apiClient.get('/api/auth/me'); // server will validate cookie
+    } catch (err) {
+      toast.error('Your session has expired. Please log in again.');
+      dispatch(logout());
     }
-  };
-  checkTokenExpiry();
-}, [user, dispatch]);
+  }, 5 * 60 * 1000); // every 5 minutes
+
+  return () => clearInterval(interval);
+}, [dispatch]);
 ```
 
 ---
@@ -854,9 +857,12 @@ const theme = useMemo(() => {
 ⚠️ **1. Socket URL Configuration**
 ```javascript
 const socketURL = import.meta.env.VITE_SOCKET_URL;
+// Recommended: rely on server-side cookie auth for the socket handshake and
+// (optionally) pass a non-sensitive deviceId for session tracking.
 socketRef.current = io(socketURL, {
-  auth: { token: user.token },
+  auth: { deviceId }, // optional - do NOT send JWTs from the client
   transports: ['websocket'],
+  withCredentials: true, // ensure cookies are sent for cross-origin setups
 });
 
 // Comment suggests proxy in vite.config.js

@@ -57,7 +57,7 @@ const ConversationList = () => {
         const delayDebounceFn = setTimeout(async () => {
             setIsSearching(true);
             try {
-                const users = await profileService.getDiscoverableUsers(user.token);
+                const users = await profileService.getDiscoverableUsers();
                 setSearchResults(
                     users.filter((u) =>
                         u.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -70,7 +70,7 @@ const ConversationList = () => {
         }, 500);
         
         return () => clearTimeout(delayDebounceFn);
-    }, [searchTerm, user.token]);
+    }, [searchTerm, user?._id]);
 
     return (
         <Box 

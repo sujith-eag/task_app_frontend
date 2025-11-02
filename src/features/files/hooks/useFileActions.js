@@ -8,7 +8,7 @@ import fileService from '../fileService.js';
 export const useFileActions = () => {
     const dispatch = useDispatch();
 
-    const user = useSelector(state => state.auth.user); // user for token
+    // We no longer rely on a client-side token; apiClient sends cookies (withCredentials)
 
     const navigateToFolder = (folderId) => {
         dispatch(getFiles(folderId));
@@ -29,18 +29,19 @@ export const useFileActions = () => {
     };
 
 	// --- Main Handler for Download to dispatch different calls ---
-    const downloadFiles = (selectedIds, userToken) => {
+    const downloadFiles = (selectedIds) => {
         if (selectedIds.length === 1) {
-            fileService.getDownloadLink(selectedIds[0], userToken)
+            fileService.getDownloadLink(selectedIds[0])
                 .then(({ url }) => window.open(url, '_blank')) // Trigger download in a new tab
                 .catch(() => toast.error('Could not get download link.'));
         } else if (selectedIds.length > 1) {
-            fileService.bulkDownloadFiles(selectedIds, userToken);
+            // bulkDownloadFiles triggers a form submit for native download
+            fileService.bulkDownloadFiles(selectedIds);
         }
     };
 
     const downloadSingleFile = (fileId) => {
-        fileService.getDownloadLink(fileId, user.token)
+        fileService.getDownloadLink(fileId)
             .then(({ url }) => window.open(url, '_blank'))
             .catch(() => toast.error('Could not get download link.'));
     };

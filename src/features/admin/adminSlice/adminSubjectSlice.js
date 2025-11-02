@@ -7,8 +7,7 @@ import adminService from '../adminService';
 // Get all subjects
 export const getSubjects = createAsyncThunk('adminSubjects/getAll', async (params, thunkAPI) => {
     try {
-        const token = thunkAPI.getState().auth.user.token;
-        return await adminService.getSubjects(token, params);
+        return await adminService.getSubjects(params);
     } catch (error) {
         const message = (error.response?.data?.message) || error.message || error.toString();
         return thunkAPI.rejectWithValue(message);
@@ -18,8 +17,7 @@ export const getSubjects = createAsyncThunk('adminSubjects/getAll', async (param
 // Create a new subject
 export const createSubject = createAsyncThunk('adminSubjects/create', async (subjectData, thunkAPI) => {
     try {
-        const token = thunkAPI.getState().auth.user.token;
-        return await adminService.createSubject(subjectData, token);
+        return await adminService.createSubject(subjectData);
     } catch (error) {
         const message = (error.response?.data?.message) || error.message || error.toString();
         return thunkAPI.rejectWithValue(message);
@@ -29,8 +27,7 @@ export const createSubject = createAsyncThunk('adminSubjects/create', async (sub
 // Update an existing subject
 export const updateSubject = createAsyncThunk('adminSubjects/update', async (subjectData, thunkAPI) => {
     try {
-        const token = thunkAPI.getState().auth.user.token;
-        return await adminService.updateSubject(subjectData, token);
+        return await adminService.updateSubject(subjectData);
     } catch (error) {
         const message = (error.response?.data?.message) || error.message || error.toString();
         return thunkAPI.rejectWithValue(message);
@@ -40,8 +37,7 @@ export const updateSubject = createAsyncThunk('adminSubjects/update', async (sub
 // Delete a subject
 export const deleteSubject = createAsyncThunk('adminSubjects/delete', async (subjectId, thunkAPI) => {
     try {
-        const token = thunkAPI.getState().auth.user.token;
-        return await adminService.deleteSubject(subjectId, token);
+        return await adminService.deleteSubject(subjectId);
         // await adminService.deleteSubject(subjectId, token);
         // return subjectId; // Return the ID on success
     } catch (error) {

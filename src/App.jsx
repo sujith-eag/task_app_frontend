@@ -1,5 +1,8 @@
 // App.jsx
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { fetchMe } from './features/auth/authSlice';
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import { Box } from '@mui/material';
@@ -36,6 +39,12 @@ import StudentReportPage from "./features/admin/pages/StudentReportPage.jsx";
 import TimetablePage from "./features/timetable/pages/TimetablePage.jsx";
 
 function App() {
+  const dispatch = useDispatch();
+
+  // On app mount try to fetch current user (reads cookie)
+  useEffect(() => {
+    dispatch(fetchMe());
+  }, [dispatch]);
   return (
     <>
       <Router>

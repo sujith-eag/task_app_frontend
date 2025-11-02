@@ -8,37 +8,37 @@ Base URL
 
 Exported functions and mapped backend endpoints
 
-- getCurrentUser(token)
+- getCurrentUser()
   - GET /api/users/me
-  - Returns the authenticated user's full profile (used on profile page and account settings).
+  - Returns the authenticated user's full profile (used on profile page and account settings). Uses the browser's httpOnly session cookie.
 
-- updateProfile(profileData, token)
+- updateProfile(profileData)
   - PUT /api/users/me
   - Body: profile fields to update (name, bio, preferences, etc.)
 
-- changePassword(passwordData, token)
+- changePassword(passwordData)
   - PUT /api/users/password
   - Body: { currentPassword, newPassword, confirmPassword }
 
-- updateAvatar(avatarFormData, token)
+- updateAvatar(avatarFormData)
   - PUT /api/users/me/avatar
   - Multipart FormData with the image file. The backend uses Multer and enforces file size limits.
 
-- getDiscoverableUsers(token)
+- getDiscoverableUsers()
   - GET /api/users/discoverable
   - Only available to verified users; returns simplified user objects for messaging and sharing.
 
-- applyAsStudent(applicationData, token)
+- applyAsStudent(applicationData)
   - POST /api/users/apply-student
   - Body: { usn, batch, section }
   - The backend enforces policies (e.g. only certain roles can apply).
 
-- getStorageUsage(token)
+- getStorageUsage()
   - GET /api/users/me/storage
   - Returns storage usage and quota details for the authenticated user.
 
 Notes & Implementation details
-- All protected endpoints require `Authorization: Bearer <token>` in headers. The service functions set this header.
+-- Browser clients should NOT send JWTs from Redux. Instead use a central `apiClient` configured with `withCredentials: true` so the httpOnly `jwt` cookie is sent automatically. Server will authenticate using the cookie.
 - Avatar upload route uses Multer on the backend; client should send a FormData object with the file under a standard key (see component code). The avatar upload route has an error handler for large files — keep uploads < 5MB.
 - If you add tests for this service, remember the frontend is ESM (Vite). Jest will need either the `--experimental-vm-modules` Node flag or a transform (Babel) to import ESM modules.
 

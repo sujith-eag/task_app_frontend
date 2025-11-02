@@ -1,7 +1,7 @@
-import axios from 'axios';
+import apiClient from '../../app/apiClient.js';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const API_URL = `${API_BASE_URL}/college/students/`;
+// Relative endpoints; apiClient.baseURL supplies the API root (e.g. '/api' or full URL)
+const API_URL = '/college/students/';
 
 
 /**
@@ -11,9 +11,8 @@ const API_URL = `${API_BASE_URL}/college/students/`;
  * @param {string} token - The user's JWT for authentication.
  * @returns {Promise<object>} A promise that resolves to a success confirmation message.
  */
-const markAttendance = async (attendanceData, token) => {
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.post(API_URL + 'attendance/mark', attendanceData, config);
+const markAttendance = async (attendanceData) => {
+    const response = await apiClient.post(API_URL + 'attendance/mark', attendanceData);
     return response.data;
 };
 
@@ -25,9 +24,8 @@ const markAttendance = async (attendanceData, token) => {
  * @param {string} token - The user's JWT for authentication.
  * @returns {Promise<object>} A promise that resolves to a success confirmation message.
  */
-const submitFeedback = async (feedbackData, token) => {
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.post(API_URL + 'feedback', feedbackData, config);
+const submitFeedback = async (feedbackData) => {
+    const response = await apiClient.post(API_URL + 'feedback', feedbackData);
     return response.data;
 };
 
@@ -38,9 +36,8 @@ const submitFeedback = async (feedbackData, token) => {
  * @param {string} token - The user's JWT for authentication.
  * @returns {Promise<Array<object>>} A promise that resolves to an array of statistics objects.
  */
-const getStudentDashboardStats = async (token) => {
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.get(API_URL + 'dashboard-stats', config);
+const getStudentDashboardStats = async () => {
+    const response = await apiClient.get(API_URL + 'dashboard-stats');
     return response.data;
 };
 
@@ -51,9 +48,8 @@ const getStudentDashboardStats = async (token) => {
  * @param {string} token - The user's JWT for authentication.
  * @returns {Promise<Array<object>>} A promise that resolves to an array of class session objects.
  */
-const getSessionsForFeedback = async (token) => {
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.get(API_URL + 'sessions-for-feedback', config);
+const getSessionsForFeedback = async () => {
+    const response = await apiClient.get(API_URL + 'sessions-for-feedback');
     return response.data;
 };
 
@@ -64,9 +60,8 @@ const getSessionsForFeedback = async (token) => {
  * @param {string} token - The user's JWT for authentication.
  * @returns  Subject name, Subject code and omplete studentdetail
  */
-const getStudentProfile = async (token) => {
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.get(API_URL + 'me/profile', config);
+const getStudentProfile = async () => {
+    const response = await apiClient.get(API_URL + 'me/profile');
     return response.data;
 };
 

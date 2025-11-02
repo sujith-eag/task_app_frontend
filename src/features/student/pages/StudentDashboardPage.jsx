@@ -12,6 +12,7 @@ import StudentApplication from '../components/StudentApplication.jsx';
 import PastSessionsList from '../components/PastSessionsList.jsx';
 
 import { resetProfileStatus } from '../../profile/profileSlice.js';
+import { hasRole } from '../../../utils/roles.js';
 
 const StudentDashboardPage = () => {
 
@@ -41,28 +42,9 @@ const StudentDashboardPage = () => {
     
     
     const renderContent = () => {
-        // Case 1: User is an approved student
-        // if (user && user.role === 'student') {
-        //     return (
-        //         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3 }}>
-        //             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-        //                 <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
-        //                      <AttendanceEntry />
-        //                 </Paper>
-        //                 <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
-        //                     <MyAttendanceStats />
-        //                 </Paper>
-        //             </Box>
-        //             <Box>
-        //                  <PastSessionsList />
-        //             </Box>
-        //         </Box>
-        //     );
-        // }
-
         
-        // Case 1: User is an approved student
-        if (user?.role === 'student') {
+    // Case 1: User is an approved student
+    if (hasRole(user, 'student')) {
             return (
                 // Main container stack. Behaves as a row on medium screens and up, a column on small screens.
                 <Stack

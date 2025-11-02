@@ -7,8 +7,7 @@ import adminService from '../adminService';
 // Get attendance statistics report
 export const getAttendanceStats = createAsyncThunk('adminReporting/getAttendance', async (filters, thunkAPI) => {
     try {
-        const token = thunkAPI.getState().auth.user.token;
-        return await adminService.getAttendanceStats(filters, token);
+        return await adminService.getAttendanceStats(filters);
     } catch (error) {
         const message = (error.response?.data?.message) || error.message || error.toString();
         return thunkAPI.rejectWithValue(message);
@@ -18,8 +17,7 @@ export const getAttendanceStats = createAsyncThunk('adminReporting/getAttendance
 // Get feedback summary report
 export const getFeedbackSummary = createAsyncThunk('adminReporting/getFeedback', async (filters, thunkAPI) => {
     try {
-        const token = thunkAPI.getState().auth.user.token;
-        return await adminService.getFeedbackSummary(filters, token);
+        return await adminService.getFeedbackSummary(filters);
     } catch (error) {
         const message = (error.response?.data?.message) || error.message || error.toString();
         return thunkAPI.rejectWithValue(message);
@@ -29,8 +27,7 @@ export const getFeedbackSummary = createAsyncThunk('adminReporting/getFeedback',
 
 export const getFeedbackReport = createAsyncThunk('adminReporting/getDetailedReport', async (classSessionId, thunkAPI) => {
     try {
-        const token = thunkAPI.getState().auth.user.token;
-        return await adminService.getFeedbackReport(classSessionId, token);
+        return await adminService.getFeedbackReport(classSessionId);
     } catch (error) {
         const message = (error.response?.data?.message) || error.message || error.toString();
         return thunkAPI.rejectWithValue(message);
@@ -40,8 +37,7 @@ export const getFeedbackReport = createAsyncThunk('adminReporting/getDetailedRep
 
 export const getTeacherReport = createAsyncThunk('adminReporting/getTeacherReport', async (teacherId, thunkAPI) => {
     try {
-        const token = thunkAPI.getState().auth.user.token;
-        return await adminService.getTeacherReport(teacherId, token);
+        return await adminService.getTeacherReport(teacherId);
     } catch (error) {
         const message = (error.response?.data?.message) || error.message || error.toString();
         return thunkAPI.rejectWithValue(message);
@@ -51,8 +47,7 @@ export const getTeacherReport = createAsyncThunk('adminReporting/getTeacherRepor
 
 export const getStudentReport = createAsyncThunk('adminReporting/getStudentReport', async (studentId, thunkAPI) => {
     try {
-        const token = thunkAPI.getState().auth.user.token;
-        return await adminService.getStudentReport(studentId, token);
+        return await adminService.getStudentReport(studentId);
     } catch (error) {
         const message = (error.response?.data?.message) || error.message || error.toString();
         return thunkAPI.rejectWithValue(message);

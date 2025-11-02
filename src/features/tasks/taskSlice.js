@@ -23,8 +23,7 @@ export const createTask = createAsyncThunk(
   'tasks/create',
   async (taskData, thunkAPI) => {
     try {
-      const token = thunkAPI.getState().auth.user.token
-      return await taskService.createTask(taskData, token)
+      return await taskService.createTask(taskData)
     } catch (error) {
       const message =(
 	      error.response?.data?.message || error.message || error.toString() )
@@ -37,8 +36,7 @@ export const getTasks = createAsyncThunk(
   'tasks/getAll',
   async (filterData, thunkAPI) => { // Now accepts filterData
     try {
-      const token = thunkAPI.getState().auth.user.token
-      return await taskService.getTasks(filterData, token)
+      return await taskService.getTasks(filterData)
     } catch (error) {
       const message =
         (error.response?.data?.message || error.message || error.toString())
@@ -51,8 +49,7 @@ export const updateTask = createAsyncThunk(
   'tasks/update',
   async ({ taskId, taskData }, thunkAPI) => { // Accepts taskId and taskData
     try {
-      const token = thunkAPI.getState().auth.user.token
-      return await taskService.updateTask(taskId, taskData, token)
+      return await taskService.updateTask(taskId, taskData)
     } catch (error) {
       const message =
         (error.response?.data?.message || error.message || error.toString())
@@ -65,8 +62,7 @@ export const deleteTask = createAsyncThunk(
   'tasks/delete',
   async (id, thunkAPI) => {
     try {
-      const token = thunkAPI.getState().auth.user.token
-      return await taskService.deleteTask(id, token)
+      return await taskService.deleteTask(id)
     } catch (error) {
       const message =
         (error.response?.data?.message || error.message || error.toString())
@@ -81,8 +77,7 @@ export const addSubTask = createAsyncThunk(
   'tasks/addSubTask',
   async ({ taskId, subTaskData }, thunkAPI) => {
     try {
-      const token = thunkAPI.getState().auth.user.token
-      return await taskService.addSubTask(taskId, subTaskData, token)
+      return await taskService.addSubTask(taskId, subTaskData)
     } catch (error) {
       const message =
         (error.response?.data?.message || error.message || error.toString())
@@ -95,8 +90,7 @@ export const updateSubTask = createAsyncThunk(
   'tasks/updateSubTask',
   async ({ taskId, subTaskId, subTaskData }, thunkAPI) => {
     try {
-      const token = thunkAPI.getState().auth.user.token
-      return await taskService.updateSubTask(taskId, subTaskId, subTaskData, token)
+      return await taskService.updateSubTask(taskId, subTaskId, subTaskData)
     } catch (error) {
       const message =
         (error.response?.data?.message || error.message || error.toString())
@@ -109,8 +103,7 @@ export const deleteSubTask = createAsyncThunk(
   'tasks/deleteSubTask',
   async ({ taskId, subTaskId }, thunkAPI) => {
     try {
-      const token = thunkAPI.getState().auth.user.token
-      return await taskService.deleteSubTask(taskId, subTaskId, token)
+      return await taskService.deleteSubTask(taskId, subTaskId)
     } catch (error) {
       const message =
         (error.response?.data?.message || error.message || error.toString())
@@ -233,7 +226,20 @@ export const taskSlice = createSlice({
       .addCase(getTasks.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.tasks = action.payload;
+        // If payload is undefined (e.g., network/cache returned no body), do not
+        // overwrite existing tasks — keep previous list. Otherwise normalize both
+        // array and wrapped ({ tasks: [...] }) shapes.
+        if (typeof action.payload === 'undefined') {
+          return;
+        }
+        if (Array.isArray(action.payload)) {
+          state.tasks = action.payload;
+        } else if (action.payload && Array.isArray(action.payload.tasks)) {
+          state.tasks = action.payload.tasks;
+        } else {
+          // Fallback to an empty array to avoid runtime errors in components
+          state.tasks = [];
+        }
       })
       .addCase(getTasks.rejected, (state, action) => {
         state.isLoading = false;

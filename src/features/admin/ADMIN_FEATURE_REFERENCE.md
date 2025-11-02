@@ -261,12 +261,14 @@ const API_URL = `${API_BASE_URL}/admin/`;
  * Service function with JSDoc documentation
  * @route HTTP_METHOD /api/path
  * @param {type} paramName - Description
- * @param {string} token - JWT token
- * @returns {Promise<type>} Description
+ * Notes:
+ * - Browser clients should NOT forward httpOnly JWTs from Redux.
+ * - Use a central axios instance (for example `apiClient`) configured with `withCredentials: true` so cookies are sent automatically.
+ * - For non-browser (server-to-server) clients you may continue to use Authorization headers.
  */
-const serviceFunction = async (param, token) => {
-  const config = { headers: { Authorization: `Bearer ${token}` } };
-  const response = await axios.get(`${API_URL}endpoint`, config);
+const serviceFunction = async (param) => {
+  // apiClient is an axios instance configured with `withCredentials: true`
+  const response = await apiClient.get(`${API_URL}endpoint`, { params: { param } });
   return response.data;
 };
 
@@ -289,10 +291,11 @@ export const serviceName = { serviceFunction, ... };
 **Example Usage:**
 ```javascript
 // In Redux thunk
-const data = await userService.getPendingApplications(token);
+// With cookie-based sessions, the thunk does not need to forward tokens. Use the central service which uses `apiClient` (configured with `withCredentials: true`).
+const data = await userService.getPendingApplications();
 // Returns: Array<{ _id, name, email, studentDetails, ... }>
 
-await userService.reviewApplication(userId, 'approve', token);
+await userService.reviewApplication(userId, 'approve');
 // Returns: { success: true, message: 'Application approved' }
 ```
 
@@ -602,13 +605,13 @@ handleReview(userId, 'approve')
 dispatch(reviewApplication({ userId, action: 'approve' }))
          ↓
 reviewApplication thunk
-  - Get token from state.auth.user.token
-  - Call adminService.reviewApplication(userId, 'approve', token)
+  - Use the central `apiClient` (cookies sent automatically)
+  - Call adminService.reviewApplication(userId, 'approve')
          ↓
 userService.reviewApplication
   - POST /api/admin/applications/:userId/review
   - Body: { action: 'approve' }
-  - Headers: { Authorization: 'Bearer <token>' }
+  - Cookies: httpOnly `jwt` cookie is used for auth (no Authorization header needed from browser)
          ↓
 Backend: admin.routes.js
   - protect middleware: Verify JWT
@@ -638,14 +641,16 @@ The admin feature uses **JWT-based authentication** with role-based access contr
 
 Tokens are stored in Redux auth slice:
 ```javascript
-// auth state structure
+// auth state structure (cookie-first)
+// Keep minimal user/profile info in the auth slice (id, name, role, maybe deviceId).
+// Do NOT store the httpOnly JWT cookie value in Redux — it is intentionally inaccessible to JS.
 {
   user: {
     _id: "60d5f484...",
     name: "Admin User",
     email: "admin@college.edu",
     role: "admin",  // or "hod"
-    token: "eyJhbGciOiJIUzI1NiIs..."
+    // deviceId: "optional-client-device-id" // safe to store for per-device tracking
   },
   isLoading: false,
   isSuccess: false,
@@ -654,16 +659,17 @@ Tokens are stored in Redux auth slice:
 }
 ```
 
-#### Token Extraction Pattern
+#### Token / Session Pattern
 
-All thunks extract token from Redux state:
+With cookie-first sessions, thunks should NOT read or forward JWT values from Redux. Keep the auth slice for minimal user/profile info and let service functions rely on the central `apiClient` (configured with `withCredentials: true`).
+
 ```javascript
 export const someAction = createAsyncThunk(
   'slice/action',
   async (data, thunkAPI) => {
     try {
-      const token = thunkAPI.getState().auth.user.token;
-      return await service.function(data, token);
+      // service.function uses apiClient which sends cookies automatically
+      return await service.function(data);
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
     }
@@ -1281,8 +1287,8 @@ export const someAction = createAsyncThunk(
   'sliceName/actionName',
   async (params, thunkAPI) => {
     try {
-      const token = thunkAPI.getState().auth.user.token;
-      return await service.apiCall(params, token);
+      // With cookie-based sessions use the service which relies on `apiClient` and browser cookies.
+      return await service.apiCall(params);
     } catch (error) {
       const message = error.response?.data?.message || 
                       error.message || 
@@ -1659,9 +1665,9 @@ Before deploying admin feature changes:
 ```javascript
 // 1. Add to service module
 export const newService = {
-  newFunction: async (param, token) => {
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.method(API_URL + 'endpoint', config);
+  newFunction: async (param) => {
+    // Use apiClient (withCredentials) so browser cookies are sent; no token param required in browser clients.
+    const response = await apiClient.method(API_URL + 'endpoint', { data: param });
     return response.data;
   }
 };
@@ -1671,8 +1677,8 @@ export const newAction = createAsyncThunk(
   'slice/action',
   async (param, thunkAPI) => {
     try {
-      const token = thunkAPI.getState().auth.user.token;
-      return await adminService.newFunction(param, token);
+      // With cookie-based sessions we don't forward tokens from Redux.
+      return await adminService.newFunction(param);
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
     }

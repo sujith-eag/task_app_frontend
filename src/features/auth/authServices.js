@@ -1,37 +1,9 @@
-import axios from 'axios'
+import apiClient from '../../app/apiClient.js';
+import { getDeviceId } from '../../utils/deviceId.js';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const AUTH_API_URL = `${API_BASE_URL}/auth/`;
-
-// --- Axios Interceptor for Token Expiration Handling ---
-axios.interceptors.response.use(
-    (response) => response,
-    (error) => {
-        // Handle 401 Unauthorized (Token expired or invalid)
-        if (error.response?.status === 401) {
-            const currentPath = window.location.pathname;
-            // Don't redirect if already on auth pages
-            const authPages = ['/login', '/register', '/forgotpassword', '/resetpassword'];
-            const isAuthPage = authPages.some(page => currentPath.startsWith(page));
-            
-            if (!isAuthPage) {
-                // Clear user data
-                localStorage.removeItem('user');
-                // Redirect to login
-                window.location.href = '/login';
-                // Show error message (will display after redirect)
-                setTimeout(() => {
-                    // Using setTimeout to ensure it shows after redirect
-                    const event = new CustomEvent('auth:sessionExpired', { 
-                        detail: { message: 'Your session has expired. Please log in again.' } 
-                    });
-                    window.dispatchEvent(event);
-                }, 100);
-            }
-        }
-        return Promise.reject(error);
-    }
-);
+// apiClient.baseURL is expected to point to the API root (for example '/api' or 'http://localhost:5000')
+// Keep this path relative so baseURL + AUTH_API_URL => '/api/auth' when baseURL='/api'
+const AUTH_API_URL = '/auth/';
 
 // --- Authentication & User Management ---
 
@@ -42,7 +14,7 @@ axios.interceptors.response.use(
  * @returns {object} A success message.
  */
 const register = async (userData) => {
-    const response = await axios.post(AUTH_API_URL + 'register', userData)
+    const response = await apiClient.post(AUTH_API_URL + 'register', userData)
     return response.data
 }
 
@@ -53,10 +25,10 @@ const register = async (userData) => {
  * @returns {object} The user object and JWT token.
  */
 const login = async (userData) => {
-    const response = await axios.post(AUTH_API_URL + 'login', userData)
-    if (response.data) {
-        localStorage.setItem('user', JSON.stringify(response.data))
-    }
+    const deviceId = getDeviceId();
+    const response = await apiClient.post(AUTH_API_URL + 'login', userData, { headers: { 'x-device-id': deviceId } });
+    // Backend now sets httpOnly cookie; response.data contains user profile
+    // Do not persist user profile in localStorage anymore; app will rely on fetchMe
     return response.data
 }
 
@@ -67,7 +39,7 @@ const login = async (userData) => {
  * @returns {object} A success message.
  */
 const verifyEmail = async (token) => {
-    const response = await axios.get(AUTH_API_URL + 'verifyemail/' + token);
+    const response = await apiClient.get(AUTH_API_URL + 'verifyemail/' + token);
     return response.data;
 };
 
@@ -75,8 +47,12 @@ const verifyEmail = async (token) => {
  * Logs the user out by clearing their data from local storage.
  * This is a client-side only function.
  */
-const logout = () => {
-    localStorage.removeItem('user')
+const logout = async () => {
+        try {
+            await apiClient.post(AUTH_API_URL + 'logout');
+        } catch (e) {
+            // ignore network errors on logout
+        }
 }
 
 // --- Password Management ---
@@ -88,7 +64,7 @@ const logout = () => {
  * @returns {object} A success message confirming the email has been sent.
  */
 const forgotPassword = async (userData) => {
-    const response = await axios.post(AUTH_API_URL + 'forgotpassword', userData)
+    const response = await apiClient.post(AUTH_API_URL + 'forgotpassword', userData)
     return response.data
 }
 
@@ -99,7 +75,7 @@ const forgotPassword = async (userData) => {
  * @returns {object} A success message.
  */
 const resetPassword = async (resetData) => {
-    const response = await axios.put(
+    const response = await apiClient.put(
         AUTH_API_URL + 'resetpassword/' + resetData.token,
         {
             password: resetData.password,
@@ -108,6 +84,12 @@ const resetPassword = async (resetData) => {
     );
     return response.data;
 };
+
+// Get currently authenticated user (reads server cookie)
+const getMe = async () => {
+    const response = await apiClient.get(AUTH_API_URL + 'me');
+    return response.data;
+}
 
 // --- Service Export ---
 
@@ -118,6 +100,7 @@ const authService = {
     forgotPassword,
     resetPassword,
     verifyEmail,
+    getMe,
 }
 
 export default authService

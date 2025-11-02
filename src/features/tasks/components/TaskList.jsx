@@ -23,14 +23,14 @@ const TaskList = () => {
 const [initialLoadDone, setInitialLoadDone] = useState(false);
 
 useEffect(() => {
-  if (!initialLoadDone) {
-    const filterData = { sortBy };
-    if (filters.status) filterData.status = filters.status;
-    if (filters.priority) filterData.priority = filters.priority;
+  // Always fetch tasks on mount and when filters/sort change. Use
+  // initialLoadDone only to track that the first request completed.
+  const filterData = { sortBy };
+  if (filters.status) filterData.status = filters.status;
+  if (filters.priority) filterData.priority = filters.priority;
 
-    dispatch(getTasks(filterData)).finally(() => setInitialLoadDone(true));
-  }
-}, [dispatch, initialLoadDone, filters, sortBy]);
+  dispatch(getTasks(filterData)).finally(() => setInitialLoadDone(true));
+}, [dispatch, filters.status, filters.priority, sortBy]);
 
   // Initial fetch (only if no tasks yet)
   // useEffect(() => {

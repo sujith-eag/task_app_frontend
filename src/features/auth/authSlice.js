@@ -3,8 +3,22 @@ import authService from './authServices.js'
 
 import { updateProfile, updateAvatar, applyAsStudent } from '../profile/profileSlice.js'; // actions from profileSlice
 
-// Get user from localStorage
-const user = JSON.parse(localStorage.getItem('user'))
+// Start without a cached user; rely on server-side cookie via fetchMe
+const user = null;
+
+// Fetch current user from backend (reads httpOnly cookie)
+export const fetchMe = createAsyncThunk('auth/fetchMe', async (_, thunkAPI) => {
+  try {
+    const user = await authService.getMe();
+    return user.user || user; // authService.getMe returns { user }
+  } catch (err) {
+    // If backend returns 401 for /auth/me, treat it as "not authenticated" (resolve with null).
+    if (err?.response?.status === 401) {
+      return null
+    }
+    return thunkAPI.rejectWithValue(err.response?.data?.message || err.message || err.toString());
+  }
+});
 
 const initialState = {
   user: user ? user : null,
@@ -138,6 +152,12 @@ export const authSlice = createSlice({
         state.isSuccess = true
         state.user = action.payload
       })
+      // fetchMe
+      .addCase(fetchMe.pending, (state) => { state.isLoading = true })
+      .addCase(fetchMe.fulfilled, (state, action) => {
+        state.isLoading = false; state.user = action.payload;
+      })
+      .addCase(fetchMe.rejected, (state) => { state.isLoading = false; state.user = null; })
       .addCase(login.rejected, (state, action) => {
         state.isLoading = false
         state.isError = true
@@ -184,10 +204,8 @@ export const authSlice = createSlice({
       .addCase(updateProfile.fulfilled, (state, action) => {
           // The backend returns the updated user object
           if (state.user) {
-              
             const updatedUser = { ...state.user, ...action.payload };
             state.user = updatedUser;
-            localStorage.setItem('user', JSON.stringify(updatedUser));
         }
       })
       .addCase(updateAvatar.fulfilled, (state, action) => {
@@ -195,7 +213,6 @@ export const authSlice = createSlice({
             if (state.user) {
               const updatedUser = { ...state.user, avatar: action.payload.avatar };
               state.user = updatedUser;
-              localStorage.setItem('user', JSON.stringify(updatedUser));
           }
       })
 
@@ -217,7 +234,7 @@ export const authSlice = createSlice({
       .addCase(applyAsStudent.fulfilled, (state, action) => {
           // The action.payload is the full user object returned by the API
           state.user = action.payload;
-          localStorage.setItem('user', JSON.stringify(action.payload));
+      // Do not persist user to localStorage; rely on server-side httpOnly cookie and fetchMe
       })      
       
   ;},

@@ -10,6 +10,7 @@ import { useTheme } from '@mui/material/styles';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { getUserRoles } from '../../utils/roles.js';
 
 import {
     AppBar, Toolbar, Typography, Button, Box, Stack, IconButton, Tooltip,
@@ -39,6 +40,7 @@ const Header = () => {
     const dispatch = useDispatch();
     const location = useLocation();
     const { user } = useSelector((state) => state.auth);
+    const userRoles = getUserRoles(user);
 
     const [anchorEl, setAnchorEl] = useState(null);
     const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
@@ -362,7 +364,7 @@ const Header = () => {
                         )}
 
                         {/* Dashboards Section - Role-based */}
-                        {(user?.role === 'admin' || user?.role === 'teacher' || user?.role === 'student') && (
+                        {(userRoles.includes('admin') || userRoles.includes('teacher') || userRoles.includes('student')) && (
                             <>
                                 <Divider sx={{ my: 1 }} />
                                 <Box sx={{ px: 2, py: 0.5 }}>
@@ -380,7 +382,7 @@ const Header = () => {
                                 </Box>
 
                                 {/* --- Admin Dashboard Link --- */}
-                                {user?.role === 'admin' && location.pathname !== '/admin/dashboard' && (
+                                {userRoles.includes('admin') && location.pathname !== '/admin/dashboard' && (
                                     <MenuItem 
                                         component={Link} 
                                         to='/admin/dashboard' 
@@ -392,7 +394,7 @@ const Header = () => {
                                     </MenuItem>
                                 )}
                                 {/* --- Teacher Dashboard --- */}
-                                {user.role === 'teacher' && location.pathname !== '/teacher/dashboard' && (
+                                {userRoles.includes('teacher') && location.pathname !== '/teacher/dashboard' && (
                                     <MenuItem 
                                         component={Link} 
                                         to='/teacher/dashboard' 
@@ -404,7 +406,7 @@ const Header = () => {
                                     </MenuItem>
                                 )}
                                 {/* --- Student Dashboard --- */}
-                                {user.role === 'student' && location.pathname !== '/student/dashboard' && (
+                                {userRoles.includes('student') && location.pathname !== '/student/dashboard' && (
                                     <MenuItem 
                                         component={Link} 
                                         to='/student/dashboard' 

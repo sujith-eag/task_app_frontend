@@ -1,9 +1,7 @@
-import axios from 'axios';
+import apiClient from '../../../app/apiClient.js';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const API_URL = `${API_BASE_URL}/admin/`;
-const MANAGEMENT_API_URL = `${API_BASE_URL}/admin/management`;
-const TEACHER_ASSIGNMENTS_API_URL = `${API_BASE_URL}/admin/teacher-assignments`;
+const MANAGEMENT_API_URL = '/admin/management';
+const TEACHER_ASSIGNMENTS_API_URL = '/admin/teacher-assignments';
 
 
 // --- Teacher & Assignment Management ---
@@ -14,9 +12,8 @@ const TEACHER_ASSIGNMENTS_API_URL = `${API_BASE_URL}/admin/teacher-assignments`;
  * @param {string} token - The JWT for authentication.
  * @returns {Promise<Array<object>>} An array of teacher user objects.
  */
-const getAllTeachers = async (token) => {
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.get(`${MANAGEMENT_API_URL}/teachers`, config);
+const getAllTeachers = async () => {
+    const response = await apiClient.get(`${MANAGEMENT_API_URL}/teachers`);
     return response.data;
 };
 
@@ -28,10 +25,9 @@ const getAllTeachers = async (token) => {
  * @param {string} token - The JWT for authentication.
  * @returns {Promise<object>} The updated teacher object.
  */
-const updateTeacherAssignments = async (data, token) => {
+const updateTeacherAssignments = async (data) => {
     const { teacherId, assignmentData } = data;
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.post(`${TEACHER_ASSIGNMENTS_API_URL}/${teacherId}`, assignmentData, config);
+    const response = await apiClient.post(`${TEACHER_ASSIGNMENTS_API_URL}/${teacherId}`, assignmentData);
     return response.data;
 };
 
@@ -43,10 +39,9 @@ const updateTeacherAssignments = async (data, token) => {
  * @param {string} token - The JWT for authentication.
  * @returns {Promise<object>} A success confirmation message.
  */
-const deleteTeacherAssignment = async (data, token) => {
+const deleteTeacherAssignment = async (data) => {
     const { teacherId, assignmentId } = data;
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.delete(`${TEACHER_ASSIGNMENTS_API_URL}/${teacherId}/${assignmentId}`, config);
+    const response = await apiClient.delete(`${TEACHER_ASSIGNMENTS_API_URL}/${teacherId}/${assignmentId}`);
     return response.data;
 };
 

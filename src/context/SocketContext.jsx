@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useRef, useState } from 'r
 import { useSelector, useDispatch } from 'react-redux';
 import { io } from 'socket.io-client';
 import { addMessage, setOnlineUsers, updateMessagesToRead } from '../features/chat/chatSlice.js';
+import { getDeviceId } from '../utils/deviceId.js';
 import { toast } from 'react-toastify';
 
 
@@ -22,9 +23,12 @@ export const SocketContextProvider = ({ children }) => {
         if (user) {
             // --- Only create the socket once --- 
             const socketURL = import.meta.env.VITE_SOCKET_URL;
-            socketRef.current = io( socketURL, {
-                auth: { token: user.token },
+            // Use deviceId in the handshake and rely on httpOnly cookie for auth.
+            const deviceId = getDeviceId();
+            socketRef.current = io(socketURL, {
+                auth: { deviceId },
                 transports: ['websocket'],
+                withCredentials: true, // ensure cookies are sent on cross-origin handshake
             });
 // No URL is needed here. It will default to the current host,
 // and the '/socket.io' proxy rule in vite.config.js will handle it.            
@@ -120,7 +124,7 @@ export const SocketContextProvider = ({ children }) => {
             setIsConnected(false);
             setIsReconnecting(false);
         } // Dependency array only react to the token.
-    }, [user?.token, dispatch]);
+    }, [user, dispatch]);
 
     // Manual reconnect function
     const reconnect = () => {

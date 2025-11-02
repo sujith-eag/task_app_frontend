@@ -1,7 +1,7 @@
-import axios from 'axios';
+import apiClient from '../../app/apiClient.js';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const API_URL = `${API_BASE_URL}/users/`;
+// Keep paths relative to apiClient.baseURL (e.g. '/api')
+const API_URL = '/users/';
 
 /**
  * Submits an application for a user to gain student status.
@@ -10,13 +10,8 @@ const API_URL = `${API_BASE_URL}/users/`;
  * @param {string} token - The user's JWT for authentication.
  * @returns {Promise<object>} A promise that resolves to a success confirmation object.
  */
-const applyAsStudent = async (applicationData, token) => {
-    const config = {
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
-    };
-    const response = await axios.post(API_URL + 'apply-student', applicationData, config);
+const applyAsStudent = async (applicationData) => {
+    const response = await apiClient.post(API_URL + 'apply-student', applicationData);
     return response.data;
 };
 
@@ -27,13 +22,8 @@ const applyAsStudent = async (applicationData, token) => {
  * @param {string} token - The user's JWT for authentication.
  * @returns {Promise<object>} A promise that resolves to the updated user object.
  */
-const updateProfile = async (profileData, token) => {
-    const config = {
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
-    };
-    const response = await axios.put(API_URL + 'me', profileData, config);
+const updateProfile = async (profileData) => {
+    const response = await apiClient.put(API_URL + 'me', profileData);
     return response.data;
 };
 
@@ -44,13 +34,8 @@ const updateProfile = async (profileData, token) => {
  * @param {string} token - The user's JWT for authentication.
  * @returns {Promise<object>} A promise that resolves to a success confirmation message.
  */
-const changePassword = async (passwordData, token) => {
-    const config = {
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
-    };
-    const response = await axios.put(API_URL + 'password', passwordData, config);
+const changePassword = async (passwordData) => {
+    const response = await apiClient.put(API_URL + 'password', passwordData);
     return response.data;
 };
 
@@ -61,15 +46,8 @@ const changePassword = async (passwordData, token) => {
  * @param {string} token - The user's JWT for authentication.
  * @returns {Promise<object>} A promise that resolves to an object with the new avatar URL.
  */
-const updateAvatar = async (avatarFormData, token) => {
-    const config = {
-        headers: {
-            Authorization: `Bearer ${token}`,
-            // When sending FormData, Axios automatically sets the
-            // 'Content-Type': 'multipart/form-data' header.
-        },
-    };
-    const response = await axios.put(API_URL + 'me/avatar', avatarFormData, config);
+const updateAvatar = async (avatarFormData) => {
+    const response = await apiClient.put(API_URL + 'me/avatar', avatarFormData);
     return response.data;
 };
 
@@ -79,13 +57,8 @@ const updateAvatar = async (avatarFormData, token) => {
  * @param {string} token - The user's JWT for authentication.
  * @returns {Promise<Array<object>>} A promise that resolves to an array of simplified user objects { name, avatar }.
  */
-const getDiscoverableUsers = async (token) => {
-    const config = {
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
-    };
-    const response = await axios.get(API_URL + 'discoverable', config);
+const getDiscoverableUsers = async () => {
+    const response = await apiClient.get(API_URL + 'discoverable');
     return response.data;
 };
 
@@ -95,9 +68,8 @@ const getDiscoverableUsers = async (token) => {
  * @param {string} token - The user's JWT for authentication.
  * @returns {Promise<object>} The current user's full profile object.
  */
-const getCurrentUser = async (token) => {
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.get(API_URL + 'me', config);
+const getCurrentUser = async () => {
+    const response = await apiClient.get(API_URL + 'me');
     return response.data;
 };
 
@@ -107,9 +79,27 @@ const getCurrentUser = async (token) => {
  * @param {string} token - The user's JWT for authentication.
  * @returns {Promise<object>} An object containing used/limit and any per-role quotas.
  */
-const getStorageUsage = async (token) => {
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.get(API_URL + 'me/storage', config);
+const getStorageUsage = async () => {
+    const response = await apiClient.get(API_URL + 'me/storage');
+    return response.data;
+};
+
+/**
+ * Get active sessions for the authenticated user.
+ * @route GET /api/auth/sessions
+ */
+const getActiveSessions = async () => {
+    const response = await apiClient.get('/auth/sessions');
+    // backend returns { sessions: [...] } — normalize to return the array
+    return response.data && response.data.sessions ? response.data.sessions : [];
+};
+
+/**
+ * Revoke a session by deviceId.
+ * @route DELETE /api/auth/sessions/:deviceId
+ */
+const revokeSession = async (deviceId) => {
+    const response = await apiClient.delete(`/auth/sessions/${deviceId}`);
     return response.data;
 };
 
@@ -121,6 +111,8 @@ const profileService = {
     applyAsStudent,
     getCurrentUser,
     getStorageUsage,
+    getActiveSessions,
+    revokeSession,
 };
 
 export default profileService;

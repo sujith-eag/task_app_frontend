@@ -63,8 +63,7 @@ export const createPublicShare = createAsyncThunk(
     'files/createPublicShare',
     async (shareData, thunkAPI) => {
         try {
-            const token = thunkAPI.getState().auth.user.token;
-            return await fileService.createPublicShare(shareData, token);
+            return await fileService.createPublicShare(shareData);
         } catch (error) {
             const message = 
                 (error.response?.data?.message) || 
@@ -79,8 +78,7 @@ export const revokePublicShare = createAsyncThunk(
     'files/revokePublicShare',
     async (fileId, thunkAPI) => {
         try {
-            const token = thunkAPI.getState().auth.user.token;
-            return await fileService.revokePublicShare(fileId, token);
+            return await fileService.revokePublicShare(fileId);
         } catch (error) {
             const message = 
                 (error.response?.data?.message) || 
@@ -94,8 +92,7 @@ export const revokePublicShare = createAsyncThunk(
 
 export const getStorageUsage = createAsyncThunk('files/getUsage', async (_, thunkAPI) => {
     try {
-        const token = thunkAPI.getState().auth.user.token;
-        return await fileService.getStorageUsage(token);
+        return await fileService.getStorageUsage();
     } catch (error) {
         const message = (error.response?.data?.message) || error.message || error.toString();
         return thunkAPI.rejectWithValue(message);
@@ -104,8 +101,7 @@ export const getStorageUsage = createAsyncThunk('files/getUsage', async (_, thun
 
 export const getFiles = createAsyncThunk('files/getAll', async (parentId, thunkAPI) => {
     try {
-        const token = thunkAPI.getState().auth.user.token;
-        return await fileService.getFiles(parentId, token);
+        return await fileService.getFiles(parentId);
     } catch (error) {
         const message = (error.response?.data?.message) || error.message || error.toString();
         return thunkAPI.rejectWithValue(message);
@@ -115,7 +111,7 @@ export const getFiles = createAsyncThunk('files/getAll', async (parentId, thunkA
 
 export const uploadFiles = createAsyncThunk('files/upload', async ({ filesFormData, parentId }, thunkAPI) => {
     try {
-        const token = thunkAPI.getState().auth.user.token;
+    // No token needed; apiClient will send cookies
         // Extract files and uploadKeys arrays from the FormData
         const files = filesFormData.getAll('files') || [];
         const keys = filesFormData.getAll('uploadKeys') || [];
@@ -141,7 +137,7 @@ export const uploadFiles = createAsyncThunk('files/upload', async ({ filesFormDa
             };
 
             // Use the existing fileService.uploadFiles which accepts an onUploadProgress handler
-            return fileService.uploadFiles(fd, token, onUploadProgress);
+            return fileService.uploadFiles(fd, undefined, onUploadProgress);
         });
 
         // Execute all uploads in parallel
@@ -166,8 +162,7 @@ export const uploadFiles = createAsyncThunk('files/upload', async ({ filesFormDa
 
 export const deleteFile = createAsyncThunk('files/delete', async (fileId, thunkAPI) => {
     try {
-        const token = thunkAPI.getState().auth.user.token;
-        return await fileService.deleteFile(fileId, token);
+        return await fileService.deleteFile(fileId);
     } catch (error) {
         const message = (error.response?.data?.message) || error.message || error.toString();
         return thunkAPI.rejectWithValue(message);
@@ -177,8 +172,7 @@ export const deleteFile = createAsyncThunk('files/delete', async (fileId, thunkA
 
 export const bulkDeleteFiles = createAsyncThunk('files/bulkDelete', async (fileIds, thunkAPI) => {
     try {
-        const token = thunkAPI.getState().auth.user.token;
-        return await fileService.bulkDeleteFiles(fileIds, token);
+        return await fileService.bulkDeleteFiles(fileIds);
     } catch (error) {
         const message = (error.response?.data?.message) || error.message || error.toString();
         return thunkAPI.rejectWithValue(message);
@@ -189,8 +183,7 @@ export const bulkDeleteFiles = createAsyncThunk('files/bulkDelete', async (fileI
 export const shareFile = createAsyncThunk('files/share', async (shareData, thunkAPI) => {
     try {
         const { fileId, userIdToShareWith } = shareData;
-        const token = thunkAPI.getState().auth.user.token;
-        return await fileService.shareFile(fileId, userIdToShareWith, token);
+        return await fileService.shareFile(fileId, userIdToShareWith);
     } catch (error) {
         const message = (error.response?.data?.message) || error.message || error.toString();
         return thunkAPI.rejectWithValue(message);
@@ -201,8 +194,7 @@ export const shareFile = createAsyncThunk('files/share', async (shareData, thunk
 export const manageShareAccess = createAsyncThunk('files/manageShare', async (shareData, thunkAPI) => {
     try {
         const { fileId, userIdToRemove } = shareData;
-        const token = thunkAPI.getState().auth.user.token;
-        return await fileService.manageShareAccess(fileId, userIdToRemove, token);
+        return await fileService.manageShareAccess(fileId, userIdToRemove);
     } catch (error) {
         const message = (error.response?.data?.message) || error.message || error.toString();
         return thunkAPI.rejectWithValue(message);
@@ -212,8 +204,7 @@ export const manageShareAccess = createAsyncThunk('files/manageShare', async (sh
 
 export const bulkRemoveAccess = createAsyncThunk('files/bulkRemove', async (fileIds, thunkAPI) => {
     try {
-        const token = thunkAPI.getState().auth.user.token;
-        return await fileService.bulkRemoveAccess(fileIds, token);
+        return await fileService.bulkRemoveAccess(fileIds);
     } catch (error) {
         const message = (error.response?.data?.message) || error.message || error.toString();
         return thunkAPI.rejectWithValue(message);
@@ -223,8 +214,7 @@ export const bulkRemoveAccess = createAsyncThunk('files/bulkRemove', async (file
 
 export const shareWithClass = createAsyncThunk('files/shareClass', async (data, thunkAPI) => {
     try {
-        const token = thunkAPI.getState().auth.user.token;
-        return await fileService.shareWithClass(data, token);
+        return await fileService.shareWithClass(data);
     } catch (error) {
         const message = (error.response?.data?.message) || error.message || error.toString();
         return thunkAPI.rejectWithValue(message);
@@ -234,8 +224,7 @@ export const shareWithClass = createAsyncThunk('files/shareClass', async (data, 
 
 export const createFolder = createAsyncThunk('files/createFolder', async (folderData, thunkAPI) => {
     try {
-        const token = thunkAPI.getState().auth.user.token;
-        return await fileService.createFolder(folderData, token);
+        return await fileService.createFolder(folderData);
     } catch (error) { 
         const message = (error.response?.data?.message) || error.message || error.toString();
         return thunkAPI.rejectWithValue(message);

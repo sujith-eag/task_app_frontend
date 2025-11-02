@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import profileService from './profileService.js';
+import { getDeviceId } from '../../utils/deviceId.js';
+import { logout } from '../auth/authSlice.js';
 
 // --- Async Thunks ---
 
@@ -8,8 +10,7 @@ export const updateProfile = createAsyncThunk(
     'profile/update',
     async (profileData, thunkAPI) => {
         try {
-            const token = thunkAPI.getState().auth.user.token;
-            return await profileService.updateProfile(profileData, token);
+            return await profileService.updateProfile(profileData);
         } catch (error) {
             const message = (error.response?.data?.message) || error.message || error.toString();
             return thunkAPI.rejectWithValue(message);
@@ -22,8 +23,7 @@ export const changePassword = createAsyncThunk(
     'profile/changePassword',
     async (passwordData, thunkAPI) => {
         try {
-            const token = thunkAPI.getState().auth.user.token;
-            return await profileService.changePassword(passwordData, token);
+            return await profileService.changePassword(passwordData);
         } catch (error) {
             const message = (error.response?.data?.message) || error.message || error.toString();
             return thunkAPI.rejectWithValue(message);
@@ -36,8 +36,7 @@ export const updateAvatar = createAsyncThunk(
     'profile/updateAvatar',
     async (avatarFormData, thunkAPI) => {
         try {
-            const token = thunkAPI.getState().auth.user.token;
-            return await profileService.updateAvatar(avatarFormData, token);
+            return await profileService.updateAvatar(avatarFormData);
         } catch (error) {
             const message = (error.response?.data?.message) || error.message || error.toString();
             return thunkAPI.rejectWithValue(message);
@@ -50,8 +49,7 @@ export const applyAsStudent = createAsyncThunk(
   'profile/applyAsStudent',
   async (applicationData, thunkAPI) => {
     try {
-      const token = thunkAPI.getState().auth.user.token;
-      return await profileService.applyAsStudent(applicationData, token);
+            return await profileService.applyAsStudent(applicationData);
     } catch (error) {
       const message =
         (error.response?.data?.message || error.message || error.toString())
@@ -66,7 +64,45 @@ const initialState = {
     passwordStatus: 'idle',
     avatarStatus: 'idle',
     message: '',
+        sessions: [],
+        sessionStatus: 'idle',
 };
+
+// Thunk to fetch active sessions
+export const fetchSessions = createAsyncThunk(
+    'profile/fetchSessions',
+    async (_, thunkAPI) => {
+        try {
+            const sessions = await profileService.getActiveSessions();
+            return sessions;
+        } catch (error) {
+            const message = (error.response?.data?.message) || error.message || error.toString();
+            return thunkAPI.rejectWithValue(message);
+        }
+    }
+);
+
+// Thunk to revoke a session by deviceId
+export const revokeSession = createAsyncThunk(
+    'profile/revokeSession',
+    async (deviceId, thunkAPI) => {
+        try {
+            await profileService.revokeSession(deviceId);
+            // If user revoked current device, log them out
+            if (deviceId === getDeviceId()) {
+                // dispatch logout so UI clears immediately
+                thunkAPI.dispatch(logout());
+                return [];
+            }
+            // Return refreshed sessions list
+            const sessions = await profileService.getActiveSessions();
+            return sessions;
+        } catch (error) {
+            const message = (error.response?.data?.message) || error.message || error.toString();
+            return thunkAPI.rejectWithValue(message);
+        }
+    }
+);
 
 export const profileSlice = createSlice({
     name: 'profile',
@@ -131,6 +167,29 @@ export const profileSlice = createSlice({
             })
             .addCase(applyAsStudent.rejected, (state, action) => {
                 state.profileStatus = 'failed';
+                state.message = action.payload;
+            })
+            // Sessions
+            .addCase(fetchSessions.pending, (state) => {
+                state.sessionStatus = 'loading';
+            })
+            .addCase(fetchSessions.fulfilled, (state, action) => {
+                state.sessionStatus = 'succeeded';
+                state.sessions = action.payload;
+            })
+            .addCase(fetchSessions.rejected, (state, action) => {
+                state.sessionStatus = 'failed';
+                state.message = action.payload;
+            })
+            .addCase(revokeSession.pending, (state) => {
+                state.sessionStatus = 'loading';
+            })
+            .addCase(revokeSession.fulfilled, (state, action) => {
+                state.sessionStatus = 'succeeded';
+                state.sessions = action.payload;
+            })
+            .addCase(revokeSession.rejected, (state, action) => {
+                state.sessionStatus = 'failed';
                 state.message = action.payload;
             })
             

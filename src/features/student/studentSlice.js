@@ -18,8 +18,7 @@ const initialState = {
 // Getting Student details
 export const getStudentProfile = createAsyncThunk('student/getProfile', async (_, thunkAPI) => {
     try {
-        const token = thunkAPI.getState().auth.user.token;
-        return await studentService.getStudentProfile(token);
+        return await studentService.getStudentProfile();
     } catch (error) {
         const message = (error.response?.data?.message) || error.message || error.toString();
         return thunkAPI.rejectWithValue(message);
@@ -30,8 +29,7 @@ export const getStudentProfile = createAsyncThunk('student/getProfile', async (_
 // Get the student's personal dashboard stats (attendance per subject)
 export const getStudentDashboardStats = createAsyncThunk('student/getDashboardStats', async (_, thunkAPI) => {
     try {
-        const token = thunkAPI.getState().auth.user.token;
-        return await studentService.getStudentDashboardStats(token);
+        return await studentService.getStudentDashboardStats();
     } catch (error) {
         const message = (error.response?.data?.message) || error.message || error.toString();
         return thunkAPI.rejectWithValue(message);
@@ -45,8 +43,7 @@ export const getStudentDashboardStats = createAsyncThunk('student/getDashboardSt
 // Submit feedback for a class session
 export const submitFeedback = createAsyncThunk('student/submitFeedback', async (feedbackData, thunkAPI) => {
     try {
-        const token = thunkAPI.getState().auth.user.token;
-        return await studentService.submitFeedback(feedbackData, token);
+        return await studentService.submitFeedback(feedbackData);
     } catch (error) {
         const message = (error.response?.data?.message) || error.message || error.toString();
         return thunkAPI.rejectWithValue(message);
@@ -57,8 +54,7 @@ export const submitFeedback = createAsyncThunk('student/submitFeedback', async (
 // --- Mark attendance ---
 export const markAttendance = createAsyncThunk('student/markAttendance', async (attendanceData, thunkAPI) => {
     try {
-        const token = thunkAPI.getState().auth.user.token;
-        const response = await studentService.markAttendance(attendanceData, token);
+        const response = await studentService.markAttendance(attendanceData);
         // On success, automatically dispatch the action to refetch the dashboard stats.
         thunkAPI.dispatch(getStudentDashboardStats());
 
@@ -73,9 +69,8 @@ export const markAttendance = createAsyncThunk('student/markAttendance', async (
 
 export const getSessionsForFeedback = createAsyncThunk('student/getSessionsForFeedback', async (_, thunkAPI) => {
     try {
-        const token = thunkAPI.getState().auth.user.token;
         // Requires a new backend endpoint.
-        return await studentService.getSessionsForFeedback(token); 
+        return await studentService.getSessionsForFeedback();
     } catch (error) {
         const message = (error.response?.data?.message) || error.message || error.toString();
         return thunkAPI.rejectWithValue(message);

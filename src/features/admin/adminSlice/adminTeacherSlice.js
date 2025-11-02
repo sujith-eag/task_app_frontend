@@ -7,8 +7,7 @@ import adminService from '../adminService';
 // Get all users with the teacher role
 export const getAllTeachers = createAsyncThunk('adminTeachers/getAll', async (_, thunkAPI) => {
     try {
-        const token = thunkAPI.getState().auth.user.token;
-        return await adminService.getAllTeachers(token);
+        return await adminService.getAllTeachers();
     } catch (error) {
         const message = (error.response?.data?.message) || error.message || error.toString();
         return thunkAPI.rejectWithValue(message);
@@ -18,8 +17,7 @@ export const getAllTeachers = createAsyncThunk('adminTeachers/getAll', async (_,
 // --- Thunk for updating teacher assignments ---
 export const updateTeacherAssignments = createAsyncThunk('adminTeachers/updateAssignments', async (data, thunkAPI) => {
     try {
-        const token = thunkAPI.getState().auth.user.token;
-        return await adminService.updateTeacherAssignments(data, token);
+        return await adminService.updateTeacherAssignments(data);
     } catch (error) {
         const message = (error.response?.data?.message) || error.message || error.toString();
         return thunkAPI.rejectWithValue(message);
@@ -30,8 +28,7 @@ export const updateTeacherAssignments = createAsyncThunk('adminTeachers/updateAs
 export const deleteTeacherAssignment = createAsyncThunk('adminTeachers/deleteAssignment', async (data, thunkAPI) => {
     // data = { teacherId, assignmentId }
     try {
-        const token = thunkAPI.getState().auth.user.token;
-        await adminService.deleteTeacherAssignment(data, token);
+        await adminService.deleteTeacherAssignment(data);
         return data; // Return { teacherId, assignmentId } on success
     } catch (error) {
         const message = (error.response?.data?.message) || error.message || error.toString();

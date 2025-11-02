@@ -1,8 +1,6 @@
-import axios from 'axios';
+import apiClient from '../../../app/apiClient.js';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const API_URL = `${API_BASE_URL}/admin/`;
-const REPORTS_API_URL = `${API_BASE_URL}/admin/reports`;
+const REPORTS_API_URL = '/admin/reports';
 
 
 // --- Reporting ---
@@ -14,12 +12,8 @@ const REPORTS_API_URL = `${API_BASE_URL}/admin/reports`;
  * @param {string} token - The JWT for authentication.
  * @returns {Promise<object>} An object containing aggregated attendance data.
  */
-const getAttendanceStats = async (filters, token) => {
-    const config = {
-        headers: { Authorization: `Bearer ${token}` },
-        params: filters,
-    };
-    const response = await axios.get(`${REPORTS_API_URL}/attendance-stats`, config);
+const getAttendanceStats = async (filters) => {
+    const response = await apiClient.get(`${REPORTS_API_URL}/attendance-stats`, { params: filters });
     return response.data;
 };
 
@@ -31,12 +25,8 @@ const getAttendanceStats = async (filters, token) => {
  * @param {string} token - The JWT for authentication.
  * @returns {Promise<object>} An object containing the aggregated feedback summary.
  */
-const getFeedbackSummary = async (filters, token) => {
-    const config = {
-        headers: { Authorization: `Bearer ${token}` },
-        params: filters,
-    };
-    const response = await axios.get(`${REPORTS_API_URL}/feedback-summary`, config);
+const getFeedbackSummary = async (filters) => {
+    const response = await apiClient.get(`${REPORTS_API_URL}/feedback-summary`, { params: filters });
     return response.data;
 };
 
@@ -49,9 +39,8 @@ const getFeedbackSummary = async (filters, token) => {
  * @param   {string} token - The admin's or HOD's JWT for authentication.
  * @returns {Promise<object>} A promise that resolves to a comprehensive report object.
  */
-const getFeedbackReport = async (classSessionId, token) => {
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.get(`${REPORTS_API_URL}/feedback-report/${classSessionId}`, config);
+const getFeedbackReport = async (classSessionId) => {
+    const response = await apiClient.get(`${REPORTS_API_URL}/feedback-report/${classSessionId}`);
     return response.data;
 };
 
@@ -63,9 +52,8 @@ const getFeedbackReport = async (classSessionId, token) => {
  * @param {string} token - The JWT for authentication.
  * @returns {Promise<object>} An object containing the teacher's performance data.
  */
-const getTeacherReport = async (teacherId, token) => {
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.get(`${REPORTS_API_URL}/teacher/${teacherId}`, config);
+const getTeacherReport = async (teacherId) => {
+    const response = await apiClient.get(`${REPORTS_API_URL}/teacher/${teacherId}`);
     return response.data;
 };
 
@@ -78,9 +66,8 @@ const getTeacherReport = async (teacherId, token) => {
  * @param {string} token - The JWT for authentication.
  * @returns {Promise<object>} An object containing the student's attendance data.
  */
-const getStudentReport = async (studentId, token) => {
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.get(`${REPORTS_API_URL}/student/${studentId}`, config);
+const getStudentReport = async (studentId) => {
+    const response = await apiClient.get(`${REPORTS_API_URL}/student/${studentId}`);
     return response.data;
 };
 

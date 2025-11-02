@@ -13,54 +13,54 @@ File
 
 Exported functions (summary)
 
-- `getConversations(token)`
+-- `getConversations()`
   - Method: GET
   - Frontend call: `GET ${API_BASE_URL}/chat/conversations`
   - Backend route: `GET /api/chat/conversations` -> `conversations.controller.getConversations`
 
-- `createOrGetConversation(recipientId, token)`
+-- `createOrGetConversation(recipientId)`
   - Method: POST
   - Frontend call: `POST ${API_BASE_URL}/chat/conversations` (body: `{ recipientId }`)
   - Backend route: `POST /api/chat/conversations` -> `conversations.controller.createOrGetConversation`
 
-- `getMessagesForConversation(conversationId, token, options)`
+-- `getMessagesForConversation(conversationId, options)`
   - Method: GET
   - Frontend call: `GET ${API_BASE_URL}/chat/conversations/:conversationId/messages` (supports query `page`, `limit`)
   - Backend route: `GET /api/chat/conversations/:id/messages` -> `messages.controller.getMessages`
 
-- `getTotalUnreadCount(token)`
+-- `getTotalUnreadCount()`
   - Method: GET
   - Frontend call: `GET ${API_BASE_URL}/chat/messages/unread/total`
   - Backend route: `GET /api/chat/messages/unread/total` -> `messages.controller.getTotalUnreadCount`
 
-- `getUnreadCountForConversation(conversationId, token)`
+-- `getUnreadCountForConversation(conversationId)`
   - Method: GET
   - Frontend call: `GET ${API_BASE_URL}/chat/conversations/:conversationId/messages/unread`
   - Backend route: `GET /api/chat/conversations/:id/messages/unread` -> `messages.controller.getUnreadCount`
 
-- `markConversationAsRead(conversationId, token)`
+-- `markConversationAsRead(conversationId)`
   - Method: PUT
   - Frontend call: `PUT ${API_BASE_URL}/chat/conversations/:conversationId/messages/read`
   - Backend route: `PUT /api/chat/conversations/:id/messages/read` -> `messages.controller.markAsRead`
 
-- `createMessage(conversationId, content, token)`
+-- `createMessage(conversationId, content)`
   - Method: POST
   - Frontend call: `POST ${API_BASE_URL}/chat/conversations/:conversationId/messages` (body: `{ content }`)
   - Backend route: `POST /api/chat/conversations/:id/messages` -> `messages.controller.createMessage`
 
-- `deleteMessage(messageId, token)`
+-- `deleteMessage(messageId)`
   - Method: DELETE
   - Frontend call: `DELETE ${API_BASE_URL}/chat/messages/:messageId`
   - Backend route: `DELETE /api/chat/messages/:id` -> `messages.controller.deleteMessage`
 
-- `searchMessages(conversationId, q, token, options)`
+-- `searchMessages(conversationId, q, options)`
   - Method: GET
   - Frontend call: `GET ${API_BASE_URL}/chat/conversations/:conversationId/messages/search?q=...` (supports pagination params)
   - Backend route: `GET /api/chat/conversations/:id/messages/search` -> `messages.controller.searchMessages`
 
 Notes & conventions
 - `API_BASE_URL` is supplied via `import.meta.env.VITE_API_BASE_URL` and typically contains the `/api` prefix in development. The service builds endpoints like `${API_BASE_URL}/chat/...`.
-- All routes under `/api/chat` are protected and require an Authorization header: `Authorization: Bearer <token>`.
+-- All routes under `/api/chat` are protected. Browser clients must rely on the httpOnly cookie `jwt` set by the server; use a central `apiClient` configured with `withCredentials: true`. For non-browser clients, send `Cookie: jwt=YOUR_TOKEN` or an Authorization header if necessary.
 - Pagination options (`page`, `limit`) may be passed in `options` objects and forwarded as query parameters.
 
 Backend routes available (reference)

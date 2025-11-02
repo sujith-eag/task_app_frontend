@@ -1,7 +1,6 @@
-import axios from 'axios';
+import apiClient from '../../app/apiClient.js';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const API_URL = `${API_BASE_URL}/tasks/`;
+const API_URL = '/tasks/';
 
 
 /**
@@ -11,9 +10,8 @@ const API_URL = `${API_BASE_URL}/tasks/`;
  * @param {string} token - The user's JWT for authentication.
  * @returns {Promise<object>} A promise that resolves to the newly created task object.
  */
-const createTask = async (taskData, token) => {
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.post(API_URL, taskData, config);
+const createTask = async (taskData) => {
+    const response = await apiClient.post(API_URL, taskData);
     return response.data;
 };
 
@@ -25,9 +23,8 @@ const createTask = async (taskData, token) => {
  * @param {string} token - The user's JWT for authentication.
  * @returns {Promise<Array<object>>} A promise that resolves to an array of the newly created task objects.
  */
-const createBulkTasks = async (tasksData, token) => {
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.post(`${API_URL}bulk`, tasksData, config);
+const createBulkTasks = async (tasksData) => {
+    const response = await apiClient.post(`${API_URL}bulk`, tasksData);
     return response.data;
 };
 
@@ -39,12 +36,8 @@ const createBulkTasks = async (tasksData, token) => {
  * @param {string} token - The user's JWT for authentication.
  * @returns {Promise<Array<object>>} A promise that resolves to an array of task objects.
  */
-const getTasks = async (filterData = {}, token) => {
-    const config = {
-        headers: { Authorization: `Bearer ${token}` },
-        params: filterData,
-    };
-    const response = await axios.get(API_URL, config);
+const getTasks = async (filterData = {}) => {
+    const response = await apiClient.get(API_URL, { params: filterData });
     return response.data;
 };
 
@@ -57,9 +50,8 @@ const getTasks = async (filterData = {}, token) => {
  * @param {string} token - The user's JWT for authentication.
  * @returns {Promise<object>} A promise that resolves to the updated task object.
  */
-const updateTask = async (taskId, taskData, token) => {
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.put(API_URL + taskId, taskData, config);
+const updateTask = async (taskId, taskData) => {
+    const response = await apiClient.put(API_URL + taskId, taskData);
     return response.data;
 };
 
@@ -71,9 +63,8 @@ const updateTask = async (taskId, taskData, token) => {
  * @param {string} token - The user's JWT for authentication.
  * @returns {Promise<object>} A promise that resolves to an object containing the ID of the deleted task.
  */
-const deleteTask = async (taskId, token) => {
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.delete(API_URL + taskId, config);
+const deleteTask = async (taskId) => {
+    const response = await apiClient.delete(API_URL + taskId);
     return response.data;
 };
 
@@ -88,9 +79,8 @@ const deleteTask = async (taskId, token) => {
  * @param {string} token - The user's JWT for authentication.
  * @returns {Promise<object>} A promise that resolves to the updated parent task object.
  */
-const addSubTask = async (taskId, subTaskData, token) => {
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.post(`${API_URL}${taskId}/subtasks`, subTaskData, config);
+const addSubTask = async (taskId, subTaskData) => {
+    const response = await apiClient.post(`${API_URL}${taskId}/subtasks`, subTaskData);
     return response.data;
 };
 
@@ -104,9 +94,8 @@ const addSubTask = async (taskId, subTaskData, token) => {
  * @param {string} token - The user's JWT for authentication.
  * @returns {Promise<object>} A promise that resolves to the updated parent task object.
  */
-const updateSubTask = async (taskId, subTaskId, subTaskData, token) => {
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.put(`${API_URL}${taskId}/subtasks/${subTaskId}`, subTaskData, config);
+const updateSubTask = async (taskId, subTaskId, subTaskData) => {
+    const response = await apiClient.put(`${API_URL}${taskId}/subtasks/${subTaskId}`, subTaskData);
     return response.data;
 };
 
@@ -119,9 +108,8 @@ const updateSubTask = async (taskId, subTaskId, subTaskData, token) => {
  * @param {string} token - The user's JWT for authentication.
  * @returns {Promise<object>} A promise that resolves to the updated parent task object.
  */
-const deleteSubTask = async (taskId, subTaskId, token) => {
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.delete(`${API_URL}${taskId}/subtasks/${subTaskId}`, config);
+const deleteSubTask = async (taskId, subTaskId) => {
+    const response = await apiClient.delete(`${API_URL}${taskId}/subtasks/${subTaskId}`);
     return response.data;
 };
 
@@ -132,9 +120,8 @@ const deleteSubTask = async (taskId, subTaskId, token) => {
  * @param {string} token - The user's JWT for authentication.
  * @returns {Promise<object>} The task object.
  */
-const getTask = async (taskId, token) => {
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.get(`${API_URL}${taskId}`, config);
+const getTask = async (taskId) => {
+    const response = await apiClient.get(`${API_URL}${taskId}`);
     return response.data;
 };
 
@@ -144,9 +131,8 @@ const getTask = async (taskId, token) => {
  * @param {string} token - The user's JWT for authentication.
  * @returns {Promise<object>} An object containing task stats (counts by status, etc.).
  */
-const getTaskStats = async (token) => {
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.get(`${API_URL}stats`, config);
+const getTaskStats = async () => {
+    const response = await apiClient.get(`${API_URL}stats`);
     return response.data;
 };
 
@@ -157,9 +143,8 @@ const getTaskStats = async (token) => {
  * @param {string} token - The user's JWT for authentication.
  * @returns {Promise<object>} An object containing subtask counts and completion percentage.
  */
-const getSubTaskStats = async (taskId, token) => {
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.get(`${API_URL}${taskId}/subtasks/stats`, config);
+const getSubTaskStats = async (taskId) => {
+    const response = await apiClient.get(`${API_URL}${taskId}/subtasks/stats`);
     return response.data;
 };
 

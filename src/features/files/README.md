@@ -80,7 +80,7 @@ Shares (important refactor notes)
 Notes and migration guidance
 - The backend refactor consolidated sharing under `/api/shares`. Frontend calls that used older endpoints were updated to use `/shares/*` paths.
 - Bulk download previously used a hidden form POST to an old `/downloads/bulk-download`; backend now exposes `/api/files/bulk-download` which streams a zip — the frontend now calls this via axios with `responseType: 'blob'` and triggers an in-browser download.
-- All requests must include `Authorization: Bearer <token>` in headers for protected endpoints.
+All protected requests should rely on the server-set httpOnly cookie `jwt` in browser clients. Use a central `apiClient` configured with `withCredentials: true`. For non-browser clients, send `Cookie: jwt=YOUR_TOKEN` or an Authorization header as a fallback.
 - When calling DELETE endpoints that accept a request body (bulk delete, manage share access), axios requires the body to be sent via the `data` option.
 
 Testing notes

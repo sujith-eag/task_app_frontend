@@ -24,7 +24,7 @@ const fileSelectors = {
 };
 
 const FileTable = () => {
-    const { user } = useSelector((state) => state.auth);
+    // auth user is intentionally not used for token forwarding anymore
     const [tabValue, setTabValue] = useState('myFiles');
     const [selectedFiles, setSelectedFiles] = useState([]);
     
@@ -116,7 +116,7 @@ const FileTable = () => {
             <BulkActionBar
                 selectedFiles={selectedFiles}
                 currentTab={tabValue}
-                onDownload={() => downloadFiles(selectedFiles, user.token)}
+                onDownload={() => downloadFiles(selectedFiles)}
                 onDelete={openBulkDeleteDialog}
                 onRemove={openBulkRemoveDialog}
             />

@@ -1,8 +1,7 @@
-import axios from 'axios';
+import apiClient from '../../../app/apiClient.js';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-// Admin-managed subjects base URL (Phase 0 refactor moved admin subject management under /api/admin/subjects)
-const SUBJECTS_API_URL = `${API_BASE_URL}/admin/subjects/`;
+// Keep endpoints relative to apiClient.baseURL
+const SUBJECTS_API_URL = '/admin/subjects/';
 
 
 // --- Subject Management ---
@@ -13,12 +12,8 @@ const SUBJECTS_API_URL = `${API_BASE_URL}/admin/subjects/`;
  * @param {string} token - The JWT for authentication.
  * @returns {Promise<Array<object>>} An array of subject objects.
  */
-const getSubjects = async (token, params={}) => {
-    const config = { 
-        headers: { Authorization: `Bearer ${token}` }, 
-        params // Passing semester as query parameter
-    };
-    const response = await axios.get(SUBJECTS_API_URL, config);
+const getSubjects = async (params={}) => {
+    const response = await apiClient.get(SUBJECTS_API_URL, { params });
     return response.data;
 };
 
@@ -30,9 +25,8 @@ const getSubjects = async (token, params={}) => {
  * @param {string} token - The JWT for authentication.
  * @returns {Promise<object>} The newly created subject object.
  */
-const createSubject = async (subjectData, token) => {
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.post(SUBJECTS_API_URL, subjectData, config);
+const createSubject = async (subjectData) => {
+    const response = await apiClient.post(SUBJECTS_API_URL, subjectData);
     return response.data;
 };
 
@@ -44,10 +38,9 @@ const createSubject = async (subjectData, token) => {
  * @param {string} token - The JWT for authentication.
  * @returns {Promise<object>} The updated subject object.
  */
-const updateSubject = async (subjectData, token) => {
+const updateSubject = async (subjectData) => {
     const { id, ...data } = subjectData;
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.put(`${SUBJECTS_API_URL}${id}`, data, config);
+    const response = await apiClient.put(`${SUBJECTS_API_URL}${id}`, data);
     return response.data;
 };
 
@@ -59,9 +52,8 @@ const updateSubject = async (subjectData, token) => {
  * @param {string} token - The JWT for authentication.
  * @returns {Promise<object>} A success confirmation object.
  */
-const deleteSubject = async (subjectId, token) => {
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.delete(`${SUBJECTS_API_URL}${subjectId}`, config);
+const deleteSubject = async (subjectId) => {
+    const response = await apiClient.delete(`${SUBJECTS_API_URL}${subjectId}`);
     return response.data;
 };
 

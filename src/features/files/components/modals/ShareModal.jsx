@@ -27,7 +27,7 @@ const ShareModal = ({ isOpen, onClose, file }) => {
             const fetchUsers = async () => {
                 setIsLoading(true);
                 try {
-                    const allUsers = await profileService.getDiscoverableUsers(user.token);
+                    const allUsers = await profileService.getDiscoverableUsers();
                     setUsers(allUsers);
                 } catch (error) {
                     toast.error('Could not fetch users to share with.');
@@ -44,7 +44,7 @@ const ShareModal = ({ isOpen, onClose, file }) => {
             setSelectedUserId(null);
             didFetchRef.current = false;
         }
-    }, [isOpen, user.token]);
+    }, [isOpen, user?._id]);
 
     const handleShare = () => {
         if (!selectedUserId) {

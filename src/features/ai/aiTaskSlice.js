@@ -26,8 +26,7 @@ export const getAIPlanPreview = createAsyncThunk(
             const { prompt } = promptData;
             // Get history and session ID from the current state
             const { conversationHistory, sessionId } = thunkAPI.getState().ai;
-            const token = thunkAPI.getState().auth.user.token;
-            return await aiTaskService.fetchAIPlanPreview({ prompt, history: conversationHistory, sessionId }, token);
+            return await aiTaskService.fetchAIPlanPreview({ prompt, history: conversationHistory, sessionId });
         } catch (error) {
             const message = (error.response?.data?.message) || error.message;
             return thunkAPI.rejectWithValue(message);
@@ -42,9 +41,8 @@ export const saveAIPlan = createAsyncThunk(
         try {
             // Get the final tasks and token from the state
             const { previewTasks } = thunkAPI.getState().ai;
-            const token = thunkAPI.getState().auth.user.token;
-            // Calling a function in `taskService`
-            return await taskService.createBulkTasks({ tasks: previewTasks }, token);
+            // Calling a function in `taskService` (no token required; apiClient will send cookies)
+            return await taskService.createBulkTasks({ tasks: previewTasks });
         } catch (error) {
             const message = (error.response?.data?.message) || error.message;
             return thunkAPI.rejectWithValue(message);
@@ -58,8 +56,7 @@ export const generateTasksWithAI = createAsyncThunk(
   'ai/generateTasks',
   async (promptData, thunkAPI) => {
     try {
-      const token = thunkAPI.getState().auth.user.token;
-      return await aiTaskService.generateTasksWithAI(promptData, token);
+    return await aiTaskService.generateTasksWithAI(promptData);
     } catch (error) {
       const message = (error.response?.data?.message) || error.message;
       return thunkAPI.rejectWithValue(message);

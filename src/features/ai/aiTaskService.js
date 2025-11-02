@@ -1,7 +1,6 @@
-import axios from 'axios';
+import apiClient from '../../app/apiClient.js';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const AI_API_URL = `${API_BASE_URL}/ai`;
+const AI_API_URL = '/ai';
 
 /**
  * Generates a preview of a task plan from a user prompt using the AI service.
@@ -11,11 +10,9 @@ const AI_API_URL = `${API_BASE_URL}/ai`;
  * @returns {Promise<object>} A promise that resolves to the AI-generated task plan preview.
  * @throws {string} Throws an error message if the API call fails.
  */
-const fetchAIPlanPreview = async (requestData, token) => {
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-
+const fetchAIPlanPreview = async (requestData) => {
     try {
-        const response = await axios.post(`${AI_API_URL}/tasks/preview`, requestData, config);
+        const response = await apiClient.post(`${AI_API_URL}/tasks/preview`, requestData);
         return response.data;
     } catch (err) {
         throw err.response?.data?.message || err.message;
@@ -30,11 +27,9 @@ const fetchAIPlanPreview = async (requestData, token) => {
  * @param {string} token - The user's JWT for authentication.
  * @returns {Promise<object[]>} Array of created tasks.
  */
-const generateTasksWithAI = async (requestData, token) => {
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-
+const generateTasksWithAI = async (requestData) => {
     try {
-        const response = await axios.post(`${AI_API_URL}/tasks/generate`, requestData, config);
+        const response = await apiClient.post(`${AI_API_URL}/tasks/generate`, requestData);
         return response.data;
     } catch (err) {
         throw err.response?.data?.message || err.message;
@@ -48,9 +43,8 @@ const generateTasksWithAI = async (requestData, token) => {
  * @param {string} token - The user's JWT for authentication.
  * @returns {Promise<object>} Usage statistics object.
  */
-const getAIStats = async (token) => {
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.get(`${AI_API_URL}/stats`, config);
+const getAIStats = async () => {
+    const response = await apiClient.get(`${AI_API_URL}/stats`);
     return response.data;
 };
 
@@ -62,9 +56,8 @@ const getAIStats = async (token) => {
  * @param {string} token - The user's JWT for authentication.
  * @returns {Promise<Array<object>>} Array of prompt history entries.
  */
-const getPromptHistory = async (params = {}, token) => {
-    const config = { headers: { Authorization: `Bearer ${token}` }, params };
-    const response = await axios.get(`${AI_API_URL}/prompts/history`, config);
+const getPromptHistory = async (params = {}) => {
+    const response = await apiClient.get(`${AI_API_URL}/prompts/history`, { params });
     return response.data;
 };
 
@@ -75,9 +68,8 @@ const getPromptHistory = async (params = {}, token) => {
  * @param {string} token - The user's JWT for authentication.
  * @returns {Promise<Array<object>>} Array of session history objects.
  */
-const getSessionHistory = async (token) => {
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.get(`${AI_API_URL}/sessions`, config);
+const getSessionHistory = async () => {
+    const response = await apiClient.get(`${AI_API_URL}/sessions`);
     return response.data;
 };
 
@@ -89,9 +81,8 @@ const getSessionHistory = async (token) => {
  * @param {string} token - The user's JWT for authentication.
  * @returns {Promise<object>} Result object from backend.
  */
-const clearPromptHistory = async (daysOld, token) => {
-    const config = { headers: { Authorization: `Bearer ${token}` }, params: { daysOld } };
-    const response = await axios.delete(`${AI_API_URL}/prompts/history`, config);
+const clearPromptHistory = async (daysOld) => {
+    const response = await apiClient.delete(`${AI_API_URL}/prompts/history`, { params: { daysOld } });
     return response.data;
 };
 

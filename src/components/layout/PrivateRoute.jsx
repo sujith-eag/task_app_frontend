@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { Box, CircularProgress, Skeleton, Stack, Container } from '@mui/material';
 import { useEffect, useState } from 'react';
+import { getUserRoles } from '../../utils/roles.js';
 
 /**
  * PrivateRoute Component with Loading States
@@ -68,7 +69,9 @@ const PrivateRoute = ({ roles }) => {
   }
 
   // Check if the route requires specific roles and if the user has one of them
-  if (roles && !roles.includes(user.role)) {
+  // New user model uses `roles` array so check inclusion there. Fall back to legacy `role`.
+  const userRoles = getUserRoles(user);
+  if (roles && !roles.some(r => userRoles.includes(r))) {
     // Notify the user and redirect them
     toast.error(`Access denied. Required role: ${roles.join(' or ')}.`, {
       toastId: 'unauthorized-access', // Prevent duplicate toasts

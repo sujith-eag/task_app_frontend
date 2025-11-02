@@ -1,6 +1,6 @@
-import axios from 'axios';
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const CHAT_API_URL = `${API_BASE_URL}/chat`;
+import apiClient from '../../app/apiClient.js';
+// Keep endpoints relative to apiClient.baseURL
+const CHAT_API_URL = '/chat';
 
 /**
  * Retrieves all conversations for the authenticated user.
@@ -9,9 +9,8 @@ const CHAT_API_URL = `${API_BASE_URL}/chat`;
  * @param {string} token - The user's JWT for authentication.
  * @returns {Promise<Array<object>>} A promise that resolves to an array of conversation objects.
  */
-const getConversations = async (token) => {
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.get(`${CHAT_API_URL}/conversations`, config);
+const getConversations = async () => {
+    const response = await apiClient.get(`${CHAT_API_URL}/conversations`);
     return response.data;
 };
 
@@ -23,9 +22,8 @@ const getConversations = async (token) => {
  * @param {string} token - The user's JWT for authentication.
  * @returns {Promise<object>} A promise that resolves to the conversation object.
  */
-const createOrGetConversation = async (recipientId, token) => {
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.post(`${CHAT_API_URL}/conversations`, { recipientId }, config);
+const createOrGetConversation = async (recipientId) => {
+    const response = await apiClient.post(`${CHAT_API_URL}/conversations`, { recipientId });
     return response.data;
 };
 
@@ -37,9 +35,8 @@ const createOrGetConversation = async (recipientId, token) => {
  * @param {string} token - The user's JWT for authentication.
  * @returns {Promise<Array<object>>} A promise that resolves to an array of message objects.
  */
-const getMessagesForConversation = async (conversationId, token) => {
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.get(`${CHAT_API_URL}/conversations/${conversationId}/messages`, config);
+const getMessagesForConversation = async (conversationId) => {
+    const response = await apiClient.get(`${CHAT_API_URL}/conversations/${conversationId}/messages`);
     return response.data;
 };
 
@@ -50,9 +47,8 @@ const getMessagesForConversation = async (conversationId, token) => {
  * @param {string} token - The user's JWT for authentication.
  * @returns {Promise<object>} A promise resolving to an object like `{ count: number }`.
  */
-const getTotalUnreadCount = async (token) => {
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.get(`${CHAT_API_URL}/messages/unread/total`, config);
+const getTotalUnreadCount = async () => {
+    const response = await apiClient.get(`${CHAT_API_URL}/messages/unread/total`);
     return response.data;
 };
 
@@ -64,9 +60,8 @@ const getTotalUnreadCount = async (token) => {
  * @param {string} token - The user's JWT for authentication.
  * @returns {Promise<object>} A promise resolving to an object like `{ count: number }`.
  */
-const getUnreadCountForConversation = async (conversationId, token) => {
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.get(`${CHAT_API_URL}/conversations/${conversationId}/messages/unread`, config);
+const getUnreadCountForConversation = async (conversationId) => {
+    const response = await apiClient.get(`${CHAT_API_URL}/conversations/${conversationId}/messages/unread`);
     return response.data;
 };
 
@@ -78,9 +73,8 @@ const getUnreadCountForConversation = async (conversationId, token) => {
  * @param {string} token - The user's JWT for authentication.
  * @returns {Promise<object>} A promise resolving to the result object.
  */
-const markConversationAsRead = async (conversationId, token) => {
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.put(`${CHAT_API_URL}/conversations/${conversationId}/messages/read`, {}, config);
+const markConversationAsRead = async (conversationId) => {
+    const response = await apiClient.put(`${CHAT_API_URL}/conversations/${conversationId}/messages/read`);
     return response.data;
 };
 
@@ -93,9 +87,8 @@ const markConversationAsRead = async (conversationId, token) => {
  * @param {string} token - The user's JWT for authentication.
  * @returns {Promise<object>} A promise resolving to the created message object.
  */
-const createMessage = async (conversationId, content, token) => {
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.post(`${CHAT_API_URL}/conversations/${conversationId}/messages`, { content }, config);
+const createMessage = async (conversationId, content) => {
+    const response = await apiClient.post(`${CHAT_API_URL}/conversations/${conversationId}/messages`, { content });
     return response.data;
 };
 
@@ -107,9 +100,8 @@ const createMessage = async (conversationId, content, token) => {
  * @param {string} token - The user's JWT for authentication.
  * @returns {Promise<object>} A promise resolving to the deletion result.
  */
-const deleteMessage = async (messageId, token) => {
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.delete(`${CHAT_API_URL}/messages/${messageId}`, config);
+const deleteMessage = async (messageId) => {
+    const response = await apiClient.delete(`${CHAT_API_URL}/messages/${messageId}`);
     return response.data;
 };
 
@@ -123,12 +115,8 @@ const deleteMessage = async (messageId, token) => {
  * @param {object} [options] - Optional pagination: { page, limit }
  * @returns {Promise<Array<object>>} A promise resolving to an array of matching messages.
  */
-const searchMessages = async (conversationId, q, token, options = {}) => {
-    const config = {
-        headers: { Authorization: `Bearer ${token}` },
-        params: { q, ...options },
-    };
-    const response = await axios.get(`${CHAT_API_URL}/conversations/${conversationId}/messages/search`, config);
+const searchMessages = async (conversationId, q, options = {}) => {
+    const response = await apiClient.get(`${CHAT_API_URL}/conversations/${conversationId}/messages/search`, { params: { q, ...options } });
     return response.data;
 };
 

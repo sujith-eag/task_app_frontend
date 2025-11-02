@@ -13,14 +13,19 @@ import AssignmentIcon from '@mui/icons-material/Assignment';
 const SummaryCards = () => {
   const { tasks } = useSelector((state) => state.tasks);
 
+  // Defensively coerce the tasks value to an array. Some responses may wrap
+  // tasks in an object ({ tasks: [...] }) or a bug elsewhere may set this
+  // slice to a non-array value. This prevents runtime crashes in the UI.
+  const tasksArray = Array.isArray(tasks) ? tasks : (tasks && Array.isArray(tasks.tasks) ? tasks.tasks : []);
+
   const summaryStats = useMemo(() => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     
     // Count tasks by status
-    const doneTasks = tasks.filter(task => task.status === 'Done' || task.status === 'done');
-    const inProgressTasks = tasks.filter(task => task.status === 'In Progress' || task.status === 'in-progress');
-    const todoTasks = tasks.filter(task => task.status === 'To Do' || task.status === 'todo' || task.status === 'ToDo');
+    const doneTasks = tasksArray.filter(task => task.status === 'Done' || task.status === 'done');
+    const inProgressTasks = tasksArray.filter(task => task.status === 'In Progress' || task.status === 'in-progress');
+    const todoTasks = tasksArray.filter(task => task.status === 'To Do' || task.status === 'todo' || task.status === 'ToDo');
     
     // Active tasks = To Do + In Progress (everything except Done)
     const activeTasks = [...todoTasks, ...inProgressTasks];

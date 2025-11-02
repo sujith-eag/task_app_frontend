@@ -4,24 +4,30 @@ import chatService from './chatService.js';
 // --- ASYNC THUNKS ---
 export const getConversations = createAsyncThunk('chat/getConversations', async (_, thunkAPI) => {
     try {
-        const token = thunkAPI.getState().auth.user.token;
-        return await chatService.getConversations(token);
-    } catch (error) { /* ... error handling ... */ }
+        return await chatService.getConversations();
+    } catch (error) {
+        const message = (error.response?.data?.message) || error.message || error.toString();
+        return thunkAPI.rejectWithValue(message);
+    }
 });
 
 export const startConversation = createAsyncThunk('chat/startConversation', async (recipientId, thunkAPI) => {
     try {
-        const token = thunkAPI.getState().auth.user.token;
-        return await chatService.createOrGetConversation(recipientId, token);
-    } catch (error) { /* ... */ }
+        return await chatService.createOrGetConversation(recipientId);
+    } catch (error) {
+        const message = (error.response?.data?.message) || error.message || error.toString();
+        return thunkAPI.rejectWithValue(message);
+    }
 });
 
 
 export const getMessages = createAsyncThunk('chat/getMessages', async (conversationId, thunkAPI) => {
     try {
-        const token = thunkAPI.getState().auth.user.token;
-        return await chatService.getMessagesForConversation(conversationId, token);
-    } catch (error) { /* ... */ }
+        return await chatService.getMessagesForConversation(conversationId);
+    } catch (error) {
+        const message = (error.response?.data?.message) || error.message || error.toString();
+        return thunkAPI.rejectWithValue(message);
+    }
 });
 
 
@@ -153,9 +159,14 @@ export const chatSlice = createSlice({
             })
             .addCase(getConversations.fulfilled, (state, action) => {
                 state.status.getConversations = 'succeeded';
-                // Normalize the conversations data
-                state.conversations.ids = action.payload.map(c => c._id);
-                state.conversations.entities = action.payload.reduce((acc, c) => {
+                // Normalize the conversations data. API may return an array or an
+                // object like { conversations: [...] } depending on version.
+                const convs = Array.isArray(action.payload)
+                    ? action.payload
+                    : (action.payload && Array.isArray(action.payload.conversations) ? action.payload.conversations : []);
+
+                state.conversations.ids = convs.map(c => c._id);
+                state.conversations.entities = convs.reduce((acc, c) => {
                     acc[c._id] = c;
                     return acc;
                 }, {});

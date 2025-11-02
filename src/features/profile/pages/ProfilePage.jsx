@@ -30,11 +30,14 @@ import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import UpdateProfileForm from '../components/UpdateProfileForm.jsx';
 import PreferencesSection from '../components/PreferencesSection.jsx';
 import PasswordForm from '../components/PasswordForm.jsx';
+import SessionManager from '../components/SessionManager.jsx';
+import { getUserRoles } from '../../../utils/roles.js';
 
 
 
 const ProfilePage = () => {
     const { user } = useSelector((state) => state.auth);
+    const userRoles = getUserRoles(user);
     
     // State for toggling profile edit mode
     const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -118,7 +121,7 @@ const ProfilePage = () => {
                             </Stack>
 
                             <Chip 
-                                label={user.role} 
+                                label={userRoles.length ? userRoles.join(', ') : (user?.role || '')} 
                                 color="primary" 
                                 size="small" 
                                 sx={{ 
@@ -191,7 +194,7 @@ const ProfilePage = () => {
                 </Paper>
 
                 {/* --- 2. Student Status Section --- */}
-                {user.role === 'user' && (
+                {userRoles.includes('user') && (
                 <Paper 
                     elevation={3} 
                     sx={{ 
@@ -254,7 +257,7 @@ const ProfilePage = () => {
                 </Paper>
                 )}
 
-                {user.role === 'student' && (
+                {userRoles.includes('student') && (
                 <Paper 
                     elevation={3} 
                     sx={{ 
@@ -344,7 +347,7 @@ const ProfilePage = () => {
                             </Typography>
                         </Paper>
 
-                        {user.role === 'student' && (
+                        {userRoles.includes('student') && (
                             <Paper
                                 component={RouterLink}
                                 to="/student/dashboard"
@@ -384,7 +387,7 @@ const ProfilePage = () => {
                             </Paper>
                         )}
 
-                        {user.role === 'teacher' && (
+                        {userRoles.includes('teacher') && (
                             <Paper
                                 component={RouterLink}
                                 to="/teacher/dashboard"
@@ -424,7 +427,7 @@ const ProfilePage = () => {
                             </Paper>
                         )}
 
-                        {(user.role === 'admin' || user.role === 'hod') && (
+                        {(userRoles.includes('admin') || userRoles.includes('hod')) && (
                             <>
                                 <Paper
                                     component={RouterLink}
@@ -770,6 +773,20 @@ const ProfilePage = () => {
                             </Collapse>
                         </Box>
                     </Stack>
+                </Paper>
+
+                {/* --- 6. Active Sessions (per-device session management) --- */}
+                <Paper 
+                    elevation={3} 
+                    sx={{ 
+                        p: 3,
+                        backgroundColor: 'background.paper',
+                        border: '1px solid',
+                        borderColor: 'divider',
+                        borderRadius: 2,
+                    }}
+                >
+                    <SessionManager />
                 </Paper>
 
                 </Stack>
