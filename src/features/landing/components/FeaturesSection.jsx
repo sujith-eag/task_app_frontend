@@ -13,27 +13,106 @@ import VpnKeyIcon from '@mui/icons-material/VpnKey';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import SecurityIcon from '@mui/icons-material/Security';
 import MarkEmailReadIcon from '@mui/icons-material/MarkEmailRead';
-
+import InsightsIcon from '@mui/icons-material/Insights';
+import EventAvailableIcon from '@mui/icons-material/EventAvailable';
+import GroupIcon from '@mui/icons-material/Group';
+import ScheduleIcon from '@mui/icons-material/Schedule';
+import HistoryIcon from '@mui/icons-material/History';
+import HttpsIcon from '@mui/icons-material/Https';
+import BoltIcon from '@mui/icons-material/Bolt';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 const FeaturesSection = () => {
     const [selectedTab, setSelectedTab] = useState(0);
 
-    const coreFeatures = [
+    const academicFeatures = [
         {
             title: 'The Modern Campus',
-            description: 'A dedicated suite for educational institutions. Manage role-based access, track attendance in real-time, and gather anonymous feedback with full administrative control over academic structures.',
+            description: 'Create hierarchical roles (admin, faculty, student), assign granular permissions, and manage profiles centrally with administrative controls and bulk-import/CSV support.',
             icon: <AssuredWorkloadIcon fontSize="large" />,
-            badge: 'Core',
+            badge: 'Academic',
         },
         {
-            title: '360° Feedback Loop',
-            description: 'Combines anonymous student feedback on classes with private teacher reflections, providing a holistic view of every session for administrative review.',
-            icon: <FactCheckIcon fontSize="large" />,
-            badge: 'Core',
+            title: 'Attendance & Timetables',
+            description: 'Real-time attendance tied to timetable data. Generate and export timetables, auto-sync sessions, and visualize attendance trends by class or semester.',
+            icon: <ScheduleIcon fontSize="large" />,
+            badge: 'Academic',
         },
+        {
+            title: 'Assignments & Submissions',
+            description: 'Create assignments with deadlines, accept file submissions, manage grading and teacher feedback, and track late/ resubmissions with an easy-to-use workflow.',
+            icon: <PlaylistAddCheckIcon fontSize="large" />,
+            badge: 'Academic',
+        },
+        {
+            title: '360° Feedback & Reflection',
+            description: 'Collect anonymous student feedback alongside private teacher reflections to give administrators an actionable view of each session.',
+            icon: <FactCheckIcon fontSize="large" />,
+            badge: 'Academic',
+        },
+        {
+            title: 'Reports & Analytics',
+            description: 'Comprehensive exports and drill-down analytics for attendance, feedback, and teacher performance. Export CSV/Excel and filter by subject, teacher and semester.',
+            icon: <InsightsIcon fontSize="large" />,
+            badge: 'Academic',
+        },
+        {
+            title: 'Timetable Automation & Interactive Editor',
+            description: 'Automated timetable generation with an interactive editor for manual review and conflict resolution. Visualize session load, attendance heatmaps, export reports and schedules for distribution.',
+            icon: <EventAvailableIcon fontSize="large" />,
+            badge: 'Academic',
+        },
+    ];
+
+    const securityFeatures = [
         {
             title: 'Enterprise-Grade Security',
-            description: 'Built with security first: mandatory email verification, brute-force lockouts, role-based access control (RBAC), JWT authentication, and granular rate limiting.',
+            description: 'Security-first design: mandatory email verification, brute-force protection, httpOnly server-side sessions, and granular RBAC across admin surfaces.',
             icon: <SecurityIcon fontSize="large" />,
+            badge: 'Security',
+        },
+        {
+            title: 'Audit & Access Control',
+            description: 'Comprehensive audit logs for sensitive actions, configurable retention policies, and easy export for compliance and investigations.',
+            icon: <HistoryIcon fontSize="large" />,
+            badge: 'Security',
+        },
+        {
+            title: 'Data Protection & Encryption',
+            description: 'At-rest and in-transit encryption, field-level protection for PII, and configurable data retention rules to meet compliance needs.',
+            icon: <HttpsIcon fontSize="large" />,
+            badge: 'Security',
+        },
+        {
+            title: 'Rate Limiting & Abuse Protection',
+            description: 'Per-endpoint rate-limits, IP throttling, and bot-detection heuristics to protect public endpoints, reduce abuse, and improve stability.',
+            icon: <BoltIcon fontSize="large" />,
+            badge: 'Security',
+        },
+        {
+            title: 'Session Management',
+            description: 'View and revoke active sessions with contextual device and location info; remote sign-out for lost devices and per-session activity history.',
+            icon: <VisibilityOffIcon fontSize="large" />,
+            badge: 'Security',
+        },
+        {
+            title: 'Input Validation & Sanitization',
+            description: 'Server-side validatin), input sanitization, CSRF protections, helmet headers and Content Security Policy to reduce injection and XSS risks.',
+            icon: <HistoryIcon fontSize="large" />,
+            badge: 'Security',
+        },
+    ];
+
+    const productivityFeatures = [
+        {
+            title: 'Cloud Drive & Filesystem',
+            description: 'Hierarchical cloud storage with role-based quotas, secure private sharing, expiring links, and public access codes for controlled sharing and collaboration.',
+            icon: <CloudUploadIcon fontSize="large" />,
+            badge: 'Core',
+        },
+        {
+            title: 'Task Management',
+            description: 'Organize your workflow with nested sub-tasks, priorities, due dates, and filtering options to stay on top of your work.',
+            icon: <PlaylistAddCheckIcon fontSize="large" />,
             badge: 'Core',
         },
         {
@@ -43,30 +122,9 @@ const FeaturesSection = () => {
             badge: 'New',
         },
         {
-            title: 'Advanced Cloud Drive',
-            description: 'Complete cloud storage solution with hierarchical folders, role-based quotas, and powerful sharing options including private sharing with expiration and public codes.',
-            icon: <CloudUploadIcon fontSize="large" />,
-            badge: 'Core',
-        },
-        {
-            title: 'Task Management',
-            description: 'Organize your workflow with nested sub-tasks, assignable priorities, due dates, and powerful filtering options to stay on top of your work.',
-            icon: <PlaylistAddCheckIcon fontSize="large" />,
-            badge: 'Core',
-        },        
-    ];
-
-    const advancedFeatures = [
-        {
             title: 'Real-Time Messaging',
-            description: 'Built-in real-time messaging with multi-device support. See who is online, send instant messages, and get read receipts without leaving the app.',
+            description: 'Built-in real-time messaging with multi-device support. See who is online, send instant messages, get read receipts and offline sync. Optimistic UI for fast interactions.',
             icon: <ForumIcon fontSize="large" />,
-            badge: 'Beta',
-        },
-        {
-            title: 'Customizable Profiles',
-            description: 'Personalize your account with a profile picture, detailed bio, and individual collaboration preferences.',
-            icon: <AccountCircleIcon fontSize="large" />,
             badge: null,
         },
         {
@@ -75,96 +133,114 @@ const FeaturesSection = () => {
             icon: <MarkEmailReadIcon fontSize="large" />,
             badge: null,
         },
-    ];
-
-    const comingSoonFeatures = [
         {
-            title: 'OAuth 2.0 Login',
-            description: 'Log in seamlessly with Google (OAuth 2.0) and utilize httpOnly cookies for an extra layer of security and convenience.',
-            icon: <VpnKeyIcon fontSize="large" />,
-            badge: 'Coming Soon',
+            title: 'Customizable Profiles',
+            description: 'Personalize your account with a profile picture, detailed bio, and individual collaboration preferences.',
+            icon: <AccountCircleIcon fontSize="large" />,
+            badge: null,
         },
     ];
 
-    const allFeatures = [...coreFeatures, ...advancedFeatures, ...comingSoonFeatures];
-    
+    const allFeatures = [...academicFeatures, ...securityFeatures, ...productivityFeatures];
+
     const getDisplayedFeatures = () => {
-        if (selectedTab === 0) return coreFeatures;
-        if (selectedTab === 1) return advancedFeatures;
-        if (selectedTab === 2) return comingSoonFeatures;
-        return coreFeatures;
+        if (selectedTab === 0) return academicFeatures;
+        if (selectedTab === 1) return securityFeatures;
+        if (selectedTab === 2) return productivityFeatures;
+        return academicFeatures;
     };
-    
+
     const displayedFeatures = getDisplayedFeatures();
+
+    // Theme-aware color helpers: use MUI theme palette to pick gradients per tab
+    const tabGradient = (theme) => {
+        if (selectedTab === 0) return `linear-gradient(135deg, ${theme.palette.primary.light} 0%, ${theme.palette.primary.main} 100%)`;
+        if (selectedTab === 1) return `linear-gradient(135deg, ${theme.palette.secondary.light} 0%, ${theme.palette.secondary.main} 100%)`;
+        return `linear-gradient(135deg, ${theme.palette.success.light} 0%, ${theme.palette.success.main} 100%)`;
+    };
 
     return (
         <Box id="features-section" sx={{ bgcolor: 'background.default', py: { xs: 8, sm: 10, md: 12 } }}>
         <Container maxWidth="lg">
             {/* Section Header */}
-            <Box sx={{ mb: { xs: 6, sm: 7, md: 8 } }}>
-              <motion.div
-                initial={{ opacity: 0, y: -20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5 }}
-              >
-                <Typography
-                  variant="h3"
-                  align="center"
-                  sx={{
-                    fontWeight: 800,
-                    mb: { xs: 2, sm: 2.5 },
-                    fontSize: { xs: '1.75rem', sm: '2.25rem', md: '2.75rem' },
-                    background: (theme) => `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                  }}
-                >
-                  Features Built for Excellence
-                </Typography>
+                        <Box sx={{ mb: { xs: 6, sm: 7, md: 8 } }}>
+                            <motion.div
+                                initial={{ opacity: 0, y: -20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.5 }}
+                            >
+                                <Typography
+                                    variant="h3"
+                                    align="center"
+                                    sx={{
+                                        fontWeight: 800,
+                                        mb: { xs: 2, sm: 2.5 },
+                                        fontSize: { xs: '1.75rem', sm: '2.25rem', md: '2.75rem' },
+                                        background: (theme) => `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
+                                        WebkitBackgroundClip: 'text',
+                                        WebkitTextFillColor: 'transparent',
+                                    }}
+                                >
+                                    Features Built for Excellence
+                                </Typography>
 
-                <Typography 
-                  variant="h6" 
-                  align="center" 
-                  color="text.secondary"
-                  sx={{ 
-                    maxWidth: '750px', 
-                    mx: 'auto', 
-                    fontWeight: 400,
-                    fontSize: { xs: '0.95rem', sm: '1.1rem', md: '1.25rem' },
-                    px: { xs: 2, sm: 3 }
-                  }}
-                >
-                  A complete suite of tools designed to streamline your workflow and enhance modern campus life
-                </Typography>
-              </motion.div>
-            </Box>
+                                <Typography
+                                    variant="h6"
+                                    align="center"
+                                    color="text.secondary"
+                                    sx={{
+                                        maxWidth: '750px',
+                                        mx: 'auto',
+                                        fontWeight: 400,
+                                        fontSize: { xs: '0.95rem', sm: '1.1rem', md: '1.25rem' },
+                                        px: { xs: 2, sm: 3 },
+                                    }}
+                                >
+                                    A complete suite of tools designed to streamline your workflow and enhance modern campus life
+                                </Typography>
+                            </motion.div>
+                        </Box>
 
             {/* Feature Tabs */}
             <Box sx={{ mb: { xs: 4, sm: 5 }, display: 'flex', justifyContent: 'center' }}>
-              <Tabs
-                value={selectedTab}
-                onChange={(e, newValue) => setSelectedTab(newValue)}
-                variant="scrollable"
-                scrollButtons="auto"
-                allowScrollButtonsMobile
-                sx={{
-                  '& .MuiTab-root': {
-                    fontWeight: 600,
-                    fontSize: { xs: '0.85rem', sm: '0.95rem' },
-                    textTransform: 'none',
-                    minHeight: { xs: 44, sm: 48 },
-                    px: { xs: 2, sm: 3 },
-                  },
-                  '& .Mui-selected': {
-                    color: 'primary.main',
-                  },
-                }}
-              >
-                <Tab label={`Core Features (${coreFeatures.length})`} />
-                <Tab label={`Advanced (${advancedFeatures.length})`} />
-                <Tab label={`Coming Soon (${comingSoonFeatures.length})`} />
-              </Tabs>
+                            <Tabs
+                                value={selectedTab}
+                                onChange={(e, newValue) => setSelectedTab(newValue)}
+                                variant="scrollable"
+                                scrollButtons="auto"
+                                allowScrollButtonsMobile
+                                sx={{
+                                    bgcolor: 'transparent',
+                                    px: { xs: 1, sm: 2 },
+                                    '& .MuiTab-root': {
+                                        fontWeight: 700,
+                                        fontSize: { xs: '0.92rem', sm: '1rem' },
+                                        textTransform: 'none',
+                                        minHeight: { xs: 44, sm: 48 },
+                                        px: { xs: 2, sm: 3 },
+                                        borderRadius: 2,
+                                        py: 0.5,
+                                        transition: 'all 200ms ease',
+                                        color: 'text.primary',
+                                    },
+                                    // selected tab as pill with primary background
+                                    '& .MuiTab-root.Mui-selected': {
+                                        color: 'primary.contrastText',
+                                        bgcolor: 'primary.main',
+                                        boxShadow: (theme) => theme.shadows[4],
+                                        transform: 'translateY(-2px)',
+                                    },
+                                    // remove default indicator to keep pill look
+                                    '& .MuiTabs-indicator': {
+                                        display: 'none',
+                                    },
+                                }}
+                            >
+                                <Tab label={`Academic (${academicFeatures.length})`} />
+                                <Tab label={`Security (${securityFeatures.length})`} />
+                                <Tab label={`Productivity (${productivityFeatures.length})`} />
+                            </Tabs>
             </Box>
             {/* Feature Cards Grid */}
             <Box
@@ -194,15 +270,14 @@ const FeaturesSection = () => {
                             sx={{
                                 height: '100%',
                                 textAlign: 'center',
-                                borderRadius: 3,
-                                p: { xs: 2, sm: 2.5 },
+                                            border: '2px solid',
+                                            borderColor: (theme) => selectedTab === 0 ? theme.palette.primary.light : selectedTab === 1 ? theme.palette.secondary.light : theme.palette.success.light,
                                 display: 'flex',
                                 flexDirection: 'column',
                                 alignItems: 'center',
                                 position: 'relative',
                                 transition: 'all 0.3s ease',
-                                border: '2px solid',
-                                borderColor: 'divider',
+                                
                                 '&:hover': {
                                     transform: 'translateY(-8px)',
                                     boxShadow: (theme) => theme.shadows[12],
@@ -270,10 +345,9 @@ const FeaturesSection = () => {
                                     height: { xs: 65, sm: 70 },
                                     mx: 'auto',
                                     borderRadius: '50%',
-                                    background: (theme) => theme.palette.mode === 'light'
-                                        ? 'linear-gradient(135deg, #29B6F6 0%, #1976D2 100%)'
-                                        : 'linear-gradient(135deg, #0277BD 0%, #01579B 100%)',
-                                    color: 'primary.contrastText',
+                                    // use theme-aware gradient based on active tab for a modern, consistent look
+                                    background: (theme) => tabGradient(theme),
+                                    color: (theme) => selectedTab === 0 ? theme.palette.primary.contrastText : selectedTab === 1 ? theme.palette.secondary.contrastText : theme.palette.success.contrastText,
                                     boxShadow: 3,
                                     transition: 'all 0.3s ease',
                                 }}

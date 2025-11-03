@@ -98,7 +98,15 @@ export const adminUserSlice = createSlice({
             .addCase(getPendingApplications.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.isSuccess = true;
-                state.pendingApplications = action.payload;
+                // Normalize wrapped or raw responses into an array
+                const payload = action.payload;
+                state.pendingApplications = Array.isArray(payload)
+                    ? payload
+                    : payload && Array.isArray(payload.data)
+                        ? payload.data
+                        : payload && Array.isArray(payload.applications)
+                            ? payload.applications
+                            : [];
             })
             .addCase(getPendingApplications.rejected, (state, action) => {
                 state.isLoading = false;
@@ -114,10 +122,15 @@ export const adminUserSlice = createSlice({
             .addCase(reviewApplication.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.isSuccess = true;
-                // Remove the reviewed application from the state
-                state.pendingApplications = state.pendingApplications.filter(
-                    (app) => app._id !== action.payload.user.id
-                );
+                // Normalize payload then remove the reviewed application
+                const payload = action.payload;
+                const data = payload && payload.data ? payload.data : payload;
+                const userId = data?.user?.id || data?.user?._id || data?.userId || null;
+                if (userId) {
+                    state.pendingApplications = state.pendingApplications.filter(
+                        (app) => app._id !== userId
+                    );
+                }
             })
             .addCase(reviewApplication.rejected, (state, action) => {
                 state.isLoading = false;
@@ -156,10 +169,15 @@ export const adminUserSlice = createSlice({
             .addCase(promoteToFaculty.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.isSuccess = true;
-                // Remove the promoted user from the list of general 'users'
-                state.userList = state.userList.filter(
-                    (user) => user._id !== action.payload.user.id
-                );
+                // Normalize payload and remove the promoted user from the list
+                const payload = action.payload;
+                const data = payload && payload.data ? payload.data : payload;
+                const userId = data?.user?.id || data?.user?._id || data?.userId || null;
+                if (userId) {
+                    state.userList = state.userList.filter(
+                        (user) => user._id !== userId
+                    );
+                }
             })
             .addCase(promoteToFaculty.rejected, (state, action) => {
                 state.isLoading = false;
@@ -176,10 +194,12 @@ export const adminUserSlice = createSlice({
                 state.isLoading = false;
                 state.isSuccess = true;
                 const { studentId } = action.meta.arg;
-                const updatedDetails = action.payload.studentDetails;
+                const payload = action.payload;
+                const data = payload && payload.data ? payload.data : payload;
+                const updatedDetails = data?.studentDetails || data?.updatedStudent || null;
 
                 const index = state.userList.findIndex((user) => user._id === studentId);
-                if (index !== -1) {
+                if (index !== -1 && updatedDetails) {
                     state.userList[index].studentDetails = updatedDetails;
                 }
             })
@@ -199,10 +219,12 @@ export const adminUserSlice = createSlice({
                 state.isSuccess = true;
                 
                 const { studentId } = action.meta.arg;
-                const { enrolledSubjects } = action.payload;
+                const payload = action.payload;
+                const data = payload && payload.data ? payload.data : payload;
+                const enrolledSubjects = data?.enrolledSubjects || data?.data?.enrolledSubjects || null;
 
                 const index = state.userList.findIndex((user) => user._id === studentId);
-                if (index !== -1) {
+                if (index !== -1 && enrolledSubjects) {
                     state.userList[index].studentDetails.enrolledSubjects = enrolledSubjects;
                 }
             })

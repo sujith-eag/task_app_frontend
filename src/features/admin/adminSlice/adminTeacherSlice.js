@@ -65,7 +65,15 @@ export const adminTeacherSlice = createSlice({
             .addCase(getAllTeachers.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.isSuccess = true;
-                state.teachers = action.payload;
+                // Normalize wrapped or raw responses into an array
+                const payload = action.payload;
+                state.teachers = Array.isArray(payload)
+                    ? payload
+                    : payload && Array.isArray(payload.data)
+                        ? payload.data
+                        : payload && Array.isArray(payload.teachers)
+                            ? payload.teachers
+                            : [];
             })
             .addCase(getAllTeachers.rejected, (state, action) => {
                 state.isLoading = false;
@@ -82,11 +90,13 @@ export const adminTeacherSlice = createSlice({
                 state.isLoading = false;
                 state.isSuccess = true;
                 const { teacherId } = action.meta.arg; // teacherId from the original thunk argument
-                const updatedDetails = action.payload.teacherDetails;
+                const payload = action.payload;
+                const data = payload && payload.data ? payload.data : payload;
+                const updatedDetails = data?.teacherDetails || data?.updatedTeacher || null;
 
                 state.teachers = state.teachers.map((teacher) => {
                     if(teacher._id === teacherId){
-                        return{ ...teacher, teacherDetails: updatedDetails};
+                        return{ ...teacher, teacherDetails: updatedDetails || teacher.teacherDetails};
                     }
                     return teacher;
                 });

@@ -75,7 +75,13 @@ export const adminSubjectSlice = createSlice({
             .addCase(getSubjects.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.isSuccess = true;
-                state.subjects = action.payload;
+                // Backend responses are wrapped as { success, count, data }
+                const payload = action.payload;
+                state.subjects = Array.isArray(payload)
+                    ? payload
+                    : payload && Array.isArray(payload.data)
+                        ? payload.data
+                        : [];
             })
             .addCase(getSubjects.rejected, (state, action) => {
                 state.isLoading = false;
@@ -91,7 +97,9 @@ export const adminSubjectSlice = createSlice({
             .addCase(createSubject.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.isSuccess = true;
-                state.subjects.push(action.payload);
+                const payload = action.payload;
+                const created = payload && payload.data ? payload.data : payload;
+                if (created) state.subjects.push(created);
             })
             .addCase(createSubject.rejected, (state, action) => {
                 state.isLoading = false;
@@ -107,11 +115,13 @@ export const adminSubjectSlice = createSlice({
             .addCase(updateSubject.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.isSuccess = true;
+                const payload = action.payload;
+                const updated = payload && payload.data ? payload.data : payload;
                 // Find index of updated subject and replace it in the state
-                const index = state.subjects.findIndex(s => s._id === action.payload._id);
+                const index = state.subjects.findIndex(s => s._id === updated._id || s._id === updated.id);
                 if (index !== -1) {
-                    state.subjects[index] = action.payload
-                };
+                    state.subjects[index] = updated;
+                }
             })
             .addCase(updateSubject.rejected, (state, action) => {
                 state.isLoading = false;
@@ -127,9 +137,13 @@ export const adminSubjectSlice = createSlice({
             .addCase(deleteSubject.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.isSuccess = true;
-                // Remove the deleted subject from the state
-                // state.subjects = state.subjects.filter(s => s._id !== action.payload);
-                state.subjects = state.subjects.filter(s => s._id !== action.payload.id);
+                // Normalize payload and remove by id/_id
+                const payload = action.payload;
+                const result = payload && payload.data ? payload.data : payload;
+                const deletedId = result && (result.id || result._id) ? (result.id || result._id) : (typeof payload === 'string' ? payload : null);
+                if (deletedId) {
+                    state.subjects = state.subjects.filter(s => s._id !== deletedId && s.id !== deletedId);
+                }
             })
             .addCase(deleteSubject.rejected, (state, action) => {
                 state.isLoading = false;

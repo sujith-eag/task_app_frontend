@@ -90,7 +90,12 @@ export const adminReportingSlice = createSlice({
             .addCase(getAttendanceStats.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.isSuccess = true;
-                state.attendanceStats = action.payload;
+                // Backend wraps responses as { success: true, data: [...] }.
+                // Normalize to the actual data payload so components receive an array.
+                const payload = action.payload;
+                if (Array.isArray(payload)) state.attendanceStats = payload;
+                else if (payload && Array.isArray(payload.data)) state.attendanceStats = payload.data;
+                else state.attendanceStats = [];
             })
             .addCase(getAttendanceStats.rejected, (state, action) => {
                 state.isLoading = false;
@@ -106,7 +111,10 @@ export const adminReportingSlice = createSlice({
             .addCase(getFeedbackSummary.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.isSuccess = true;
-                state.feedbackSummary = action.payload;
+                const payload = action.payload;
+                if (Array.isArray(payload)) state.feedbackSummary = payload;
+                else if (payload && Array.isArray(payload.data)) state.feedbackSummary = payload.data;
+                else state.feedbackSummary = [];
             })
             .addCase(getFeedbackSummary.rejected, (state, action) => {
                 state.isLoading = false;
@@ -122,7 +130,8 @@ export const adminReportingSlice = createSlice({
             })
             .addCase(getFeedbackReport.fulfilled, (state, action) => {
                 state.isDetailLoading = false;
-                state.detailedReport = action.payload;
+                const payload = action.payload;
+                state.detailedReport = payload && payload.data ? payload.data : payload;
             })
             .addCase(getFeedbackReport.rejected, (state, action) => {
                 state.isDetailLoading = false;
@@ -138,7 +147,8 @@ export const adminReportingSlice = createSlice({
             })
             .addCase(getTeacherReport.fulfilled, (state, action) => {
                 state.isTeacherReportLoading = false;
-                state.teacherReport = action.payload;
+                const payload = action.payload;
+                state.teacherReport = payload && payload.data ? payload.data : payload;
             })
             .addCase(getTeacherReport.rejected, (state, action) => {
                 state.isTeacherReportLoading = false;
@@ -153,7 +163,8 @@ export const adminReportingSlice = createSlice({
             })
             .addCase(getStudentReport.fulfilled, (state, action) => {
                 state.isStudentReportLoading = false;
-                state.studentReport = action.payload;
+                const payload = action.payload;
+                state.studentReport = payload && payload.data ? payload.data : payload;
             })
             .addCase(getStudentReport.rejected, (state, action) => {
                 state.isStudentReportLoading = false;

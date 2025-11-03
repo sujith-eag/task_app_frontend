@@ -5,6 +5,7 @@ import { fetchSessions, revokeSession } from '../profileSlice.js';
 import { getDeviceId } from '../../../utils/deviceId.js';
 import ConfirmationDialog from '../../../components/ConfirmationDialog.jsx';
 import { toast } from 'react-toastify';
+import fetchWithRetry from '../../../utils/fetchWithRetry.js';
 
 const SessionManager = () => {
   const dispatch = useDispatch();
@@ -49,13 +50,16 @@ const SessionManager = () => {
     if (!ip || ip.startsWith('::ffff:127') || ip === '::1' || ip === '127.0.0.1') return;
     try {
       const cleaned = ip.replace('::ffff:', '');
-      const res = await fetch(`https://ipapi.co/${cleaned}/json/`);
-      if (!res.ok) return;
+      // Use dev proxy when running in dev to avoid CORS; in production call ipapi.co directly
+      const url = import.meta.env.DEV ? `/ipapi/${cleaned}/json/` : `https://ipapi.co/${cleaned}/json/`;
+
+      const res = await fetchWithRetry(url, {}, 3, 400);
+      if (!res || !res.ok) return;
       const data = await res.json();
       const pretty = [data.city, data.region, data.country_name].filter(Boolean).join(', ');
       setGeoMap((m) => ({ ...m, [deviceId]: pretty }));
     } catch (err) {
-      // ignore geo errors
+      // ignore geo errors — best-effort only
     }
   };
 
