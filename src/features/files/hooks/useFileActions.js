@@ -6,6 +6,11 @@ import {
     useDeleteFile,
     useDeleteFolder,
     useBulkDelete,
+    useRestoreFile,
+    usePurgeFile,
+    useEmptyTrash,
+    useBulkRestore,
+    useBulkPurge,
     useRenameItem,
     useMoveItem,
     useRevokePublicShare,
@@ -33,6 +38,11 @@ export const useFileActions = () => {
     const { mutateAsync: deleteFileMutate } = useDeleteFile();
     const { mutateAsync: deleteFolderMutate } = useDeleteFolder();
     const { mutateAsync: bulkDeleteMutate } = useBulkDelete();
+    const { mutateAsync: restoreFileMutate } = useRestoreFile();
+    const { mutateAsync: purgeFileMutate } = usePurgeFile();
+    const { mutateAsync: emptyTrashMutate } = useEmptyTrash();
+    const { mutateAsync: bulkRestoreMutate } = useBulkRestore();
+    const { mutateAsync: bulkPurgeMutate } = useBulkPurge();
     const { mutateAsync: renameItemMutate } = useRenameItem();
     const { mutateAsync: moveItemMutate } = useMoveItem();
     const { mutateAsync: revokePublicShareMutate } = useRevokePublicShare();
@@ -62,6 +72,51 @@ export const useFileActions = () => {
         fileIds.forEach(id => startOperation(id, 'deleting'));
         try {
             return await bulkDeleteMutate(fileIds);
+        } finally {
+            fileIds.forEach(id => stopOperation(id));
+        }
+    };
+
+    /* Trash actions */
+    const restoreItem = async (fileId) => {
+        startOperation(fileId, 'restoring');
+        try {
+            return await restoreFileMutate(fileId);
+        } finally {
+            stopOperation(fileId);
+        }
+    };
+
+    const purgeItem = async (fileId) => {
+        startOperation(fileId, 'purging');
+        try {
+            return await purgeFileMutate(fileId);
+        } finally {
+            stopOperation(fileId);
+        }
+    };
+
+    const emptyTrash = async () => {
+        try {
+            return await emptyTrashMutate();
+        } catch (e) {
+            // toast handled by mutation
+        }
+    };
+
+    const bulkRestoreItems = async (fileIds) => {
+        fileIds.forEach(id => startOperation(id, 'restoring'));
+        try {
+            return await bulkRestoreMutate(fileIds);
+        } finally {
+            fileIds.forEach(id => stopOperation(id));
+        }
+    };
+
+    const bulkPurgeItems = async (fileIds) => {
+        fileIds.forEach(id => startOperation(id, 'purging'));
+        try {
+            return await bulkPurgeMutate(fileIds);
         } finally {
             fileIds.forEach(id => stopOperation(id));
         }
@@ -104,7 +159,8 @@ export const useFileActions = () => {
     const renameItem = async (itemId, newName) => {
         startOperation(itemId, 'renaming');
         try {
-            return await renameItemMutate({ folderId: itemId, newName });
+            // mutateAsync expects the same variable shape as the underlying mutation: { folderId, renameData }
+            return await renameItemMutate({ folderId: itemId, renameData: { newName } });
         } finally {
             stopOperation(itemId);
         }
@@ -150,15 +206,31 @@ export const useFileActions = () => {
         }
     };
     
-    return { 
-        navigateToFolder, 
-        deleteSingleItem, 
-        deleteBulkItems, 
-        downloadItems, 
-        renameItem,
-        moveItemToFolder,
-        removeSharedAccess, 
-        removeBulkSharedAccess, 
-        revokePublicLink
-     };
+        const actions = { 
+                navigateToFolder, 
+                deleteSingleItem, 
+                deleteBulkItems, 
+                downloadItems, 
+                renameItem,
+                moveItemToFolder,
+                removeSharedAccess, 
+                removeBulkSharedAccess, 
+                revokePublicLink,
+                // Trash actions
+                restoreItem,
+                purgeItem,
+                emptyTrash,
+                bulkRestoreItems,
+                bulkPurgeItems
+        };
+
+        // Useful for debugging in the browser console when Vite bundles this module
+        try {
+            // eslint-disable-next-line no-console
+            console.debug && console.debug('useFileActions initialized with actions:', Object.keys(actions));
+        } catch (e) {
+            // ignore
+        }
+
+        return actions;
 };

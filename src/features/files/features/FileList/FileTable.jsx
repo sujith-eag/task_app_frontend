@@ -162,32 +162,20 @@ const FileTable = () => {
                         <Table>
                             <TableHead>
                                 <TableRow>
-                                    <TableCell 
-	                                    padding="checkbox"
-										sx={{ width: '5%' }}
-										>
-                            {/* "Select All" checkbox */}
+                                    <TableCell sx={{ width: 72, textAlign: 'center' }}>Actions</TableCell>
+
+                                    <TableCell sx={{ width: '55%' }}>Name</TableCell>
+
+                                    <TableCell sx={{ width: '25%' }}>Date / Source</TableCell>
+
+                                    <TableCell padding="checkbox" sx={{ width: '5%' }}>
+                                        {/* "Select All" checkbox */}
                                         <Checkbox
-                                        // Dynamic props based on the current list
                                             indeterminate={selectedFiles.length > 0 && selectedFiles.length < currentList.length}
                                             checked={currentList.length > 0 && selectedFiles.length === currentList.length}
                                             onChange={handleSelectAll}
                                         />
                                     </TableCell>
-			
-			                        <TableCell 
-			                            sx={{ width: '55%' }}>Name
-			                        </TableCell>
-			
-			                        <TableCell 
-			                            sx={{ width: '25%' }}>Date / Source
-			                        </TableCell>
-			
-			                        <TableCell 
-			                            align="right" 
-			                            sx={{ width: '20%' }}>Actions
-			                        </TableCell>
-
                                 </TableRow>
                             </TableHead>
                             <TableBody>

@@ -243,6 +243,88 @@ export const useBulkRemoveAccess = () => {
   };
 };
 
+// --- Trash Queries & Mutations ---
+
+export const useListTrash = () => {
+  return useQuery({ queryKey: ['trash'], queryFn: fileService.listTrash });
+};
+
+export const useGetTrashStats = () => {
+  return useQuery({ queryKey: ['trashStats'], queryFn: fileService.getTrashStats });
+};
+
+export const useRestoreFile = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (fileId) => fileService.restoreFile(fileId),
+    onSuccess: () => {
+      toast.success('Item restored.');
+      queryClient.invalidateQueries(['trash']);
+      queryClient.invalidateQueries(['trashStats']);
+      queryClient.invalidateQueries(['files']);
+    },
+    onError: (err) => toast.error(err.message || 'Failed to restore.'),
+  });
+};
+
+export const usePurgeFile = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (fileId) => fileService.purgeFile(fileId),
+    onSuccess: () => {
+      toast.success('Item permanently deleted.');
+      queryClient.invalidateQueries(['trash']);
+      queryClient.invalidateQueries(['trashStats']);
+      queryClient.invalidateQueries(['storageUsage']);
+    },
+    onError: (err) => toast.error(err.message || 'Failed to delete.'),
+  });
+};
+
+export const useEmptyTrash = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => fileService.emptyTrash(),
+    onSuccess: () => {
+      toast.info('Trash emptied.');
+      queryClient.invalidateQueries(['trash']);
+      queryClient.invalidateQueries(['trashStats']);
+      queryClient.invalidateQueries(['storageUsage']);
+    },
+    onError: (err) => toast.error(err.message || 'Failed to empty trash.'),
+  });
+};
+
+export const useBulkRestore = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (fileIds) => fileService.bulkRestore(fileIds),
+    onSuccess: (data) => {
+      const count = (data && data.ids && data.ids.length) || 0;
+      toast.success(`${count || 'Items'} restored.`);
+      queryClient.invalidateQueries(['trash']);
+      queryClient.invalidateQueries(['trashStats']);
+      queryClient.invalidateQueries(['files']);
+    },
+    onError: (err) => toast.error(err.message || 'Failed to restore items.'),
+  });
+};
+
+export const useBulkPurge = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (fileIds) => fileService.bulkPurge(fileIds),
+    onSuccess: (data) => {
+      const count = (data && data.ids && data.ids.length) || 0;
+      toast.success(`${count || 'Items'} permanently deleted.`);
+      queryClient.invalidateQueries(['trash']);
+      queryClient.invalidateQueries(['trashStats']);
+      queryClient.invalidateQueries(['storageUsage']);
+    },
+    onError: (err) => toast.error(err.message || 'Failed to delete items.'),
+  });
+};
+
 // Export other lightweight wrappers as needed in future
 
 export default {};

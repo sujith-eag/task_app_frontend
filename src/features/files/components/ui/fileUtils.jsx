@@ -69,3 +69,118 @@ export const getFileIcon = (mimeType) => {
             return <ArticleIcon {...iconProps} />; 
     }
 };
+
+    // Centralized mapping of MIME types (and common fallbacks) to friendly display names.
+    // Keep this aligned with backend allowed mimetypes in `file.middleware.js`.
+    export const FILE_TYPE_LABELS = {
+        // Images
+        'image/jpeg': 'JPEG image',
+        'image/jpg': 'JPEG image',
+        'image/png': 'PNG image',
+        'image/gif': 'GIF image',
+        'image/webp': 'WebP image',
+        'image/svg+xml': 'SVG image',
+
+        // Documents
+        'application/pdf': 'PDF document',
+        'application/msword': 'Word document (.doc)',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'Word document (.docx)',
+        'application/vnd.ms-powerpoint': 'PowerPoint (.ppt)',
+        'application/vnd.openxmlformats-officedocument.presentationml.presentation': 'PowerPoint (.pptx)',
+        'application/vnd.ms-excel': 'Excel spreadsheet (.xls)',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'Excel spreadsheet (.xlsx)',
+
+        // Archives
+        'application/zip': 'Archive (zip)',
+        'application/x-rar-compressed': 'Archive (rar)',
+        'application/vnd.rar': 'Archive (rar)',
+        'application/x-7z-compressed': 'Archive (7z)',
+
+        // Notebooks & code
+        'application/x-ipynb+json': 'Jupyter Notebook (.ipynb)',
+        'application/ipynb': 'Jupyter Notebook (.ipynb)',
+        'text/x-python': 'Python script (.py)',
+        'application/x-python': 'Python script (.py)',
+        'application/typescript': 'TypeScript',
+        'text/javascript': 'JavaScript',
+        'text/x-java-source': 'Java source',
+        'text/x-csrc': 'C source',
+        'text/x-c++src': 'C++ source',
+        'application/x-sh': 'Shell script (.sh)',
+
+        // Text & structured
+        'text/markdown': 'Markdown',
+        'text/plain': 'Text file',
+        'text/csv': 'CSV',
+        'text/html': 'HTML',
+        'text/css': 'CSS',
+        'application/json': 'JSON',
+
+        // Fallback / generic
+        'application/octet-stream': 'Binary file'
+    };
+
+    // Export the canonical allowed mimetypes used by the app (mirror of backend file.middleware)
+    export const ALLOWED_MIME_TYPES = [
+        // Images
+        'image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml',
+        // Documents
+        'application/pdf',
+        'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.ms-powerpoint', 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+        'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        // Archives
+        'application/zip', 'application/x-rar-compressed', 'application/vnd.rar', 'application/x-7z-compressed',
+        // Programming & notebooks
+        'text/x-python', 'application/x-ipynb+json', 'application/typescript', 'text/x-java-source', 'text/x-csrc', 'text/x-c++src',
+        'text/markdown', 'application/x-sh',
+        // Text files
+        'text/plain', 'text/csv', 'text/javascript', 'text/css', 'text/html', 'application/json',
+        // Fallback
+        'application/octet-stream'
+    ];
+
+    /**
+     * Format bytes into a human-readable string.
+     * Example: 1536 -> "1.50 KB"
+     */
+    export const formatBytes = (bytes, decimals = 2) => {
+        if (bytes === 0) return '0 Bytes';
+        if (!bytes && bytes !== 0) return '0 Bytes';
+        const k = 1024;
+        const dm = decimals < 0 ? 0 : decimals;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+    };
+
+    /**
+     * Returns a friendly label for a MIME type using FILE_TYPE_LABELS as the canonical map.
+     * Falls back to generic groups like 'Image' or 'Text file' when possible.
+     */
+    export const formatFileType = (mime) => {
+        if (!mime) return '';
+        const m = String(mime).toLowerCase();
+        if (FILE_TYPE_LABELS[m]) return FILE_TYPE_LABELS[m];
+        if (m.startsWith('image/')) return 'Image';
+        if (m.startsWith('text/')) {
+            if (m.includes('markdown')) return 'Markdown';
+            if (m.includes('csv')) return 'CSV';
+            if (m.includes('html')) return 'HTML';
+            if (m.includes('css')) return 'CSS';
+            if (m.includes('javascript')) return 'JavaScript';
+            return 'Text file';
+        }
+        const parts = m.split('/');
+        if (parts.length > 1 && parts[1]) return parts[1].toUpperCase();
+        return m.toUpperCase();
+    };
+
+    export default {
+        getFileIcon,
+        getFileColor,
+        FILE_TYPE_LABELS,
+        ALLOWED_MIME_TYPES,
+        formatBytes,
+        formatFileType
+    };

@@ -27,6 +27,7 @@ import TaskDashboard from './features/tasks/pages/TaskDashboard.jsx'
 import ProfilePage from './features/profile/pages/ProfilePage.jsx'
 import FilesPage from './features/files/pages/FilePage.jsx';
 import ChatPage from './features/chat/pages/ChatPage.jsx';
+import TrashPage from './features/files/features/TrashList/TrashPage.jsx';
 
 // --- ROLE-SPECIFIC PAGES ---
 import StudentDashboardPage from './features/student/pages/StudentDashboardPage.jsx';
@@ -72,6 +73,7 @@ function App() {
                 <Route path="/dashboard" element={<TaskDashboard />} />
                 <Route path='/profile' element={<ProfilePage />} />
                 <Route path='/files' element={<FilesPage />} />
+                <Route path='/trash' element={<TrashPage />} />
                 <Route path='/chat' element={<ChatPage />} />
             </Route>
 

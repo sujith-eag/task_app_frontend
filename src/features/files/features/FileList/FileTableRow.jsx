@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Avatar, TableRow, TableCell, Checkbox, Box, Typography, CircularProgress, Tooltip, Chip } from '@mui/material';
-import FolderIcon from '@mui/icons-material/Folder';
+import FolderOpenIcon from '@mui/icons-material/FolderOpen';
+import Badge from '@mui/material/Badge';
 
 import { useFileActions } from '../../hooks/useFileActions.js';
 import FileActionMenu from './FileActionMenu.jsx';
-import { getFileIcon, getFileColor } from '../../components/ui/fileUtils.jsx';
+import { getFileIcon, getFileColor, formatBytes, formatFileType } from '../../components/ui/fileUtils.jsx';
 import { useFileOperations } from '../../hooks/FileOperationContext.jsx';
 
 const FileTableRow = ({ file, isSelected, onSelectFile, onDeleteClick, onNavigate, context, onOpenShare, onOpenPublicShare, onOpenManageShare, onOpenRename, onOpenMove }) => {
@@ -40,6 +41,8 @@ const FileTableRow = ({ file, isSelected, onSelectFile, onDeleteClick, onNavigat
         return ''; // Should not happen in this tab, but as a fallback
     };
 
+    // formatBytes and formatFileType now live in fileUtils and are imported above.
+
 
     return (
         <>
@@ -69,29 +72,70 @@ const FileTableRow = ({ file, isSelected, onSelectFile, onDeleteClick, onNavigat
                     transition: 'all 0.2s ease-in-out',
                 }}
             >
-                <TableCell padding="checkbox">
-					{/* Visible in All tabs */}
-                    <Checkbox 
-                        checked={isSelected} 
-                        onClick={(e) => e.stopPropagation()}
-                        onChange={(e) => { e.stopPropagation(); onSelectFile(file._id); }}
-                    />
+
+                {/* Actions moved to the start of the row so they're easy to reach */}
+                <TableCell sx={{ width: 72, textAlign: 'center' }}>
+                    {/* Prevent opening menu from triggering row navigation */}
+                    <Box onClick={(e) => e.stopPropagation()} sx={{ display: 'flex', justifyContent: 'center' }}>
+                        {status ? (
+                            <Chip label={`${status}...`} size="small" />
+                        ) : (
+                            <FileActionMenu
+                                file={file}
+                                onManageShare={() => onOpenManageShare && onOpenManageShare(file._id)}
+                                onDelete={() => onDeleteClick(file)}
+                                onShare={() => onOpenShare && onOpenShare(file._id)}
+                                onPublicShare={() => onOpenPublicShare && onOpenPublicShare(file._id)}
+                                onRemove={() => removeSharedAccess(file._id)}
+                                onRevokePublic={() => revokePublicLink(file._id)}
+                                onDownload={() => downloadItems([file])}
+                                onOpenRename={() => onOpenRename && onOpenRename(file._id)}
+                                onOpenMove={() => onOpenMove && onOpenMove(file._id)}
+                            />
+                        )}
+                    </Box>
                 </TableCell>
 
                 <TableCell component="th" scope="row">
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <Avatar 
-                            variant="rounded" 
-                            sx={{ bgcolor: file.isFolder ? 'transparent' : getFileColor(file.fileType), mr: 2 }}>
-                            {file.isFolder 
-                                ? <FolderIcon 
-                                sx={{ color: 'text.primary' }} /> 
-                                : getFileIcon(file.fileType)}
-                        </Avatar>
+                        <Badge
+                            overlap="circular"
+                            badgeContent={file.isFolder && file.descendantCount ? file.descendantCount : null}
+                            color="primary"
+                            sx={{ mr: 2 }}
+                        >
+                            <Avatar
+                                variant="rounded"
+                                sx={{
+                                    bgcolor: file.isFolder ? 'warning.main' : getFileColor(file.fileType),
+                                    mr: 2,
+                                    width: 44,
+                                    height: 44,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    boxShadow: file.isFolder ? 2 : 'none',
+                                    border: file.isFolder ? `1px solid rgba(0,0,0,0.08)` : 'none'
+                                }}
+                            >
+                                {file.isFolder
+                                    ? <FolderOpenIcon sx={{ color: 'common.white' }} />
+                                    : getFileIcon(file.fileType)}
+                            </Avatar>
+                        </Badge>
                         {/* Truncate long filenames, show full name on hover/focus */}
-                        <Tooltip title={file.fileName} placement="top" enterDelay={400}>
-                            <Typography noWrap sx={{ maxWidth: { xs: 160, sm: 320, md: 420 } }}>{file.fileName}</Typography>
-                        </Tooltip>
+                        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                            <Tooltip title={file.fileName} placement="top" enterDelay={400}>
+                                <Typography noWrap sx={{ maxWidth: { xs: 160, sm: 320, md: 420 }, fontWeight: 500 }}>{file.fileName}</Typography>
+                            </Tooltip>
+
+                            {/* Show file type and size under the filename for files (not folders) */}
+                            {!file.isFolder && (
+                                <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5 }}>
+                                    {formatFileType(file.fileType)}{file.size ? ` • ${formatBytes(file.size)}` : ''}
+                                </Typography>
+                            )}
+                        </Box>
                     </Box>
                 </TableCell>
 
@@ -120,26 +164,13 @@ const FileTableRow = ({ file, isSelected, onSelectFile, onDeleteClick, onNavigat
                 })()}
                 </TableCell>
 
-                <TableCell align="right">
-                    {/* Prevent opening menu from triggering row navigation */}
-                    <Box onClick={(e) => e.stopPropagation()}>
-                        {status ? (
-                            <Chip label={`${status}...`} size="small" />
-                        ) : (
-                            <FileActionMenu
-                                file={file}
-                                onManageShare={() => onOpenManageShare && onOpenManageShare(file._id)}
-                                onDelete={() => onDeleteClick(file)}
-                                onShare={() => onOpenShare && onOpenShare(file._id)}
-                                onPublicShare={() => onOpenPublicShare && onOpenPublicShare(file._id)}
-                                onRemove={() => removeSharedAccess(file._id)}
-                                onRevokePublic={() => revokePublicLink(file._id)}
-                                onDownload={() => downloadItems([file])}
-                                onOpenRename={() => onOpenRename && onOpenRename(file._id)}
-                                onOpenMove={() => onOpenMove && onOpenMove(file._id)}
-                            />
-                        )}
-                    </Box>
+                <TableCell padding="checkbox">
+                    {/* Visible in All tabs */}
+                    <Checkbox 
+                        checked={isSelected} 
+                        onClick={(e) => e.stopPropagation()}
+                        onChange={(e) => { e.stopPropagation(); onSelectFile(file._id); }}
+                    />
                 </TableCell>
             </TableRow>
 

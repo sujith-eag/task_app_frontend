@@ -1,13 +1,14 @@
 import React from 'react';
-import { Paper, Typography, Button, Box } from '@mui/material';
+import { Paper, Typography, Button, Box, Stack, useTheme } from '@mui/material';
 import DownloadIcon from '@mui/icons-material/Download';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 const BulkActionBar = ({ selectedItems = [], currentTab, onDownload, onDelete, onRemove }) => {
     const count = selectedItems.length;
-    if (count === 0) return null;
-
+    const theme = useTheme();
+    const isXs = useMediaQuery(theme.breakpoints.down('sm'));
     // If any selected folder is empty, disable bulk download
     const [hasEmptyFolder, setHasEmptyFolder] = React.useState(false);
     React.useEffect(() => {
@@ -30,46 +31,61 @@ const BulkActionBar = ({ selectedItems = [], currentTab, onDownload, onDelete, o
         return () => { mounted = false; };
     }, [selectedItems]);
 
-    return (
-        <Paper sx={{ p: 2, mb: 2, 
-		        display: 'flex', alignItems: 'center', 
-		        justifyContent: 'space-between' }}>
-            <Typography>{count} selected</Typography>
-            <Box>
-				{/* --- Dynamic Download Button --- */}
-				{/* This button is NOT shown on the 'My Shares' tab */}
-                {currentTab !== 'myShares' && (
-                    <Button
-                        variant="contained"
-                        startIcon={<DownloadIcon />}
-                        onClick={onDownload}
-                        disabled={hasEmptyFolder}
-                        title={hasEmptyFolder ? 'One or more selected folders are empty — cannot download.' : undefined}
-                        sx={{ mr: 2 }}
-                    >
-                        {count > 1 ? 'Download as Zip' : 'Download'}
-                    </Button>
-                )}
+    if (count === 0) return null;
 
-				{/* Context-aware buttons for Delete/Remove */}
-                {currentTab === 'myFiles' && (
-                    <Button 
-	                    variant="contained" 
-	                    color="error" 
-	                    startIcon={<DeleteIcon />} 
-	                    onClick={onDelete}>
-                        Delete Selected
-                    </Button>
-                )}
-                {currentTab === 'sharedWithMe' && (
-                    <Button 
-	                    variant="contained" 
-	                    color="warning" 
-	                    startIcon={<ExitToAppIcon />} 
-	                    onClick={onRemove}>
-                        Remove From My List
-                    </Button>
-                )}
+    return (
+        <Paper
+            elevation={0}
+            sx={{
+                p: { xs: 1, sm: 2 },
+                mb: 2,
+                bgcolor: theme.palette.mode === 'light' ? 'grey.50' : 'background.paper',
+                border: `1px solid ${theme.palette.divider}`,
+                borderRadius: 1,
+            }}
+        >
+            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap' }}>
+                <Typography variant="body2" color="text.secondary">{count} selected</Typography>
+
+                <Stack direction={isXs ? 'column' : 'row'} spacing={1} sx={{ ml: 'auto' }}>
+                    {/* --- Dynamic Download Button --- */}
+                    {currentTab !== 'myShares' && (
+                        <Button
+                            variant="contained"
+                            startIcon={<DownloadIcon />}
+                            onClick={onDownload}
+                            disabled={hasEmptyFolder}
+                            title={hasEmptyFolder ? 'One or more selected folders are empty — cannot download.' : undefined}
+                            size={isXs ? 'small' : 'medium'}
+                        >
+                            {count > 1 ? 'Download as Zip' : 'Download'}
+                        </Button>
+                    )}
+
+                    {/* Context-aware buttons for Delete/Remove */}
+                    {currentTab === 'myFiles' && (
+                        <Button 
+                            variant="contained" 
+                            color="error" 
+                            startIcon={<DeleteIcon />} 
+                            onClick={onDelete}
+                            size={isXs ? 'small' : 'medium'}
+                        >
+                            Delete Selected
+                        </Button>
+                    )}
+                    {currentTab === 'sharedWithMe' && (
+                        <Button 
+                            variant="contained" 
+                            color="warning" 
+                            startIcon={<ExitToAppIcon />} 
+                            onClick={onRemove}
+                            size={isXs ? 'small' : 'medium'}
+                        >
+                            Remove From My List
+                        </Button>
+                    )}
+                </Stack>
             </Box>
         </Paper>
     );
