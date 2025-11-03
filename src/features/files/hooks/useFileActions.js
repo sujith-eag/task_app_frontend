@@ -88,16 +88,13 @@ export const useFileActions = () => {
                     .catch(() => toast.error('Could not get download link.'));
             }
         } else {
-            // Bulk Download (Files Only)
-            const fileIds = selectedItems
-                .filter(item => !item.isFolder)
-                .map(item => item._id);
-            
-            if (fileIds.length > 0) {
-                fileService.bulkDownloadFiles(fileIds);
-            } else {
-                toast.info('Bulk download is only available for files.');
-            }
+            // Bulk Download (Files and Folders). Backend will expand folders.
+            const ids = selectedItems.map(item => item._id);
+            toast.info('Preparing download...');
+            fileService.bulkDownloadFiles(ids).catch((err) => {
+                const msg = err?.response?.data?.message || err?.message || 'Bulk download failed.';
+                toast.error(msg);
+            });
         }
     };
 

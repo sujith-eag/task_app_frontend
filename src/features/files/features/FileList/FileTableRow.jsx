@@ -8,7 +8,7 @@ import FileActionMenu from './FileActionMenu.jsx';
 import { getFileIcon, getFileColor } from '../../components/ui/fileUtils.jsx';
 import { useFileOperations } from '../../hooks/FileOperationContext.jsx';
 
-const FileTableRow = ({ file, isSelected, onSelectFile, onDeleteClick, onNavigate, context, onOpenShare, onOpenPublicShare, onOpenManageShare }) => {
+const FileTableRow = ({ file, isSelected, onSelectFile, onDeleteClick, onNavigate, context, onOpenShare, onOpenPublicShare, onOpenManageShare, onOpenRename, onOpenMove }) => {
 
     // Read per-file processing status from the FileOperationContext
     const { operationStatus } = useFileOperations();
@@ -135,6 +135,8 @@ const FileTableRow = ({ file, isSelected, onSelectFile, onDeleteClick, onNavigat
                                 onRemove={() => removeSharedAccess(file._id)}
                                 onRevokePublic={() => revokePublicLink(file._id)}
                                 onDownload={() => downloadItems([file])}
+                                onOpenRename={() => onOpenRename && onOpenRename(file._id)}
+                                onOpenMove={() => onOpenMove && onOpenMove(file._id)}
                             />
                         )}
                     </Box>

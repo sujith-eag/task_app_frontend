@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Box, TableContainer, Table, TableHead, 
-	TableRow, TableCell, Checkbox, TableBody, 
-	Paper, Typography } from '@mui/material';
+    TableRow, TableCell, Checkbox, TableBody, 
+    Paper, Typography } from '@mui/material';
+import { useDispatch } from 'react-redux';
+import { setBreadcrumbs, setCurrentFolder } from '../../fileSlice.js';
 
 // Import selectors and hooks
 import { useFileActions } from '../../hooks/useFileActions.js';
@@ -16,6 +18,8 @@ import FileListTabs from './FileListTabs.jsx';
 import ShareModal from '../../components/modals/ShareModal.jsx';
 import PublicShareModal from '../../components/modals/PublicShareModal.jsx';
 import ManageShareModal from '../../components/modals/ManageShareModal.jsx';
+import RenameModal from '../../components/modals/RenameModal.jsx';
+import MoveModal from '../../components/modals/MoveModal.jsx';
 
 const FileTable = () => {
     // auth user is intentionally not used for token forwarding anymore
@@ -47,7 +51,7 @@ const FileTable = () => {
 
     // Hook for actions
     const { navigateToFolder, deleteSingleItem, 
-        deleteBulkItems, downloadItems, removeBulkSharedAccess } = useFileActions();
+        deleteBulkItems, downloadItems, removeBulkSharedAccess, renameItem, moveItemToFolder } = useFileActions();
 
     // Centralized modal state to avoid mounting per-row modals
     // activeModal.file will store the fileId (not the object) so we can derive the latest file
@@ -60,6 +64,21 @@ const FileTable = () => {
     useEffect(() => {
         setSelectedFiles([]);
     }, [tabValue, currentList]);
+
+    // Sync breadcrumbs and current folder from server data into UI slice
+    const dispatch = useDispatch();
+    useEffect(() => {
+        // Only sync when we're on the main 'myFiles' tab
+        if (tabValue !== 'myFiles') return;
+        const data = filesQuery.data;
+        if (!data) {
+            dispatch(setBreadcrumbs([]));
+            dispatch(setCurrentFolder(null));
+            return;
+        }
+        dispatch(setBreadcrumbs(data.breadcrumbs || []));
+        dispatch(setCurrentFolder(data.currentFolder || null));
+    }, [tabValue, filesQuery.data, dispatch]);
 
     const handleSelectAll = (event) => {
         if (event.target.checked) {
@@ -120,12 +139,12 @@ const FileTable = () => {
         <Box>
 			{/* Conditionally rendered bulk action bar */}
                 <BulkActionBar
-                selectedFiles={selectedFiles}
-                currentTab={tabValue}
-                onDownload={() => downloadItems(currentList.filter(f => selectedFiles.includes(f._id)))}
-                onDelete={openBulkDeleteDialog}
-                onRemove={openBulkRemoveDialog}
-            />
+                    selectedItems={currentList.filter(f => selectedFiles.includes(f._id))}
+                    currentTab={tabValue}
+                    onDownload={() => downloadItems(currentList.filter(f => selectedFiles.includes(f._id)))}
+                    onDelete={openBulkDeleteDialog}
+                    onRemove={openBulkRemoveDialog}
+                />
 
             <FileBreadcrumbs onNavigate={navigateToFolder} />
             
@@ -184,6 +203,8 @@ const FileTable = () => {
                                             onOpenShare={() => openModal('share', file._id)}
                                             onOpenPublicShare={() => openModal('public', file._id)}
                                             onOpenManageShare={() => openModal('manage', file._id)}
+                                            onOpenRename={() => openModal('rename', file._id)}
+                                            onOpenMove={() => openModal('move', file._id)}
                                         />
                                 ))}
                             </TableBody>
@@ -216,6 +237,24 @@ const FileTable = () => {
                         open={true}
                         onClose={closeModal}
                         file={currentList.find(f => f._id === activeModal.fileId) || null}
+                    />
+                )}
+
+                {activeModal.type === 'rename' && activeModal.fileId && (
+                    <RenameModal
+                        open={true}
+                        onClose={closeModal}
+                        itemToRename={currentList.find(f => f._id === activeModal.fileId) || null}
+                        onRename={renameItem}
+                    />
+                )}
+
+                {activeModal.type === 'move' && activeModal.fileId && (
+                    <MoveModal
+                        open={true}
+                        onClose={closeModal}
+                        itemToMove={currentList.find(f => f._id === activeModal.fileId) || null}
+                        onMove={moveItemToFolder}
                     />
                 )}
             

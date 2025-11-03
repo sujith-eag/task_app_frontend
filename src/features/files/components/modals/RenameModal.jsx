@@ -3,58 +3,48 @@ import { Dialog, DialogTitle, DialogContent,
     TextField, DialogActions, Button, CircularProgress 
 } from '@mui/material';
 
-const CreateFolderModal = ({ open, onClose, onCreate }) => {
-    const [folderName, setFolderName] = useState('');
+const RenameModal = ({ open, onClose, onRename, itemToRename }) => {
+    const [newName, setNewName] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [apiError, setApiError] = useState(null);
 
-    // Reset state when the modal is opened/closed to avoid stale data
     useEffect(() => {
         if (!open) {
-            setFolderName('');
+            setNewName('');
             setIsLoading(false);
             setApiError(null);
+        } else {
+            setNewName(itemToRename?.fileName || '');
         }
-    }, [open]);
+    }, [open, itemToRename]);
 
-    const handleCreate = async () => {
+    const handleRename = async () => {
         setIsLoading(true);
         setApiError(null);
         try {
-            // Await the onCreate promise from the parent (mutateAsync)
-            await onCreate(folderName);
-            onClose(); // Only close on success
+            await onRename(itemToRename._id, newName);
+            onClose();
         } catch (err) {
-            // Prefer API error messages if available (axios shape)
-            const msg = err?.response?.data?.message || err?.message || 'Could not create folder.';
+            const msg = err?.response?.data?.message || err?.message || 'Could not rename item.';
             setApiError(msg);
         } finally {
             setIsLoading(false);
         }
     };
 
-    const handleTextChange = (e) => {
-        // Clear error as soon as the user starts typing again
-        if (apiError) {
-            setApiError(null);
-        }
-        setFolderName(e.target.value);
-    };
-    
     return (
         <Dialog open={open} onClose={isLoading ? null : onClose} fullWidth maxWidth="xs">
-            <DialogTitle>Create New Folder</DialogTitle>
+            <DialogTitle>Rename Item</DialogTitle>
             <DialogContent>
                 <TextField
                     autoFocus
                     margin="dense"
-                    label="Folder Name"
+                    label="New name"
                     type="text"
                     fullWidth
                     variant="standard"
-                    value={folderName}
-                    onChange={handleTextChange}
-                    // Display the error state and message
+                    value={newName}
+                    onChange={(e) => { if (apiError) setApiError(null); setNewName(e.target.value); }}
                     error={!!apiError}
                     helperText={apiError}
                 />
@@ -64,17 +54,15 @@ const CreateFolderModal = ({ open, onClose, onCreate }) => {
                     Cancel
                 </Button>
                 <Button
-                    onClick={handleCreate}
-                    // Disable button if no name, or if loading
-                    disabled={!folderName || isLoading}
+                    onClick={handleRename}
+                    disabled={!newName || isLoading}
                     variant="contained"
                 >
-                    {isLoading ? <CircularProgress size={24} /> : 'Create'}
+                    {isLoading ? <CircularProgress size={24} /> : 'Save'}
                 </Button>
             </DialogActions>
         </Dialog>
     );
 };
 
-
-export default CreateFolderModal;
+export default RenameModal;

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import fileService from '../../fileService.js';
 import { useSelector } from 'react-redux';
 import { Menu, MenuItem, ListItemIcon, ListItemText, IconButton, Typography } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -11,7 +12,7 @@ import LinkOffIcon from '@mui/icons-material/LinkOff';
 import PeopleIcon from '@mui/icons-material/People';
 
 // This component receives the file and simple on<Action> handlers
-const FileActionMenu = ({ file, onDelete, onShare, onManageShare, onPublicShare, onRemove, onRevokePublic, onDownload }) => {
+const FileActionMenu = ({ file, onDelete, onShare, onManageShare, onPublicShare, onRemove, onRevokePublic, onDownload, onOpenRename, onOpenMove }) => {
     const [anchorEl, setAnchorEl] = useState(null);
     const { user } = useSelector((state) => state.auth);
     // Normalize id comparison to strings to avoid mismatches between ObjectId and string
@@ -32,6 +33,25 @@ const FileActionMenu = ({ file, onDelete, onShare, onManageShare, onPublicShare,
         handleClose();
     };
 
+    // If file is a folder, fetch folder stats to determine whether it is empty
+    const [folderStats, setFolderStats] = useState(null);
+    useEffect(() => {
+        let mounted = true;
+        const fetchStats = async () => {
+            if (!file || !file.isFolder) return;
+            try {
+                const res = await fileService.getFolderDetails(file._id);
+                if (mounted) setFolderStats(res?.stats || null);
+            } catch (e) {
+                if (mounted) setFolderStats(null);
+            }
+        };
+        fetchStats();
+        return () => { mounted = false; };
+    }, [file]);
+
+    const isFolderEmpty = file?.isFolder && (!folderStats || folderStats.fileCount === 0);
+
     return (
         <>
             <IconButton onClick={handleClick}>
@@ -39,7 +59,10 @@ const FileActionMenu = ({ file, onDelete, onShare, onManageShare, onPublicShare,
             </IconButton>
             <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
                 <MenuItem 
-	                onClick={handleAction(onDownload)}>
+                    onClick={(e) => { e.stopPropagation(); if (!isFolderEmpty) { onDownload(); handleClose(); } else handleClose(); }}
+                    disabled={isFolderEmpty}
+                    title={isFolderEmpty ? 'Folder is empty — cannot download.' : ''}
+                    >
                     <ListItemIcon>
 	                    <DownloadIcon fontSize="small" />
 					</ListItemIcon>
@@ -75,7 +98,10 @@ const FileActionMenu = ({ file, onDelete, onShare, onManageShare, onPublicShare,
 
 				{/* --- menu item for public sharing --- */}
                 {isOwner && (
-                    <MenuItem onClick={handleAction(onPublicShare)}>
+                    <MenuItem onClick={(e) => { e.stopPropagation(); if (!isFolderEmpty) { onPublicShare(); handleClose(); } else handleClose(); }}
+                        disabled={file?.isFolder && isFolderEmpty}
+                        title={file?.isFolder && isFolderEmpty ? 'Folder is empty — cannot create public link.' : ''}
+                    >
                         <ListItemIcon>
                             <PublicIcon fontSize="small" />
                         </ListItemIcon>
@@ -84,6 +110,24 @@ const FileActionMenu = ({ file, onDelete, onShare, onManageShare, onPublicShare,
                                 ? 'Manage Public Share' 
                                 : 'Share Publicly'}
                         </ListItemText>
+                    </MenuItem>
+                )}
+                {isOwner && (
+                    <MenuItem onClick={handleAction(onOpenRename)}>
+                        <ListItemIcon>
+                            {/* rename icon */}
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z" fill="currentColor"/><path d="M20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" fill="currentColor"/></svg>
+                        </ListItemIcon>
+                        <ListItemText>Rename</ListItemText>
+                    </MenuItem>
+                )}
+                {isOwner && (
+                    <MenuItem onClick={handleAction(onOpenMove)}>
+                        <ListItemIcon>
+                            {/* move icon */}
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 4v3H5v10h10v-5h3v8H4V4h6z" fill="currentColor"/></svg>
+                        </ListItemIcon>
+                        <ListItemText>Move</ListItemText>
                     </MenuItem>
                 )}
                 

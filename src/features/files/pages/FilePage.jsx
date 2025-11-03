@@ -24,12 +24,9 @@ const FilesPage = () => {
     // React Query handles fetching; no manual dispatch required.
 
     
-    const handleCreateFolder = async (folderName) => {
-        try {
-            await createFolderMutation.mutateAsync({ folderName, parentId: currentParentId });
-        } catch (err) {
-            // mutateAsync will surface errors; toast handled in mutation hook
-        }
+    const handleCreateFolder = (folderName) => {
+        // Return the mutateAsync promise so callers can await it and handle errors
+        return createFolderMutation.mutateAsync({ folderName, parentId: currentParentId });
     };
     
     let content;
@@ -55,13 +52,13 @@ const FilesPage = () => {
 
                     {/* Folder Creation */}
                 <Box>
-                    {/* <Button
+                    <Button
                         variant="outlined"
                         onClick={() => setCreateFolderModalOpen(true)}
                         sx={{ mr: 2 }}
-                    > 
+                    >
                         New Folder
-                    </Button> */}
+                    </Button>
 
                     {/* --- Upload Button --- */}
                     <Button

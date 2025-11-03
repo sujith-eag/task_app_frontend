@@ -381,6 +381,17 @@ const downloadFolderAsZip = async (folderId) => {
             {},
             { responseType: 'blob' }
         );
+        // If the server returned an XML error (S3 returns XML for NoSuchKey),
+        // the response is still a blob. Detect XML and surface a readable error instead
+        const contentType = response.headers && (response.headers['content-type'] || response.headers['Content-Type'] || '');
+        // Blob returned by axios in browser has a text() method
+        if (contentType && contentType.toLowerCase().includes('xml')) {
+            const text = await response.data.text();
+            // Try to extract the <Message> from S3 XML
+            const m = text.match(/<Message>([^<]+)<\/Message>/);
+            const msg = m ? m[1] : text;
+            throw new Error(`Download failed: ${msg}`);
+        }
 
         const blob = new Blob([response.data], { type: 'application/zip' });
         const url = window.URL.createObjectURL(blob);
@@ -392,6 +403,10 @@ const downloadFolderAsZip = async (folderId) => {
         link.remove();
         window.URL.revokeObjectURL(url);
     } catch (err) {
+        // If we already have a helpful message, rethrow it; otherwise log and rethrow
+        if (err && err.message && err.message.startsWith('Download failed:')) {
+            throw err;
+        }
         console.error('Folder download via API failed:', err?.message || err);
         throw err;
     }

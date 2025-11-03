@@ -13,14 +13,16 @@ const PublicDownloadPage = () => {
     const [error, setError] = useState('');
     const inputRefs = useRef([]);
     const { status, downloadUrl } = useSelector((state) => state.public);
+    const [downloadReady, setDownloadReady] = useState(false);
 
     // Automatically trigger download and show toast on success
     useEffect(() => {
         if (downloadUrl) {
-            toast.success('Your download is starting...', {
+            // Mark ready but do NOT auto-open — present a user-triggered button to avoid popup blocks
+            setDownloadReady(true);
+            toast.success('Your download is ready. Click the button to start.', {
                 icon: <CheckCircleOutlineIcon sx={{ color: 'success.main' }} />
             });
-            window.open(downloadUrl, '_blank');
         }
     }, [downloadUrl]);
 
@@ -56,41 +58,140 @@ const PublicDownloadPage = () => {
     };
 
     const handleKeyDown = (index, e) => {
-        // Handle backspace
+        // Handle backspace: if current empty, move focus to previous
         if (e.key === 'Backspace' && !code[index] && index > 0) {
             inputRefs.current[index - 1]?.focus();
         }
-        // Handle paste
-        if (e.key === 'v' && (e.ctrlKey || e.metaKey)) {
-            e.preventDefault();
-            navigator.clipboard.readText().then((text) => {
-                const sanitized = text.replace(/[^a-zA-Z0-9]/g, '').slice(0, 8);
-                const newCode = [...sanitized.split(''), ...Array(8).fill('')].slice(0, 8);
-                setCode(newCode);
-                // Focus last filled input
-                const lastIndex = Math.min(sanitized.length, 7);
-                inputRefs.current[lastIndex]?.focus();
-            });
+        // Note: paste is handled in onPaste handler for reliability
+    };
+
+    const handlePaste = (index, e) => {
+        e.preventDefault();
+        const pasted = (e.clipboardData && e.clipboardData.getData('text')) || '';
+        const sanitized = pasted.replace(/[^a-zA-Z0-9]/g, '');
+        if (!sanitized) return;
+
+        const newCode = [...code];
+        let writeIdx = index;
+        for (let i = 0; i < sanitized.length && writeIdx < 8; i++, writeIdx++) {
+            newCode[writeIdx] = sanitized[i];
         }
+        setCode(newCode);
+        // Focus the next input after the last pasted character (or the last input)
+        const focusIdx = Math.min(writeIdx, 7);
+        inputRefs.current[focusIdx]?.focus();
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
         const fullCode = code.join('');
-        
+
         if (fullCode.length !== 8) {
             setError('Please enter all 8 characters of the share code.');
             toast.error('Share code must be 8 characters long.');
             return;
         }
-
+        // Open a popup immediately (user-initiated) to avoid popup blockers.
+        // We'll navigate it to the returned download URL when available.
         setError('');
+        setDownloadReady(false);
+        const popup = window.open('', 'public-download');
+        try {
+            if (popup) {
+                popup.document.write('<html><head><title>Preparing download...</title></head><body style="font-family: sans-serif; display:flex;align-items:center;justify-content:center;height:100vh;"><div><h3>Preparing your download...</h3><p>Please keep this window open.</p></div></body></html>');
+            }
+        } catch (e) {
+            // ignore cross-origin write errors
+        }
+
         dispatch(getPublicDownloadLink({ code: fullCode }))
             .unwrap()
+            .then((res) => {
+                const url = res && res.url;
+                if (!url) {
+                    const msg = 'Download URL not available.';
+                    setError(msg);
+                    toast.error(msg);
+                    if (popup && !popup.closed) {
+                        try { popup.document.body.innerText = msg; } catch (e) {}
+                        setTimeout(() => { try { popup.close(); } catch (e) {} }, 2500);
+                    }
+                    return;
+                }
+
+                // Navigate the popup to the download URL (user-initiated window)
+                try {
+                    if (popup && !popup.closed) {
+                        popup.location.href = url;
+                    } else {
+                        // fallback: open in new tab
+                        const w = window.open(url, '_blank', 'noopener');
+                        if (!w) {
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.target = '_blank';
+                            a.rel = 'noopener noreferrer';
+                            document.body.appendChild(a);
+                            a.click();
+                            a.remove();
+                        }
+                    }
+                } catch (e) {
+                    // final fallback: anchor click in current window
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.target = '_blank';
+                    a.rel = 'noopener noreferrer';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                }
+            })
             .catch((err) => {
-                setError(err || 'Invalid share code. Please try again.');
-                toast.error(err || 'An unknown error occurred.');
+                const message = (err && (err.message || err)) || 'Invalid share code. Please try again.';
+                setError(message);
+                toast.error(message);
+                if (popup && !popup.closed) {
+                    try { popup.document.body.innerText = message; } catch (e) {}
+                    setTimeout(() => { try { popup.close(); } catch (e) {} }, 2500);
+                }
             });
+    };
+
+    const startDownload = () => {
+        if (!downloadUrl) return;
+        // User-initiated open — should not be blocked
+        try {
+            const w = window.open(downloadUrl, '_blank', 'noopener');
+            if (!w) {
+                const a = document.createElement('a');
+                a.href = downloadUrl;
+                a.target = '_blank';
+                a.rel = 'noopener noreferrer';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+            }
+        } catch (e) {
+            const a = document.createElement('a');
+            a.href = downloadUrl;
+            a.target = '_blank';
+            a.rel = 'noopener noreferrer';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+        }
+        // Keep the page state; allow user to re-download if needed
+    };
+
+    const copyDownloadLink = async () => {
+        if (!downloadUrl) return;
+        try {
+            await navigator.clipboard.writeText(downloadUrl);
+            toast.success('Download link copied to clipboard.');
+        } catch (e) {
+            toast.info('Unable to copy link automatically. You can right-click the Download button.');
+        }
     };
 
     const isButtonDisabled = status === 'loading' || code.join('').length !== 8;
@@ -203,13 +304,18 @@ const PublicDownloadPage = () => {
                                         value={digit}
                                         onChange={(e) => handleCodeChange(index, e.target.value)}
                                         onKeyDown={(e) => handleKeyDown(index, e)}
-                                        inputProps={{
-                                            maxLength: 1,
-                                            style: { 
-                                                textAlign: 'center',
-                                                fontSize: '1.25rem',
-                                                fontWeight: 600,
-                                                padding: '8px 4px'
+                                        onPaste={(e) => handlePaste(index, e)}
+                                        slotProps={{
+                                            input: {
+                                                maxLength: 1,
+                                                autoComplete: 'one-time-code',
+                                                'aria-label': `share-code-${index}`,
+                                                style: {
+                                                    textAlign: 'center',
+                                                    fontSize: '1.25rem',
+                                                    fontWeight: 600,
+                                                    padding: '8px 4px'
+                                                }
                                             }
                                         }}
                                         sx={{
@@ -227,13 +333,25 @@ const PublicDownloadPage = () => {
                                             },
                                             '& input': {
                                                 color: digit ? 'primary.main' : 'text.primary',
-                                                padding: { xs: '12px 2px', sm: '16px 4px' }
+                                                padding: { xs: '12px 2px', sm: '16px 4px' },
+                                                textAlign: 'center'
                                             }
                                         }}
                                         error={!!error}
                                     />
                                 ))}
                             </Stack>
+
+                            {/* Download-ready banner: user-triggered download avoids popup/navigation issues */}
+                            {downloadReady && downloadUrl && (
+                                <Paper sx={{ p: 2, mb: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }} elevation={3}>
+                                    <Typography sx={{ mr: 2 }}>Your download is ready.</Typography>
+                                    <Box>
+                                        <Button variant="contained" color="primary" onClick={startDownload} sx={{ mr: 1 }} startIcon={<CloudDownloadIcon />}>Start Download</Button>
+                                        <Button variant="outlined" onClick={copyDownloadLink}>Copy Link</Button>
+                                    </Box>
+                                </Paper>
+                            )}
 
                             {/* Error Message */}
                             {error && (

@@ -8,6 +8,7 @@ import {
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { toast } from 'react-toastify';
 import { useCreatePublicShare } from '../../useFileQueries.js';
+import fileService from '../../fileService.js';
 
 const PublicShareModal = ({ open, onClose, file }) => {
     const [duration, setDuration] = useState('1-hour');
@@ -21,13 +22,34 @@ const PublicShareModal = ({ open, onClose, file }) => {
 
     const { mutateAsync: createPublicShareMutate } = useCreatePublicShare();
 
+    // If this is a folder, fetch its details to know if it's empty
+    const [folderStats, setFolderStats] = useState(null);
+    useEffect(() => {
+        let mounted = true;
+        const fetch = async () => {
+            if (!file || !file.isFolder) return;
+            try {
+                const res = await fileService.getFolderDetails(file._id);
+                if (mounted) setFolderStats(res.stats || null);
+            } catch (e) {
+                if (mounted) setFolderStats(null);
+            }
+        };
+        fetch();
+        return () => { mounted = false; };
+    }, [file]);
+
+    const isFolderEmpty = file?.isFolder && (folderStats ? folderStats.fileCount === 0 : false);
+
     const handleCreateShare = async () => {
         try {
             const payload = await createPublicShareMutate({ fileId: file._id, duration });
             setShareData(payload);
             // success toast is handled by the mutation hook
         } catch (err) {
-            // error toast handled by mutation
+            // Show friendly message based on server response
+            const msg = err?.response?.data?.message || err?.message || 'Failed to create public link.';
+            toast.error(msg);
         }
     };
 
@@ -86,9 +108,14 @@ const PublicShareModal = ({ open, onClose, file }) => {
             <DialogActions>
                 <Button onClick={handleClose}>Close</Button>
                 {!shareData && (
-                    <Button onClick={handleCreateShare} variant="contained">
+                    <Button onClick={handleCreateShare} variant="contained" disabled={isFolderEmpty}>
                         Create Link
                     </Button>
+                )}
+                {isFolderEmpty && (
+                    <Typography variant="caption" color="text.secondary" sx={{ mr: 2 }}>
+                        Folder is empty — cannot create public link.
+                    </Typography>
                 )}
             </DialogActions>
         </Dialog>

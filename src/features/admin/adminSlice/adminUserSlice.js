@@ -134,7 +134,13 @@ export const adminUserSlice = createSlice({
             .addCase(getUsersByRole.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.isSuccess = true;
-                state.userList = action.payload;
+                // Normalize various response shapes into an array for the UI.
+                const payload = action.payload;
+                if (Array.isArray(payload)) state.userList = payload;
+                else if (payload && Array.isArray(payload.data)) state.userList = payload.data;
+                else if (payload && Array.isArray(payload.users)) state.userList = payload.users;
+                else if (payload && Array.isArray(payload.docs)) state.userList = payload.docs;
+                else state.userList = [];
             })
             .addCase(getUsersByRole.rejected, (state, action) => {
                 state.isLoading = false;

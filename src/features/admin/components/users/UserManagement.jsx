@@ -33,7 +33,18 @@ const UserManagement = () => {
     const [selectedUser, setSelectedUser] = useState(null);
     const [isEnrollmentModalOpen, setIsEnrollmentModalOpen] = useState(false);
 
-    const validUserList = userList ? userList.filter(user => user && user._id) : [];
+    // `userList` can be an array or a paginated/shape object returned from the API.
+    // Normalize to an array safely to avoid "filter is not a function" runtime errors.
+    const normalizeUserList = (list) => {
+        if (!list) return [];
+        if (Array.isArray(list)) return list;
+        if (Array.isArray(list.data)) return list.data;
+        if (Array.isArray(list.users)) return list.users;
+        if (Array.isArray(list.docs)) return list.docs; // mongoose-paginate style
+        return [];
+    };
+
+    const validUserList = normalizeUserList(userList).filter((user) => user && user._id);
 
     // Fetch users when tab changes
     useEffect(() => {
