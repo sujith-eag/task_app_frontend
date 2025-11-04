@@ -1,8 +1,7 @@
 import apiClient from '../../app/apiClient.js';
 import { getDeviceId, clearDeviceId } from '../../utils/deviceId.js';
 
-// apiClient.baseURL is expected to point to the API root (for example '/api' or 'http://localhost:5000')
-// Keep this path relative so baseURL + AUTH_API_URL => '/api/auth' when baseURL='/api'
+
 const AUTH_API_URL = '/auth/';
 
 // --- Authentication & User Management ---
@@ -25,7 +24,7 @@ const register = async (userData) => {
  * @returns {object} The user object and JWT token.
  */
 const login = async (userData) => {
-    const deviceId = getDeviceId();
+    const deviceId = await getDeviceId();
     const response = await apiClient.post(AUTH_API_URL + 'login', userData, { headers: { 'x-device-id': deviceId } });
     // Backend sets an httpOnly cookie and returns an envelope { message, user }
     // Return only the user object so reducers receive a consistent payload (same shape as /auth/me)
@@ -44,34 +43,23 @@ const verifyEmail = async (token) => {
 };
 
 /**
- * Logs the user out by clearing their data from local storage.
- * This is a client-side only function.
+ * Logs the user out.
+ * This tells the backend to clear the httpOnly cookie AND remove the current device session.
  */
 const logout = async () => {
-        try {
-            await apiClient.post(AUTH_API_URL + 'logout');
-        } catch (e) {
-            // ignore network errors on logout
-        } finally {
-            // Clear any client-only persisted auth artifacts so the app cannot silently
-            // re-authenticate using stale client-side tokens/ids.
-            try {
-                // Device id used for session/device binding
-                clearDeviceId();
-            } catch (e) {}
-
-            try {
-                // Historical keys used by previous flows or optional features
-                localStorage.removeItem('user');
-                localStorage.removeItem('rememberMe');
-                localStorage.removeItem('lastLoginEmail');
-            } catch (e) {}
-        }
+    try {
+        // Get the persistent device ID
+        const deviceId = await getDeviceId(); 
+        
+        // Send the deviceId in the request body (or as a header)
+        // so the backend knows which session to remove.
+        await apiClient.post(AUTH_API_URL + 'logout', { deviceId });
+        
+    } catch (e) {
+        // ignore network errors on logout
+    }
 }
 
-// Can we just creat the cookie from device in user side. since this is clearing the Device Id, a new one is created on every login shown as a new device id is used creating a new session.
-
-// what 
 
 // --- Password Management ---
 
