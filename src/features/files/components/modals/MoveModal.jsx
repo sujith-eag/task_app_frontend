@@ -20,8 +20,13 @@ const MoveModal = ({ open, onClose, onMove, itemToMove }) => {
             setSelectedDestinationId(null);
             setSelectedDestinationIsRoot(false);
         } else {
-            // Initialize to root or to current parent of the item
-            const parentId = (itemToMove && Object.prototype.hasOwnProperty.call(itemToMove, 'parentId')) ? itemToMove.parentId : null;
+            // Support single item or bulk items (array). If bulk, pick the parentId of the first item.
+            let parentId = null;
+            if (Array.isArray(itemToMove)) {
+                parentId = itemToMove.length > 0 && Object.prototype.hasOwnProperty.call(itemToMove[0], 'parentId') ? itemToMove[0].parentId : null;
+            } else {
+                parentId = (itemToMove && Object.prototype.hasOwnProperty.call(itemToMove, 'parentId')) ? itemToMove.parentId : null;
+            }
             setCurrentMoveParentId(parentId);
             if (parentId === null) {
                 setSelectedDestinationId(null);
@@ -39,7 +44,12 @@ const MoveModal = ({ open, onClose, onMove, itemToMove }) => {
         // If selectedDestinationIsRoot is true, explicitly send null to the API (root)
         const destination = selectedDestinationIsRoot ? null : (selectedDestinationId ?? currentMoveParentId ?? null);
         try {
-            await onMove(itemToMove._id, destination);
+            // For bulk moves, pass the full item objects so caller can preserve old parentIds.
+            if (Array.isArray(itemToMove)) {
+                await onMove(itemToMove, destination);
+            } else {
+                await onMove(itemToMove._id, destination);
+            }
             onClose();
         } catch (err) {
             // Better error parsing for axios-like errors
@@ -60,8 +70,16 @@ const MoveModal = ({ open, onClose, onMove, itemToMove }) => {
     const folderList = (data?.files || []).filter(i => i.isFolder);
 
     const effectiveDestination = selectedDestinationIsRoot ? null : (selectedDestinationId ?? currentMoveParentId ?? null);
-    const itemParentId = Object.prototype.hasOwnProperty.call(itemToMove || {}, 'parentId') ? itemToMove.parentId : null;
-    const disableMove = (itemParentId === null && effectiveDestination === null) || String(itemParentId || '') === String(effectiveDestination || '');
+    // Handle parent comparison for single item or array of items.
+    let disableMove = false;
+    if (Array.isArray(itemToMove)) {
+        const parents = itemToMove.map(i => (i && Object.prototype.hasOwnProperty.call(i, 'parentId')) ? i.parentId : null);
+        // if every selected item already in the destination, disable
+        disableMove = parents.length > 0 && parents.every(p => String(p || '') === String(effectiveDestination || ''));
+    } else {
+        const itemParentId = Object.prototype.hasOwnProperty.call(itemToMove || {}, 'parentId') ? itemToMove.parentId : null;
+        disableMove = (itemParentId === null && effectiveDestination === null) || String(itemParentId || '') === String(effectiveDestination || '');
+    }
 
     return (
         <Dialog open={open} onClose={isLoading ? null : onClose} fullWidth maxWidth="sm">

@@ -51,7 +51,7 @@ const FileTable = () => {
 
     // Hook for actions
     const { navigateToFolder, deleteSingleItem, 
-        deleteBulkItems, downloadItems, removeBulkSharedAccess, renameItem, moveItemToFolder } = useFileActions();
+        deleteBulkItems, downloadItems, removeBulkSharedAccess, renameItem, moveItemToFolder, bulkMoveItems } = useFileActions();
 
     // Centralized modal state to avoid mounting per-row modals
     // activeModal.file will store the fileId (not the object) so we can derive the latest file
@@ -135,6 +135,8 @@ const FileTable = () => {
 
     const closeDialog = () => setDialogConfig({ ...dialogConfig, open: false });
 
+    const openBulkMoveModal = () => setActiveModal({ type: 'move', fileId: '__bulk__' });
+
     return (
         <Box>
 			{/* Conditionally rendered bulk action bar */}
@@ -144,6 +146,7 @@ const FileTable = () => {
                     onDownload={() => downloadItems(currentList.filter(f => selectedFiles.includes(f._id)))}
                     onDelete={openBulkDeleteDialog}
                     onRemove={openBulkRemoveDialog}
+                    onMove={openBulkMoveModal}
                 />
 
             <FileBreadcrumbs onNavigate={navigateToFolder} />
@@ -237,13 +240,21 @@ const FileTable = () => {
                     />
                 )}
 
-                {activeModal.type === 'move' && activeModal.fileId && (
-                    <MoveModal
-                        open={true}
-                        onClose={closeModal}
-                        itemToMove={currentList.find(f => f._id === activeModal.fileId) || null}
-                        onMove={moveItemToFolder}
-                    />
+                {activeModal.type === 'move' && (
+                    (() => {
+                        const isBulk = activeModal.fileId === '__bulk__';
+                        const itemToMove = isBulk ? currentList.filter(f => selectedFiles.includes(f._id)) : (currentList.find(f => f._id === activeModal.fileId) || null);
+                        const onMoveHandler = isBulk ? ((itemIds, destination) => bulkMoveItems(itemIds, destination)) : moveItemToFolder;
+
+                        return (
+                            <MoveModal
+                                open={true}
+                                onClose={closeModal}
+                                itemToMove={itemToMove}
+                                onMove={onMoveHandler}
+                            />
+                        );
+                    })()
                 )}
             
             {/* --- Dynamic Confirmation DIALOG --- */}

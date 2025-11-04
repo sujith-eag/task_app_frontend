@@ -3,9 +3,10 @@ import { Paper, Typography, Button, Box, Stack, useTheme } from '@mui/material';
 import DownloadIcon from '@mui/icons-material/Download';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
-const BulkActionBar = ({ selectedItems = [], currentTab, onDownload, onDelete, onRemove }) => {
+const BulkActionBar = ({ selectedItems = [], currentTab, onDownload, onDelete, onRemove, onMove }) => {
     const count = selectedItems.length;
     const theme = useTheme();
     const isXs = useMediaQuery(theme.breakpoints.down('sm'));
@@ -64,15 +65,25 @@ const BulkActionBar = ({ selectedItems = [], currentTab, onDownload, onDelete, o
 
                     {/* Context-aware buttons for Delete/Remove */}
                     {currentTab === 'myFiles' && (
-                        <Button 
-                            variant="contained" 
-                            color="error" 
-                            startIcon={<DeleteIcon />} 
-                            onClick={onDelete}
-                            size={isXs ? 'small' : 'medium'}
-                        >
-                            Delete Selected
-                        </Button>
+                        <>
+                            <Button
+                                variant="contained"
+                                startIcon={<FolderOpenIcon />}
+                                onClick={onMove}
+                                size={isXs ? 'small' : 'medium'}
+                            >
+                                Move Selected
+                            </Button>
+                            <Button 
+                                variant="contained" 
+                                color="error" 
+                                startIcon={<DeleteIcon />} 
+                                onClick={onDelete}
+                                size={isXs ? 'small' : 'medium'}
+                            >
+                                Delete Selected
+                            </Button>
+                        </>
                     )}
                     {currentTab === 'sharedWithMe' && (
                         <Button 

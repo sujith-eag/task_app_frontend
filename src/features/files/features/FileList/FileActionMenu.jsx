@@ -33,7 +33,8 @@ const FileActionMenu = ({ file, onDelete, onShare, onManageShare, onPublicShare,
         handleClose();
     };
 
-    // If file is a folder, fetch folder stats to determine whether it is empty
+    // If file is a folder, fetch folder stats to determine whether it is empty.
+    // Fetch lazily only when the actions menu is opened to avoid N requests on mount.
     const [folderStats, setFolderStats] = useState(null);
     useEffect(() => {
         let mounted = true;
@@ -46,9 +47,17 @@ const FileActionMenu = ({ file, onDelete, onShare, onManageShare, onPublicShare,
                 if (mounted) setFolderStats(null);
             }
         };
-        fetchStats();
+
+        if (anchorEl) {
+            // menu opened — fetch stats
+            fetchStats();
+        } else {
+            // menu closed — clear cached stats to avoid stale data and unnecessary memory
+            setFolderStats(null);
+        }
+
         return () => { mounted = false; };
-    }, [file]);
+    }, [file, anchorEl]);
 
     const isFolderEmpty = file?.isFolder && (!folderStats || folderStats.fileCount === 0);
 

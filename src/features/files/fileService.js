@@ -43,8 +43,8 @@ const revokePublicShare = async (fileId) => {
  * @returns {Promise<Array<Object>>} created file documents
  */
 const uploadFiles = async (filesFormData, onUploadProgress) => {
+    // Let axios/browser set the Content-Type (including multipart boundary).
     const config = {
-        headers: { 'Content-Type': 'multipart/form-data' },
         onUploadProgress,
     };
     const response = await apiClient.post(`${API_URL}/upload`, filesFormData, config);

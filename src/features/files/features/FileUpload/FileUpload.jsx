@@ -139,6 +139,10 @@ const FileUpload = () => {
                 fd.append('files', item.file);
                 // keep the upload key so the backend can associate progress if needed
                 fd.append('uploadKeys', item.id);
+                // Attach the current folder (parentId) so backend stores file in the correct folder.
+                // Explicitly send the string 'null' for root to match backend handling (the server treats 'null' as root).
+                const parentValue = (currentParentId === null || typeof currentParentId === 'undefined') ? 'null' : String(currentParentId);
+                fd.append('parentId', parentValue);
 
                 const onUploadProgress = (progressEvent) => {
                     try {

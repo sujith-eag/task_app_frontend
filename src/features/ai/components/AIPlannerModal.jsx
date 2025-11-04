@@ -42,13 +42,6 @@ const AIPlannerModal = ({ isOpen, onClose }) => {
         setEditableTasks(previewTasks);
     }, [previewTasks]);
 
-    // useEffect(() => {
-    //     setEditableTasks(previewTasks.map(task => ({
-    //         ...task,
-    //         dueDate: task.dueDate ? new Date(task.dueDate).toISOString().split('T')[0] : ''
-    //     })));
-    // }, [previewTasks]);
-
     useEffect(() => {
         if (status === 'succeeded') {
             dispatch(discardAIPlan()); // Now we reset the state
@@ -70,12 +63,6 @@ const AIPlannerModal = ({ isOpen, onClose }) => {
         onClose();
     };
 
-    
-    // const handleEditableChange = (index, field, value) => {
-    //     const newTasks = [...editableTasks];
-    //     newTasks[index][field] = value;
-    //     setEditableTasks(newTasks);
-    // };
 
 const handleEditableChange = (index, field, value) => {
     const newTasks = editableTasks.map((task, i) => {
@@ -93,10 +80,6 @@ const handleEditableChange = (index, field, value) => {
         e.preventDefault();
         if(!refinementPrompt.trim()) return;
         
-        // const currentPlan = `The user has edited the current plan to this: 
-            // ${JSON.stringify(editableTasks)}. `;
-        // const newPrompt = currentPlan + `Now apply this refinement: ${refinementPrompt}`;
-
         dispatch(getAIPlanPreview({ 
             prompt: refinementPrompt,
             editedPlan : editableTasks,

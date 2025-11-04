@@ -6,6 +6,7 @@ import {
     useDeleteFile,
     useDeleteFolder,
     useBulkDelete,
+    useBulkMoveItems,
     useRestoreFile,
     usePurgeFile,
     useEmptyTrash,
@@ -38,6 +39,7 @@ export const useFileActions = () => {
     const { mutateAsync: deleteFileMutate } = useDeleteFile();
     const { mutateAsync: deleteFolderMutate } = useDeleteFolder();
     const { mutateAsync: bulkDeleteMutate } = useBulkDelete();
+    const { mutateAsync: bulkMoveMutate } = useBulkMoveItems();
     const { mutateAsync: restoreFileMutate } = useRestoreFile();
     const { mutateAsync: purgeFileMutate } = usePurgeFile();
     const { mutateAsync: emptyTrashMutate } = useEmptyTrash();
@@ -74,6 +76,21 @@ export const useFileActions = () => {
             return await bulkDeleteMutate(fileIds);
         } finally {
             fileIds.forEach(id => stopOperation(id));
+        }
+    };
+
+    /**
+     * Move multiple selected items into destination folder.
+     * selectedItems can be array of item objects or IDs; we normalize to IDs.
+     */
+    const bulkMoveItems = async (selectedItems, destinationId) => {
+        const ids = (selectedItems || []).map(item => (typeof item === 'string' ? item : item._id)).filter(Boolean);
+        const oldParentIds = (selectedItems || []).map(item => (typeof item === 'string' ? null : (item.parentId || null)));
+        ids.forEach(id => startOperation(id, 'moving'));
+        try {
+            return await bulkMoveMutate({ itemIds: ids, newParentId: destinationId, oldParentIds });
+        } finally {
+            ids.forEach(id => stopOperation(id));
         }
     };
 
@@ -210,6 +227,7 @@ export const useFileActions = () => {
                 navigateToFolder, 
                 deleteSingleItem, 
                 deleteBulkItems, 
+        bulkMoveItems,
                 downloadItems, 
                 renameItem,
                 moveItemToFolder,

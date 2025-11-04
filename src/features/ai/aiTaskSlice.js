@@ -37,12 +37,16 @@ export const getAIPlanPreview = createAsyncThunk(
 // Thunk to save the final plan (will call the task service)
 export const saveAIPlan = createAsyncThunk(
     'ai/savePlan',
-    async (_, thunkAPI) => {
+    // Accept an optional payload: { tasks: [...] } so the UI can pass edited tasks.
+    async (payload, thunkAPI) => {
         try {
-            // Get the final tasks and token from the state
+            // If the UI provided tasks in the payload, use them; otherwise fall back to state.previewTasks
+            const tasksFromPayload = payload && payload.tasks ? payload.tasks : null;
             const { previewTasks } = thunkAPI.getState().ai;
-            // Calling a function in `taskService` (no token required; apiClient will send cookies)
-            return await taskService.createBulkTasks({ tasks: previewTasks });
+            const tasksToSave = tasksFromPayload || previewTasks;
+
+            // Ensure we send a plain array of tasks to the task service
+            return await taskService.createBulkTasks({ tasks: tasksToSave });
         } catch (error) {
             const message = (error.response?.data?.message) || error.message;
             return thunkAPI.rejectWithValue(message);
