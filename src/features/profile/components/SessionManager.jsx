@@ -10,7 +10,7 @@ import fetchWithRetry from '../../../utils/fetchWithRetry.js';
 const SessionManager = () => {
   const dispatch = useDispatch();
   const { sessions, sessionStatus } = useSelector((state) => state.profile);
-  const currentDeviceId = getDeviceId();
+  const [currentDeviceId, setCurrentDeviceId] = useState(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedSession, setSelectedSession] = useState(null);
   const [geoMap, setGeoMap] = useState({}); // deviceId -> { city, region, country }
@@ -18,6 +18,21 @@ const SessionManager = () => {
   useEffect(() => {
     dispatch(fetchSessions());
   }, [dispatch]);
+
+  // Resolve async device id (getDeviceId is async now)
+  useEffect(() => {
+    let mounted = true;
+    const load = async () => {
+      try {
+        const id = await getDeviceId();
+        if (mounted) setCurrentDeviceId(id);
+      } catch (e) {
+        // swallow — best-effort
+      }
+    };
+    load();
+    return () => { mounted = false; };
+  }, []);
 
   // When sessions load, attempt to fetch geo info (best-effort)
   useEffect(() => {
