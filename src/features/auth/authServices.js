@@ -1,5 +1,5 @@
 import apiClient from '../../app/apiClient.js';
-import { getDeviceId } from '../../utils/deviceId.js';
+import { getDeviceId, clearDeviceId } from '../../utils/deviceId.js';
 
 // apiClient.baseURL is expected to point to the API root (for example '/api' or 'http://localhost:5000')
 // Keep this path relative so baseURL + AUTH_API_URL => '/api/auth' when baseURL='/api'
@@ -52,8 +52,26 @@ const logout = async () => {
             await apiClient.post(AUTH_API_URL + 'logout');
         } catch (e) {
             // ignore network errors on logout
+        } finally {
+            // Clear any client-only persisted auth artifacts so the app cannot silently
+            // re-authenticate using stale client-side tokens/ids.
+            try {
+                // Device id used for session/device binding
+                clearDeviceId();
+            } catch (e) {}
+
+            try {
+                // Historical keys used by previous flows or optional features
+                localStorage.removeItem('user');
+                localStorage.removeItem('rememberMe');
+                localStorage.removeItem('lastLoginEmail');
+            } catch (e) {}
         }
 }
+
+// Can we just creat the cookie from device in user side. since this is clearing the Device Id, a new one is created on every login shown as a new device id is used creating a new session.
+
+// what 
 
 // --- Password Management ---
 
