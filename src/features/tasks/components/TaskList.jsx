@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Box, Typography, CircularProgress, Collapse } from "@mui/material";
 import { TransitionGroup } from 'react-transition-group';
@@ -13,46 +13,39 @@ const TaskList = () => {
   const dispatch = useDispatch();
   const { tasks, isLoading, isError, message } = useSelector((state) => state.tasks);
 
-  // State for filters and sorting
-  const [filters, setFilters] = useState({
-    status: '',
-    priority: '',
-  });
+  // State for filters and sorting. Keep shape predictable so downstream
+  // components (TaskFilters) can rely on `filters.status` and `filters.priority`.
+  const [filters, setFilters] = useState({ status: '', priority: '' });
   const [sortBy, setSortBy] = useState('createdAt:desc');
 
-const [initialLoadDone, setInitialLoadDone] = useState(false);
+  // Track whether the initial load completed (used only for UX decisions).
+  const [initialLoadDone, setInitialLoadDone] = useState(false);
 
-useEffect(() => {
-  // Always fetch tasks on mount and when filters/sort change. Use
-  // initialLoadDone only to track that the first request completed.
-  const filterData = { sortBy };
-  if (filters.status) filterData.status = filters.status;
-  if (filters.priority) filterData.priority = filters.priority;
+  // Fetch tasks whenever filters or sort change. We build a small `filterData`
+  // object and only include keys that are set to avoid sending empty params.
+  useEffect(() => {
+    const filterData = { sortBy };
+    if (filters.status) filterData.status = filters.status;
+    if (filters.priority) filterData.priority = filters.priority;
 
-  dispatch(getTasks(filterData)).finally(() => setInitialLoadDone(true));
-}, [dispatch, filters.status, filters.priority, sortBy]);
+    // Dispatch the thunk; mark initial load done when the promise settles.
+    dispatch(getTasks(filterData)).finally(() => setInitialLoadDone(true));
+  }, [dispatch, filters.status, filters.priority, sortBy]);
 
-  // Initial fetch (only if no tasks yet)
-  // useEffect(() => {
-  //   if (tasks.length === 0) {
-  //     const filterData = { sortBy };
-  //     if (filters.status) filterData.status = filters.status;
-  //     if (filters.priority) filterData.priority = filters.priority;
-
-  //     dispatch(getTasks(filterData));
-  //   }
-  // }, [dispatch, tasks.length, filters.status, filters.priority, sortBy]);
 
   // Error handling
   useEffect(() => {
     if (isError) { toast.error(message); }
   }, [isError, message]);
 
-  // In-memory filtering + sorting
+  // In-memory filtering + sorting. We keep this client-side so the UI can be
+  // responsive even when the server returns an unfiltered list. The memo
+  // prevents re-computation unless `tasks`, `filters` or `sortBy` change.
   const filteredTasks = useMemo(() => {
-    let result = [...tasks];
+    let result = Array.isArray(tasks) ? [...tasks] : [];
 
-    // Apply filters
+    // Apply filters (exact match semantics). If your backend supports
+    // server-side filtering it may be preferable for large datasets.
     if (filters.status) {
       result = result.filter((t) => t.status === filters.status);
     }
@@ -60,7 +53,7 @@ useEffect(() => {
       result = result.filter((t) => t.priority === filters.priority);
     }
 
-    // Sorting
+    // Sorting variations.
     if (sortBy === 'createdAt:desc') {
       result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     } else if (sortBy === 'createdAt:asc') {
@@ -73,22 +66,27 @@ useEffect(() => {
       });
     } else if (sortBy === 'priority') {
       const order = { High: 1, Medium: 2, Low: 3 };
-      result.sort((a, b) => order[a.priority] - order[b.priority]);
+      result.sort((a, b) => (order[a.priority] || 99) - (order[b.priority] || 99));
     }
+
     return result;
   }, [tasks, filters, sortBy]);
 
   // Handlers
-  const handleFilterChange = (e) => {
-    setFilters((prevState) => ({
-      ...prevState,
-      [e.target.name]: e.target.value,
-    }));
-  };
+  // setFilter and setSort use stable function identities (useCallback) to
+  // avoid unnecessary re-renders in child components.
+  const setFilter = useCallback((name, value) => {
+    setFilters((prevState) => ({ ...prevState, [name]: value }));
+  }, []);
 
-  const handleSortChange = (e) => {
-    setSortBy(e.target.value);
-  };
+  const handleFilterChange = useCallback((e) => {
+    // This component expects the same synthetic event shape as before so
+    // child components can still call onFilterChange(e).
+    const { name, value } = e.target || {};
+    if (name) setFilter(name, value);
+  }, [setFilter]);
+
+  const handleSortChange = useCallback((e) => setSortBy(e.target.value), []);
 
   if (isLoading && tasks.length === 0) {
     // Only show loader on initial load

@@ -92,7 +92,7 @@ const SubTaskChecklist = ({ taskId, subTasks }) => {
           }}
         >
           <Typography variant="body2" color="text.secondary">
-            No subtasks yet. Add one to break down this task!
+            Add subtasks to break down this task!
           </Typography>
         </Box>
       ) : (
