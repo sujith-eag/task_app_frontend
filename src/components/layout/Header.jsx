@@ -18,8 +18,8 @@ import {
 } from '@mui/material';
 import Badge from '@mui/material/Badge';
 import MenuIcon from '@mui/icons-material/Menu';
-import DarkModeIcon from '@mui/icons-material/DarkMode';
-import LightModeIcon from '@mui/icons-material/LightMode';
+import WbSunnyIcon from '@mui/icons-material/WbSunny';
+import NightlightRoundIcon from '@mui/icons-material/NightlightRound';
 import AccountCircle from '@mui/icons-material/AccountCircle'; // Generic user icon
 import AccountBoxIcon from '@mui/icons-material/AccountBox'; // Profile
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'; // Admin
@@ -156,9 +156,9 @@ const Header = () => {
                 aria-label="toggle theme"
                 >
             {theme.palette.mode === 'dark' ? (
-                <LightModeIcon sx={{ color: theme.palette.warning.main, transition: 'color 350ms ease' }} />
+                <WbSunnyIcon sx={{ color: theme.palette.warning.main, transition: 'color 350ms ease' }} />
             ) : (
-                <DarkModeIcon sx={{ color: theme.palette.primary.main, transition: 'color 350ms ease' }} />
+                <NightlightRoundIcon sx={{ color: theme.palette.primary.main, transition: 'color 350ms ease' }} />
             )}
         </IconButton>
         </Tooltip>
