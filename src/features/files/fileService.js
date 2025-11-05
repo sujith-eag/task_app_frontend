@@ -451,6 +451,7 @@ const fileService = {
     bulkPurge,
     // Folder functions
     getFolderDetails,
+    deleteFolder,
     moveItem,
     renameFolder,
 

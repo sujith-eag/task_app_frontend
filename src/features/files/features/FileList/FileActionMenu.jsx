@@ -68,7 +68,9 @@ const FileActionMenu = ({ file, onDelete, onShare, onManageShare, onPublicShare,
             </IconButton>
             <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
                 <MenuItem 
-                    onClick={(e) => { e.stopPropagation(); if (!isFolderEmpty) { onDownload(); handleClose(); } else handleClose(); }}
+                    onClick={(e) => { e.stopPropagation(); 
+                        if (!isFolderEmpty) { onDownload(); handleClose(); } 
+                        else handleClose(); }}
                     disabled={isFolderEmpty}
                     title={isFolderEmpty ? 'Folder is empty — cannot download.' : ''}
                     >
@@ -85,7 +87,13 @@ const FileActionMenu = ({ file, onDelete, onShare, onManageShare, onPublicShare,
                 
 		        {/* --- menu item for sharing with specific users --- */}
                 {isOwner && (
-                    <MenuItem onClick={handleAction(onShare)}>
+                    <MenuItem
+                        onClick={(e) => { e.stopPropagation(); 
+                            if (!isFolderEmpty) { onShare(); handleClose(); } 
+                            else handleClose(); }}
+                        disabled={file?.isFolder && isFolderEmpty}
+                        title={file?.isFolder && isFolderEmpty ? 'Folder is empty — nothing to share.' : ''}
+                    >
                         <ListItemIcon>
                             <ShareIcon fontSize="small" />
                         </ListItemIcon>
