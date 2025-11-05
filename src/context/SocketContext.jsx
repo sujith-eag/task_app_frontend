@@ -16,6 +16,8 @@ export const SocketContextProvider = ({ children }) => {
     const [isReconnecting, setIsReconnecting] = useState(false);
     const socketRef = useRef(null);
     const hasShownDisconnectToast = useRef(false); // Prevent duplicate toasts
+    const disconnectToastTimeoutRef = useRef(null);
+    const reconnectDebounceTimeoutRef = useRef(null);
     const { user } = useSelector((state) => state.auth);
     const dispatch = useDispatch();
 
@@ -45,46 +47,69 @@ export const SocketContextProvider = ({ children }) => {
             socketRef.current.on('connect', () => {
                 console.log('✅ Socket.IO connected successfully:', socketRef.current.id);
                 setIsConnected(true);
-                setIsReconnecting(false);
-                hasShownDisconnectToast.current = false;
-                
-                // Dismiss disconnect toast and show success toast on reconnection (not on initial connection)
-                toast.dismiss('socket-disconnected');
-                if (socketRef.current.recovered) {
+
+                // Clear any pending disconnect-toast timers and reconnect debounces
+                if (disconnectToastTimeoutRef.current) {
+                    clearTimeout(disconnectToastTimeoutRef.current);
+                    disconnectToastTimeoutRef.current = null;
+                }
+                if (reconnectDebounceTimeoutRef.current) {
+                    clearTimeout(reconnectDebounceTimeoutRef.current);
+                    reconnectDebounceTimeoutRef.current = null;
+                }
+
+                // If we previously showed the disconnect toast, show a restoration toast now.
+                if (hasShownDisconnectToast.current) {
+                    toast.dismiss('socket-disconnected');
                     toast.success('Connection restored', {
                         position: 'bottom-right',
                         autoClose: 3000,
                         toastId: 'socket-reconnected'
                     });
                 }
+
+                // reset flags
+                hasShownDisconnectToast.current = false;
+                setIsReconnecting(false);
             });
 
             socketRef.current.on('disconnect', (reason) => {
                 console.log('🔌 Socket.IO disconnected:', reason);
                 setIsConnected(false);
-                
-                // Dismiss any existing connection toasts first
+
+                // Dismiss any existing reconnected toast
                 toast.dismiss('socket-reconnected');
-                toast.dismiss('socket-disconnected');
-                
-                // Only show toast for unexpected disconnections (not manual logout)
+
+                // Only schedule a disconnect toast for unexpected disconnects (not manual logout)
+                // and only after a short grace period to avoid flashing toasts on transient network blips.
                 if (reason !== 'io client disconnect' && !hasShownDisconnectToast.current) {
-                    hasShownDisconnectToast.current = true;
-                    toast.error('Connection lost. Attempting to reconnect...', {
-                        position: 'bottom-right',
-                        autoClose: 3000, // Auto-dismiss after 10 seconds
-                        toastId: 'socket-disconnected'
-                    });
+                    // Start a timer; if the socket reconnects within the grace window, we won't show the toast.
+                    disconnectToastTimeoutRef.current = setTimeout(() => {
+                        hasShownDisconnectToast.current = true;
+                        toast.error('Connection lost. Attempting to reconnect...', {
+                            position: 'bottom-right',
+                            autoClose: 5000,
+                            toastId: 'socket-disconnected'
+                        });
+                    }, 8000); // 8s grace period
                 }
             });
 
             socketRef.current.io.on('reconnect_attempt', () => {
-                console.log('🔄 Attempting to reconnect...');
-                setIsReconnecting(true);
+                // Debounce setting `isReconnecting` to avoid brief UI flicker on short lived attempts
+                if (reconnectDebounceTimeoutRef.current) clearTimeout(reconnectDebounceTimeoutRef.current);
+                reconnectDebounceTimeoutRef.current = setTimeout(() => {
+                    console.log('🔄 Attempting to reconnect...');
+                    setIsReconnecting(true);
+                }, 700); // 700ms debounce
             });
 
             socketRef.current.io.on('reconnect_failed', () => {
                 console.error('❌ Reconnection failed');
+                if (reconnectDebounceTimeoutRef.current) {
+                    clearTimeout(reconnectDebounceTimeoutRef.current);
+                    reconnectDebounceTimeoutRef.current = null;
+                }
                 setIsReconnecting(false);
             });
 
@@ -117,6 +142,15 @@ export const SocketContextProvider = ({ children }) => {
                     // Dismiss any connection-related toasts on logout
                     toast.dismiss('socket-disconnected');
                     toast.dismiss('socket-reconnected');
+                    // Clear any pending timers
+                    if (disconnectToastTimeoutRef.current) {
+                        clearTimeout(disconnectToastTimeoutRef.current);
+                        disconnectToastTimeoutRef.current = null;
+                    }
+                    if (reconnectDebounceTimeoutRef.current) {
+                        clearTimeout(reconnectDebounceTimeoutRef.current);
+                        reconnectDebounceTimeoutRef.current = null;
+                    }
                 }
             };
         } else {

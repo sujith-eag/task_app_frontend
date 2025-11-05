@@ -23,7 +23,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import fileService from '../../fileService.js';
 
 const MAX_FILES = 8;
-const MAX_SIZE = 20 * 1024 * 1024; // 20 MB
+const MAX_SIZE = 50 * 1024 * 1024; // 50 MB
 
 const humanFileSize = (size) => {
     if (!size) return '0 B';

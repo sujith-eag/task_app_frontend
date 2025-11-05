@@ -1499,9 +1499,9 @@
     {
       "sessionId": "S_061",
       "day": "Wed",
-      "slotId": "S1+S2",
-      "startTime": "09:00",
-      "endTime": "10:50",
+      "slotId": "S6+S7",
+      "startTime": "14:40",
+      "endTime": "16:30",
       "roomId": "LAB-1",
       "subjectCode": "25MCA13",
       "subjectTitle": "Operating Systems and Shell Programming",
@@ -1517,8 +1517,8 @@
       ],
       "supportingStaff": [
         {
-          "id": "SM",
-          "name": "Ms Swathi M"
+          "id": "RG",
+  	      "name": "Ms Geethanjali R"
         },
         {
           "id": "SK",
@@ -1884,12 +1884,12 @@
       "supportingStaff": [],
       "shortCode": "DS"
     },
-    {
+  	{
       "sessionId": "S_077",
       "day": "Wed",
-      "slotId": "S6+S7",
-      "startTime": "14:40",
-      "endTime": "16:30",
+      "slotId": "S1+S2",
+      "startTime": "09:00",
+      "endTime": "10:50",
       "roomId": "LAB-1",
       "subjectCode": "25MCA16",
       "subjectTitle": "Data Structures using C",
@@ -1905,8 +1905,8 @@
       ],
       "supportingStaff": [
         {
-          "id": "KR",
-          "name": "Mrs Komala R"
+          "id": "SM",
+          "name": "Ms Swathi M"
         },
         {
           "id": "SZ",

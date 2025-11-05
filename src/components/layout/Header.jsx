@@ -16,6 +16,7 @@ import {
     AppBar, Toolbar, Typography, Button, Box, Stack, IconButton, Tooltip,
     Menu, MenuItem, useMediaQuery, Avatar, ListItemIcon, Divider
 } from '@mui/material';
+import Badge from '@mui/material/Badge';
 import MenuIcon from '@mui/icons-material/Menu';
 import Brightness4Icon from '@mui/icons-material/Brightness4'; // Moon Icon
 import Brightness7Icon from '@mui/icons-material/Brightness7'; // Sun icon
@@ -31,6 +32,7 @@ import LoginIcon from '@mui/icons-material/Login'; // login
 import LogoutIcon from '@mui/icons-material/Logout'; // logout
 import PersonAddIcon from '@mui/icons-material/PersonAdd'; // register
 import DownloadIcon from '@mui/icons-material/Download';
+import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 
 const Header = () => {
     const theme = useTheme();
@@ -153,6 +155,17 @@ const Header = () => {
 
         {/* Socket Connection Status - Only shown when disconnected */}
         {user && <ConnectionStatus />}
+
+        {/* Notifications placeholder (badge will be wired later) */}
+        {user && (
+            <Tooltip title="Notifications">
+                <IconButton color="inherit" size="large" sx={{ ml: 0.5 }}>
+                    <Badge color="error" badgeContent={0} invisible={true}>
+                        <NotificationsNoneIcon />
+                    </Badge>
+                </IconButton>
+            </Tooltip>
+        )}
 
         {user ? (
             <Tooltip title="Account">
