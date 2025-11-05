@@ -102,15 +102,15 @@ const FileTableRow = ({ file, isSelected, onSelectFile, onDeleteClick, onNavigat
                             overlap="circular"
                             badgeContent={file.isFolder && file.descendantCount ? file.descendantCount : null}
                             color="primary"
-                            sx={{ mr: 2 }}
+                            sx={{ mr: { xs: 1.5, sm: 2 } }}
                         >
                             <Avatar
                                 variant="rounded"
                                 sx={{
                                     bgcolor: file.isFolder ? 'warning.main' : getFileColor(file.fileType),
-                                    mr: 2,
-                                    width: 44,
-                                    height: 44,
+                                    mr: { xs: 1.5, sm: 2 },
+                                    width: { xs: 36, sm: 44 },
+                                    height: { xs: 36, sm: 44 },
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
@@ -119,14 +119,14 @@ const FileTableRow = ({ file, isSelected, onSelectFile, onDeleteClick, onNavigat
                                 }}
                             >
                                 {file.isFolder
-                                    ? <FolderOpenIcon sx={{ color: 'common.white' }} />
+                                    ? <FolderOpenIcon sx={{ color: 'common.white', fontSize: { xs: 18, sm: 20 } }} />
                                     : getFileIcon(file.fileType)}
                             </Avatar>
                         </Badge>
                         {/* Truncate long filenames, show full name on hover/focus */}
                         <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                             <Tooltip title={file.fileName} placement="top" enterDelay={400}>
-                                <Typography noWrap sx={{ maxWidth: { xs: 160, sm: 320, md: 420 }, fontWeight: 500 }}>{file.fileName}</Typography>
+                                <Typography noWrap sx={{ maxWidth: { xs: 120, sm: 320, md: 420 }, fontWeight: 500 }}>{file.fileName}</Typography>
                             </Tooltip>
 
                             {/* Show file type and size under the filename for files (not folders) */}
@@ -140,7 +140,7 @@ const FileTableRow = ({ file, isSelected, onSelectFile, onDeleteClick, onNavigat
                 </TableCell>
 
                 {/* --- INTEGRATE Data --- */}
-                <TableCell>
+                    <TableCell sx={{ px: { xs: 1, sm: 2 } }}>
                 {/* Switch statement for clear, context-aware rendering */}
                 {(() => {
                     switch (context) {
@@ -164,10 +164,11 @@ const FileTableRow = ({ file, isSelected, onSelectFile, onDeleteClick, onNavigat
                 })()}
                 </TableCell>
 
-                <TableCell padding="checkbox">
+                <TableCell padding="checkbox" sx={{ px: { xs: 0.5, sm: 1 } }}>
                     {/* Visible in All tabs */}
-                    <Checkbox 
-                        checked={isSelected} 
+                    <Checkbox
+                        size="small"
+                        checked={isSelected}
                         onClick={(e) => e.stopPropagation()}
                         onChange={(e) => { e.stopPropagation(); onSelectFile(file._id); }}
                     />

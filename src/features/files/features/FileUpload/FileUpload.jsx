@@ -221,7 +221,7 @@ const FileUpload = () => {
                             <UploadFileIcon color={isDragActive ? 'primary' : 'inherit'} sx={{ fontSize: 36 }} />
                             <Box sx={{ textAlign: 'left' }}>
                                 <Typography variant="subtitle1">Drag & drop files here</Typography>
-                                <Typography variant="body2" color="text.secondary">Click Select to choose files — up to {MAX_FILES} files, max {humanFileSize(MAX_SIZE)} each</Typography>
+                                <Typography variant="body2" color="text.secondary">Choose files — up to {MAX_FILES} files, max {humanFileSize(MAX_SIZE)} each</Typography>
                             </Box>
                         </Stack>
 

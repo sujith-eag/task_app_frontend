@@ -18,8 +18,8 @@ import {
 } from '@mui/material';
 import Badge from '@mui/material/Badge';
 import MenuIcon from '@mui/icons-material/Menu';
-import Brightness4Icon from '@mui/icons-material/Brightness4'; // Moon Icon
-import Brightness7Icon from '@mui/icons-material/Brightness7'; // Sun icon
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+import LightModeIcon from '@mui/icons-material/LightMode';
 import AccountCircle from '@mui/icons-material/AccountCircle'; // Generic user icon
 import AccountBoxIcon from '@mui/icons-material/AccountBox'; // Profile
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'; // Admin
@@ -144,13 +144,23 @@ const Header = () => {
             alignItems="center">
 
         <Tooltip title={theme.palette.mode === 'dark' ? 'Switch to light' : 'Switch to dark'}>
-          <IconButton 
-              sx={{ ml: 1 }} 
-              onClick={colorMode.toggleColorMode} 
-              color="inherit"
-              >
-            {theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
-          </IconButton>
+        <IconButton
+                sx={{
+                    ml: 1,
+                    transition: 'transform 350ms ease, color 350ms ease',
+                    transform: theme.palette.mode === 'dark' ? 'rotate(-8deg) scale(1.02)' : 'rotate(0deg) scale(1)',
+                    '&:active': { transform: 'scale(0.95) rotate(0deg)' },
+                }}
+                onClick={colorMode.toggleColorMode}
+                color="inherit"
+                aria-label="toggle theme"
+                >
+            {theme.palette.mode === 'dark' ? (
+                <LightModeIcon sx={{ color: theme.palette.warning.main, transition: 'color 350ms ease' }} />
+            ) : (
+                <DarkModeIcon sx={{ color: theme.palette.primary.main, transition: 'color 350ms ease' }} />
+            )}
+        </IconButton>
         </Tooltip>
 
         {/* Socket Connection Status - Only shown when disconnected */}

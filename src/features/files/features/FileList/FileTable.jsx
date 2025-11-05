@@ -161,17 +161,17 @@ const FileTable = () => {
 
             <Box sx={{ mt: 2 }}>
                 {currentList.length > 0 ? (
-                    <TableContainer component={Paper} variant="outlined">
+                    <TableContainer component={Paper} variant="outlined" sx={{ overflowX: 'auto' }}>
                         <Table>
                             <TableHead>
                                 <TableRow>
-                                    <TableCell sx={{ width: 72, textAlign: 'center' }}>Actions</TableCell>
+                                    <TableCell sx={{ width: { xs: 56, sm: 72 }, textAlign: 'center', px: { xs: 1, sm: 2 } }}>Actions</TableCell>
 
-                                    <TableCell sx={{ width: '55%' }}>Name</TableCell>
+                                    <TableCell sx={{ width: { xs: '45%', sm: '55%' }, px: { xs: 1, sm: 2 } }}>Name</TableCell>
 
-                                    <TableCell sx={{ width: '25%' }}>Date / Source</TableCell>
+                                    <TableCell sx={{ width: { xs: '35%', sm: '25%' }, px: { xs: 1, sm: 2 } }}>Date / Source</TableCell>
 
-                                    <TableCell padding="checkbox" sx={{ width: '5%' }}>
+                                    <TableCell padding="checkbox" sx={{ width: { xs: '10%', sm: '5%' }, px: { xs: 0.5, sm: 1 } }}>
                                         {/* "Select All" checkbox */}
                                         <Checkbox
                                             indeterminate={selectedFiles.length > 0 && selectedFiles.length < currentList.length}
