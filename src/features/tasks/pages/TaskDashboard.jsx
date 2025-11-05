@@ -1,11 +1,10 @@
-import TaskForm from '../components/TaskForm.jsx';
 import TaskList from '../components/TaskList.jsx';
 import SummaryCards from '../components/SummaryCards.jsx';
-import AITaskGenerator from '../../ai/components/AITaskGenerator.jsx';
 
 import { useSelector } from 'react-redux';
 
-import { Box, Typography, CircularProgress } from '@mui/material';
+import { Box, Typography, CircularProgress, Button } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 
 const Dashboard = () => {
@@ -23,92 +22,61 @@ const Dashboard = () => {
     );
   }
 
+  const navigate = useNavigate();
+
   return (
-  <Box> 
+  <Box>
       <Box 
         sx={{ 
-          textAlign: 'center', 
-          mb: 4, 
-          p: 3,
-          borderRadius: 2,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          mb: 3,
+          p: { xs: 1.5, sm: 3 },
+          borderRadius: 1,
           background: (theme) => 
             theme.palette.mode === 'dark'
-              ? 'linear-gradient(135deg, rgba(103, 58, 183, 0.1) 0%, rgba(63, 81, 181, 0.1) 100%)'
-              : 'linear-gradient(135deg, rgba(103, 58, 183, 0.05) 0%, rgba(63, 81, 181, 0.05) 100%)',
-          animation: 'fadeIn 0.6s ease-out',
-          '@keyframes fadeIn': {
-            from: { opacity: 0, transform: 'translateY(-10px)' },
-            to: { opacity: 1, transform: 'translateY(0)' }
-          }
+              ? 'rgba(255,255,255,0.02)'
+              : 'rgba(0,0,0,0.02)'
         }}
       >
-        <Typography 
-          variant="h3" 
-          component="h1" 
-          gutterBottom
-          sx={{
-            fontWeight: 700,
-            fontSize: {
-              xs: '2.2rem',
-              md: '2.4rem',
-              sm: '3rem'
-            },
-            background: (theme) => 
-              theme.palette.mode === 'dark'
-                ? 'linear-gradient(135deg, #90caf9 0%, #64b5f6 100%)'
-                : 'linear-gradient(135deg, #673ab7 0%, #3f51b5 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text'
-          }}
+        <Box>
+          <Typography 
+            variant="h5" 
+            component="h1" 
+            gutterBottom
+            sx={{
+              fontWeight: 700,
+              fontSize: { xs: '1.25rem', sm: '1.5rem' }
+            }}
           >
-        Welcome {user?.name}
-        </Typography>
+            Welcome {user?.name}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">Your Personal Task Dashboard</Typography>
+        </Box>
 
-        <Typography 
-          variant="h5" 
-          color="text.secondary"
-          sx={{
-            fontSize: {
-              xs: '1.1rem',
-              md: '1.2rem',
-              sm: '1.5rem',
-            },
-            fontWeight: 500
-          }}
-          >
-          Your Personal Task Dashboard
-        </Typography>
+        <Button variant="contained" onClick={() => navigate('/tasks/create')}>Create Task</Button>
       </Box>
-      
-
-      {/* --- SUMMARY CARDS SECTION --- */}
-        <SummaryCards />
-      
+  
       
       {/* --- MASTER FLEXBOX Two-Column Layout --- */}
       <Box sx={{
         display: 'flex',
         gap: 4,
-        // On extra-small screens, stack them. On medium and up, put them in a row.
         flexDirection: { xs: 'column', md: 'row' }
       }}>
 
-        {/* Left Column for the Form */}
+        {/* Left Column: compact quick actions + summary on mobile */}
       <Box sx={{
-        width: { xs: '100%', md: '35%' }, // Takes full width on mobile, 35% on desktop
-        flexShrink: 0 // Prevents this column from shrinking
+        width: { xs: '100%', md: '35%' },
+        flexShrink: 0
       }}>
 
-          <AITaskGenerator />
-
-          <TaskForm />
-          
+          <SummaryCards />
         </Box>
         
         {/* Right Column for the Task List */}
-        <Box sx={{ flexGrow: 1 }}>      {/* flexGrow allows this column to take all remaining space */}
-          
+        <Box sx={{ flexGrow: 1 }}>
           <TaskList />
 
         </Box>

@@ -24,6 +24,7 @@ import PublicDownloadPage from "./features/public/pages/PublicDownloadPage.jsx";
 
 // General Private Pages
 import TaskDashboard from './features/tasks/pages/TaskDashboard.jsx'
+import TaskCreation from './features/tasks/pages/TaskCreation.jsx';
 import ProfilePage from './features/profile/pages/ProfilePage.jsx'
 import FilesPage from './features/files/pages/FilePage.jsx';
 import ChatPage from './features/chat/pages/ChatPage.jsx';
@@ -71,6 +72,7 @@ function App() {
             {/* --- General Private Routes (Accessible to all logged-in users) --- */}
             <Route element={<PrivateRoute />}>
                 <Route path="/dashboard" element={<TaskDashboard />} />
+                <Route path="/tasks/create" element={<TaskCreation />} />
                 <Route path='/profile' element={<ProfilePage />} />
                 <Route path='/files' element={<FilesPage />} />
                 <Route path='/trash' element={<TrashPage />} />
