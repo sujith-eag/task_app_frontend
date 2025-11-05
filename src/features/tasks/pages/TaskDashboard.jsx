@@ -4,6 +4,7 @@ import SummaryCards from '../components/SummaryCards.jsx';
 import { useSelector } from 'react-redux';
 
 import { Box, Typography, CircularProgress, Button } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 import { useNavigate } from 'react-router-dom';
 
 
@@ -55,7 +56,23 @@ const Dashboard = () => {
           <Typography variant="body2" color="text.secondary">Your Personal Task Dashboard</Typography>
         </Box>
 
-        <Button variant="contained" onClick={() => navigate('/tasks/create')}>Create Task</Button>
+        <Button
+          variant="contained"
+          color="primary"
+          size="small"
+          startIcon={<AddIcon fontSize="small" />}
+          onClick={() => navigate('/tasks/create')}
+          sx={{
+            textTransform: 'none',
+            borderRadius: 1,
+            px: 2,
+            py: 0.8,
+            minWidth: 140,
+            boxShadow: 1,
+          }}
+        >
+          Create Task
+        </Button>
       </Box>
   
       
