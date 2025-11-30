@@ -303,7 +303,7 @@ export const taskSlice = createSlice({
           state.lastDeletedSubTask = null;
         }
 
-        const { taskId, subTaskData } = action.meta.arg;
+        const { taskId } = action.meta.arg;
         const task = state.tasks.find((t) => t._id === taskId);
         if (task) {
           task.subTasks = task.subTasks.filter(sub => !sub._id.startsWith('temp_'));

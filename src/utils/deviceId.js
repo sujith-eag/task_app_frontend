@@ -16,9 +16,10 @@ function getOrCreateInstallId() {
     let installId = localStorage.getItem(INSTALL_ID_KEY);
     if (installId) return installId;
     installId = cryptoRandomHex(16);
-    try { localStorage.setItem(INSTALL_ID_KEY, installId); } catch (e) {}
+    localStorage.setItem(INSTALL_ID_KEY, installId);
     return installId;
-  } catch (e) {
+  } catch {
+    // localStorage disabled or quota exceeded
     return 'localStorage_disabled';
   }
 }
@@ -31,7 +32,11 @@ async function computeFingerprint() {
   parts.push(nav.userAgent || '');
   parts.push(nav.platform || '');
   parts.push((nav.languages && nav.languages.join(',')) || nav.language || '');
-  try { parts.push(Intl?.DateTimeFormat().resolvedOptions().timeZone || ''); } catch (e) { parts.push(''); }
+  try { 
+    parts.push(Intl?.DateTimeFormat().resolvedOptions().timeZone || ''); 
+  } catch { 
+    parts.push(''); 
+  }
   parts.push(String(screenInfo.width || '') + 'x' + String(screenInfo.height || '') + 'x' + String(screenInfo.colorDepth || ''));
   parts.push(String(navigator.hardwareConcurrency || ''));
   if (typeof navigator.deviceMemory !== 'undefined') parts.push(String(navigator.deviceMemory));
@@ -48,7 +53,7 @@ async function computeFingerprint() {
       const hashArray = Array.from(new Uint8Array(hashBuffer));
       const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
       return 'v1:' + hashHex;
-    } catch (e) {
+    } catch {
       // fallthrough to fallback
     }
   }
@@ -58,9 +63,9 @@ async function computeFingerprint() {
     let id = localStorage.getItem(DEVICE_ID_KEY);
     if (id) return id;
     id = cryptoRandomHex(32);
-    try { localStorage.setItem(DEVICE_ID_KEY, id); } catch (e) {}
+    localStorage.setItem(DEVICE_ID_KEY, id);
     return id;
-  } catch (e) {
+  } catch {
     return cryptoRandomHex(32);
   }
 }
@@ -74,9 +79,9 @@ export async function getDeviceId() {
     let id = localStorage.getItem(DEVICE_ID_KEY);
     if (id) return id;
     id = await computeFingerprint();
-    try { localStorage.setItem(DEVICE_ID_KEY, id); } catch (e) {}
+    localStorage.setItem(DEVICE_ID_KEY, id);
     return id;
-  } catch (e) {
+  } catch {
     return cryptoRandomHex(32);
   }
 }
@@ -85,5 +90,7 @@ export function clearDeviceId() {
   try {
     localStorage.removeItem(DEVICE_ID_KEY);
     localStorage.removeItem(INSTALL_ID_KEY);
-  } catch (e) {}
+  } catch {
+    // Ignore localStorage errors
+  }
 }

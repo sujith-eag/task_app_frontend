@@ -115,7 +115,7 @@ const useConfirmDialog = () => {
       console.error('Confirmation action failed:', error);
       setDialogState((prev) => ({ ...prev, loading: false }));
     }
-  }, [dialogState.onConfirm, handleClose]);
+  }, [dialogState, handleClose]);
 
   return {
     dialogState: {
