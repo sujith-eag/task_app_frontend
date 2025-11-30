@@ -1,5 +1,7 @@
 import React, { useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { Grid, Box, IconButton, Tooltip, Typography, Alert } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import PeopleIcon from '@mui/icons-material/People';
@@ -14,6 +16,7 @@ import AttendanceChart from './AttendanceChart.jsx';
 import FeedbackChart from './FeedbackChart.jsx';
 import SemesterDistributionChart from './SemesterDistributionChart.jsx';
 import ActivityFeed from './ActivityFeed.jsx';
+import QuickActions from './QuickActions.jsx';
 
 import {
   fetchAllDashboardData,
@@ -22,9 +25,11 @@ import {
 
 /**
  * DashboardOverview - Main dashboard statistics overview component
+ * @param {Function} onTabChange - Callback to change parent tab
  */
-const DashboardOverview = () => {
+const DashboardOverview = ({ onTabChange }) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   
   const {
     stats,
@@ -61,6 +66,14 @@ const DashboardOverview = () => {
       return new Date(lastUpdated).toLocaleString();
     } catch {
       return null;
+    }
+  };
+
+  const handleQuickAction = (action) => {
+    if (action.type === 'tab' && onTabChange) {
+      onTabChange(action.value);
+    } else if (action.type === 'path') {
+      navigate(action.value);
     }
   };
 
@@ -193,23 +206,33 @@ const DashboardOverview = () => {
         </Grid>
       </Grid>
 
-      {/* Bottom Row - Feedback and Activity */}
+      {/* Bottom Row - Feedback, Activity, and Quick Actions */}
       <Grid container spacing={3}>
-        <Grid size={{ xs: 12, md: 6 }}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <FeedbackChart
             data={feedbackDistribution}
             loading={isFeedbackLoading}
           />
         </Grid>
-        <Grid size={{ xs: 12, md: 6 }}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <ActivityFeed
             activities={recentActivity}
             loading={isActivityLoading}
           />
         </Grid>
+        <Grid size={{ xs: 12, md: 4 }}>
+          <QuickActions
+            onNavigate={handleQuickAction}
+            pendingCount={stats.pendingApplications?.total || 0}
+          />
+        </Grid>
       </Grid>
     </Box>
   );
+};
+
+DashboardOverview.propTypes = {
+  onTabChange: PropTypes.func,
 };
 
 export default DashboardOverview;

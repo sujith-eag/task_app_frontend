@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { Box, Container, Typography, Tabs, Tab, Paper } from '@mui/material';
@@ -43,6 +43,11 @@ const AdminDashboardPage = () => {
         setTabIndex(newValue);
     };
 
+    // Callback for DashboardOverview quick actions to change tabs
+    const handleQuickActionTabChange = useCallback((tabValue) => {
+        setTabIndex(tabValue);
+    }, []);
+
     return (
         <Container maxWidth="xl">
             <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'bold' }}>
@@ -66,7 +71,7 @@ const AdminDashboardPage = () => {
                     </Tabs>
                 </Box>
                 <TabPanel value={tabIndex} index={0}>
-                    <DashboardOverview />
+                    <DashboardOverview onTabChange={handleQuickActionTabChange} />
                 </TabPanel>
                 <TabPanel value={tabIndex} index={1}>
                     <ApplicationReview />
