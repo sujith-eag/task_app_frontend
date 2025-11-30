@@ -7,13 +7,23 @@ const SUBJECTS_API_URL = '/admin/subjects/';
 // --- Subject Management ---
 
 /**
- * Retrieves a list of all academic subjects. with optional semester filter
+ * Retrieves a list of all academic subjects with optional filters.
+ * Supports pagination, search, and filtering by semester/department.
  * @route GET /api/admin/subjects/
- * @param {string} token - The JWT for authentication.
- * @returns {Promise<Array<object>>} An array of subject objects.
+ * @param {Object} params - Query parameters
+ * @param {number} [params.page=1] - Page number
+ * @param {number} [params.limit=20] - Items per page
+ * @param {string} [params.search=''] - Search term for subject name or code
+ * @param {number} [params.semester] - Filter by semester
+ * @param {string} [params.department] - Filter by department
+ * @returns {Promise<Object>} Paginated subjects with pagination metadata
  */
-const getSubjects = async (params={}) => {
-    const response = await apiClient.get(SUBJECTS_API_URL, { params });
+const getSubjects = async (params = {}) => {
+    const { page = 1, limit = 20, search = '', semester, department } = params;
+    const queryParams = { page, limit, search };
+    if (semester) queryParams.semester = semester;
+    if (department) queryParams.department = department;
+    const response = await apiClient.get(SUBJECTS_API_URL, { params: queryParams });
     return response.data;
 };
 

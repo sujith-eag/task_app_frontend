@@ -4,15 +4,21 @@ import adminService from '../adminService';
 
 // --- Async Thunks ---
 
-// Get all users with the teacher role
-export const getAllTeachers = createAsyncThunk('adminTeachers/getAll', async (_, thunkAPI) => {
-    try {
-        return await adminService.getAllTeachers();
-    } catch (error) {
-        const message = (error.response?.data?.message) || error.message || error.toString();
-        return thunkAPI.rejectWithValue(message);
+/**
+ * Get all users with the teacher role with pagination and search
+ * @param {Object} params - { page, limit, search }
+ */
+export const getAllTeachers = createAsyncThunk(
+    'adminTeachers/getAll', 
+    async (params = {}, thunkAPI) => {
+        try {
+            return await adminService.getAllTeachers(params);
+        } catch (error) {
+            const message = (error.response?.data?.message) || error.message || error.toString();
+            return thunkAPI.rejectWithValue(message);
+        }
     }
-});
+);
 
 // --- Thunk for updating teacher assignments ---
 export const updateTeacherAssignments = createAsyncThunk('adminTeachers/updateAssignments', async (data, thunkAPI) => {
@@ -39,6 +45,14 @@ export const deleteTeacherAssignment = createAsyncThunk('adminTeachers/deleteAss
 // --- Slice Definition ---
 const initialState = {
     teachers: [],
+    pagination: {
+        page: 1,
+        limit: 20,
+        total: 0,
+        totalPages: 0,
+        hasMore: false,
+    },
+    searchTerm: '',
     isLoading: false,
     isSuccess: false,
     isError: false,
@@ -55,6 +69,13 @@ export const adminTeacherSlice = createSlice({
             state.isError = false;
             state.message = '';
         },
+        setTeacherSearchTerm: (state, action) => {
+            state.searchTerm = action.payload;
+        },
+        clearTeachers: (state) => {
+            state.teachers = [];
+            state.pagination = initialState.pagination;
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -65,15 +86,21 @@ export const adminTeacherSlice = createSlice({
             .addCase(getAllTeachers.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.isSuccess = true;
-                // Normalize wrapped or raw responses into an array
+                // Handle new paginated response format
                 const payload = action.payload;
-                state.teachers = Array.isArray(payload)
-                    ? payload
-                    : payload && Array.isArray(payload.data)
-                        ? payload.data
-                        : payload && Array.isArray(payload.teachers)
-                            ? payload.teachers
-                            : [];
+                if (payload && payload.data && payload.pagination) {
+                    state.teachers = payload.data;
+                    state.pagination = payload.pagination;
+                } else {
+                    // Fallback for old format
+                    state.teachers = Array.isArray(payload)
+                        ? payload
+                        : payload && Array.isArray(payload.data)
+                            ? payload.data
+                            : payload && Array.isArray(payload.teachers)
+                                ? payload.teachers
+                                : [];
+                }
             })
             .addCase(getAllTeachers.rejected, (state, action) => {
                 state.isLoading = false;
@@ -132,5 +159,5 @@ export const adminTeacherSlice = createSlice({
     },
 });
 
-export const { reset } = adminTeacherSlice.actions;
+export const { reset, setTeacherSearchTerm, clearTeachers } = adminTeacherSlice.actions;
 export default adminTeacherSlice.reducer;

@@ -8,12 +8,19 @@ const TEACHER_ASSIGNMENTS_API_URL = '/admin/teacher-assignments';
 
 /**
  * Retrieves a list of all users with the 'teacher' role.
+ * Supports pagination and search.
  * @route GET /api/admin/management/teachers
- * @param {string} token - The JWT for authentication.
- * @returns {Promise<Array<object>>} An array of teacher user objects.
+ * @param {Object} params - Query parameters
+ * @param {number} [params.page=1] - Page number
+ * @param {number} [params.limit=20] - Items per page
+ * @param {string} [params.search=''] - Search term for name, email, or staffId
+ * @returns {Promise<Object>} Paginated teachers with pagination metadata
  */
-const getAllTeachers = async () => {
-    const response = await apiClient.get(`${MANAGEMENT_API_URL}/teachers`);
+const getAllTeachers = async (params = {}) => {
+    const { page = 1, limit = 20, search = '' } = params;
+    const response = await apiClient.get(`${MANAGEMENT_API_URL}/teachers`, {
+        params: { page, limit, search }
+    });
     return response.data;
 };
 

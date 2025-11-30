@@ -2,6 +2,7 @@
  * Application Review Component
  * 
  * Review and process pending student applications with:
+ * - Server-side pagination and search
  * - DataGrid with enhanced UX
  * - Confirmation dialogs for approve/reject
  * - Loading states and empty states
@@ -9,7 +10,7 @@
  * - Development logging
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Box, Typography, Button, Alert, Chip, Tooltip } from '@mui/material';
 import { toast } from 'react-toastify';
@@ -19,14 +20,14 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import RefreshIcon from '@mui/icons-material/Refresh';
 
 // Components
-import { EnhancedDataGrid } from '../../../../components/common';
+import { EnhancedDataGrid, SearchInput } from '../../../../components/common';
 import ConfirmationDialog from '../../../../components/ConfirmationDialog';
 
 // Hooks
 import useConfirmDialog from '../../../../hooks/useConfirmDialog';
 
 // Redux
-import { getPendingApplications, reviewApplication } from '../../adminSlice/adminUserSlice.js';
+import { getPendingApplications, reviewApplication, setSearchTerm } from '../../adminSlice/adminUserSlice.js';
 
 // Logger
 import { createLogger } from '../../../../utils/logger.js';
@@ -35,15 +36,56 @@ const logger = createLogger('ApplicationReview');
 
 const ApplicationReview = () => {
     const dispatch = useDispatch();
-    const { pendingApplications, isLoading, isError, message } = useSelector((state) => state.adminUsers);
+    const { 
+        pendingApplications, 
+        applicationsPagination, 
+        searchTerm,
+        isLoading, 
+        isError, 
+        message 
+    } = useSelector((state) => state.adminUsers);
     const { dialogState, showDialog } = useConfirmDialog();
 
+    // Local pagination state for DataGrid
+    const [paginationModel, setPaginationModel] = useState({
+        page: 0, // DataGrid uses 0-indexed pages
+        pageSize: 20,
+    });
+
+    // Fetch applications on mount and when pagination/search changes
     useEffect(() => {
         logger.mount({ applicationsCount: pendingApplications.length });
-        if (pendingApplications.length === 0) {
-            dispatch(getPendingApplications());
-        }
-    }, [dispatch, pendingApplications.length]);
+        fetchApplications();
+    }, [paginationModel.page, paginationModel.pageSize, searchTerm]);
+
+    const fetchApplications = useCallback(() => {
+        dispatch(getPendingApplications({
+            page: paginationModel.page + 1, // API uses 1-indexed pages
+            limit: paginationModel.pageSize,
+            search: searchTerm,
+        }));
+    }, [dispatch, paginationModel.page, paginationModel.pageSize, searchTerm]);
+
+    /**
+     * Handle pagination model change from DataGrid
+     */
+    const handlePaginationModelChange = useCallback((newModel) => {
+        logger.action('Pagination changed', { 
+            from: paginationModel, 
+            to: newModel 
+        });
+        setPaginationModel(newModel);
+    }, [paginationModel]);
+
+    /**
+     * Handle search term change
+     */
+    const handleSearchChange = useCallback((value) => {
+        logger.action('Search changed', { searchTerm: value });
+        dispatch(setSearchTerm(value));
+        // Reset to first page when searching
+        setPaginationModel(prev => ({ ...prev, page: 0 }));
+    }, [dispatch]);
 
     /**
      * Handle application approval with confirmation
@@ -64,6 +106,8 @@ const ApplicationReview = () => {
                     
                     logger.success('Application approved', { userId: user._id });
                     toast.success(result.message || 'Application approved successfully');
+                    // Refresh list after action
+                    fetchApplications();
                 } catch (err) {
                     logger.error('Approval failed', { error: err, userId: user._id });
                     toast.error(err || 'Failed to approve application');
@@ -93,6 +137,8 @@ const ApplicationReview = () => {
                     
                     logger.success('Application rejected', { userId: user._id });
                     toast.success(result.message || 'Application rejected');
+                    // Refresh list after action
+                    fetchApplications();
                 } catch (err) {
                     logger.error('Rejection failed', { error: err, userId: user._id });
                     toast.error(err || 'Failed to reject application');
@@ -107,7 +153,7 @@ const ApplicationReview = () => {
      */
     const handleRefresh = () => {
         logger.action('Refresh clicked');
-        dispatch(getPendingApplications());
+        fetchApplications();
     };
 
     const columns = [
@@ -226,15 +272,23 @@ const ApplicationReview = () => {
         <Box>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                 <Typography variant="h5">Pending Student Applications</Typography>
-                <Button
-                    variant="outlined"
-                    size="small"
-                    onClick={handleRefresh}
-                    startIcon={<RefreshIcon />}
-                    disabled={isLoading}
-                >
-                    Refresh
-                </Button>
+                <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                    <SearchInput
+                        value={searchTerm}
+                        onChange={handleSearchChange}
+                        placeholder="Search by name, email, or USN..."
+                        isLoading={isLoading}
+                    />
+                    <Button
+                        variant="outlined"
+                        size="small"
+                        onClick={handleRefresh}
+                        startIcon={<RefreshIcon />}
+                        disabled={isLoading}
+                    >
+                        Refresh
+                    </Button>
+                </Box>
             </Box>
             
             <EnhancedDataGrid
@@ -243,10 +297,17 @@ const ApplicationReview = () => {
                 getRowId={(row) => row._id}
                 isLoading={isLoading}
                 height={500}
+                // Server-side pagination
+                serverPagination
+                rowCount={applicationsPagination.total}
+                paginationModel={paginationModel}
+                onPaginationModelChange={handlePaginationModelChange}
                 emptyStateProps={{
                     icon: PendingActionsIcon,
-                    title: 'No pending applications',
-                    description: 'All student applications have been processed. New applications will appear here.',
+                    title: searchTerm ? 'No matching applications' : 'No pending applications',
+                    description: searchTerm 
+                        ? `No applications match "${searchTerm}". Try a different search term.`
+                        : 'All student applications have been processed. New applications will appear here.',
                 }}
             />
 

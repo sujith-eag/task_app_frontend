@@ -2,6 +2,7 @@
  * Teacher List Component
  * 
  * Displays and manages teachers with:
+ * - Server-side pagination and search
  * - DataGrid with enhanced UX
  * - Assignment management
  * - Loading states and skeleton loaders
@@ -9,7 +10,7 @@
  * - Development logging
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Box, Button, Chip, Tooltip } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
@@ -17,10 +18,10 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 
 // Components
-import { EnhancedDataGrid } from '../../../../components/common';
+import { EnhancedDataGrid, SearchInput } from '../../../../components/common';
 
 // Redux
-import { getAllTeachers } from '../../adminSlice/adminTeacherSlice.js';
+import { getAllTeachers, setTeacherSearchTerm, clearTeachers } from '../../adminSlice/adminTeacherSlice.js';
 
 // Logger
 import { createLogger } from '../../../../utils/logger.js';
@@ -29,14 +30,53 @@ const logger = createLogger('TeacherList');
 
 const TeacherList = ({ onAssign }) => { 
     const dispatch = useDispatch();
-    const { teachers, isLoading } = useSelector((state) => state.adminTeachers);
+    const { 
+        teachers, 
+        pagination, 
+        searchTerm,
+        isLoading 
+    } = useSelector((state) => state.adminTeachers);
+
+    // Local pagination state for DataGrid
+    const [paginationModel, setPaginationModel] = useState({
+        page: 0, // DataGrid uses 0-indexed pages
+        pageSize: 20,
+    });
     
+    // Fetch teachers when pagination/search changes
     useEffect(() => {
         logger.mount({ teachersCount: teachers.length });
-        if (teachers.length === 0) {
-            dispatch(getAllTeachers());
-        }
-    }, [dispatch, teachers.length]);
+        fetchTeachers();
+    }, [paginationModel.page, paginationModel.pageSize, searchTerm]);
+
+    const fetchTeachers = useCallback(() => {
+        dispatch(getAllTeachers({
+            page: paginationModel.page + 1, // API uses 1-indexed pages
+            limit: paginationModel.pageSize,
+            search: searchTerm,
+        }));
+    }, [dispatch, paginationModel.page, paginationModel.pageSize, searchTerm]);
+
+    /**
+     * Handle pagination model change from DataGrid
+     */
+    const handlePaginationModelChange = useCallback((newModel) => {
+        logger.action('Pagination changed', { 
+            from: paginationModel, 
+            to: newModel 
+        });
+        setPaginationModel(newModel);
+    }, [paginationModel]);
+
+    /**
+     * Handle search term change
+     */
+    const handleSearchChange = useCallback((value) => {
+        logger.action('Search changed', { searchTerm: value });
+        dispatch(setTeacherSearchTerm(value));
+        // Reset to first page when searching
+        setPaginationModel(prev => ({ ...prev, page: 0 }));
+    }, [dispatch]);
 
     /**
      * Handle manage assignments click
@@ -55,7 +95,7 @@ const TeacherList = ({ onAssign }) => {
      */
     const handleRefresh = () => {
         logger.action('Refresh clicked');
-        dispatch(getAllTeachers());
+        fetchTeachers();
     };
 
     const columns = [
@@ -141,7 +181,13 @@ const TeacherList = ({ onAssign }) => {
 
     return (
         <Box sx={{ mt: 2 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 1 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                <SearchInput
+                    value={searchTerm}
+                    onChange={handleSearchChange}
+                    placeholder="Search by name, email, or staff ID..."
+                    isLoading={isLoading}
+                />
                 <Button
                     variant="outlined"
                     size="small"
@@ -159,10 +205,17 @@ const TeacherList = ({ onAssign }) => {
                 getRowId={(row) => row._id}
                 isLoading={isLoading}
                 height={500}
+                // Server-side pagination
+                serverPagination
+                rowCount={pagination.total}
+                paginationModel={paginationModel}
+                onPaginationModelChange={handlePaginationModelChange}
                 emptyStateProps={{
                     icon: PersonIcon,
-                    title: 'No teachers found',
-                    description: 'Teachers will appear here once they register and are assigned the faculty role',
+                    title: searchTerm ? 'No matching teachers' : 'No teachers found',
+                    description: searchTerm 
+                        ? `No teachers match "${searchTerm}". Try a different search term.`
+                        : 'Teachers will appear here once they register and are assigned the faculty role',
                 }}
             />
         </Box>

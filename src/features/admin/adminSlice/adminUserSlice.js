@@ -4,15 +4,21 @@ import adminService from '../adminService';
 
 // --- Async Thunks ---
 
-// Get pending student applications
-export const getPendingApplications = createAsyncThunk('adminUsers/getPending', async (_, thunkAPI) => {
-    try {
-        return await adminService.getPendingApplications();
-    } catch (error) {
-        const message = (error.response?.data?.message) || error.message || error.toString();
-        return thunkAPI.rejectWithValue(message);
+/**
+ * Get pending student applications with pagination and search
+ * @param {Object} params - { page, limit, search }
+ */
+export const getPendingApplications = createAsyncThunk(
+    'adminUsers/getPending', 
+    async (params = {}, thunkAPI) => {
+        try {
+            return await adminService.getPendingApplications(params);
+        } catch (error) {
+            const message = (error.response?.data?.message) || error.message || error.toString();
+            return thunkAPI.rejectWithValue(message);
+        }
     }
-});
+);
 
 // Review (approve/reject) a student application
 export const reviewApplication = createAsyncThunk('adminUsers/reviewApp', async (reviewData, thunkAPI) => {
@@ -25,15 +31,29 @@ export const reviewApplication = createAsyncThunk('adminUsers/reviewApp', async 
     }
 });
 
-// Get users by their role
-export const getUsersByRole = createAsyncThunk('adminUsers/getByRole', async (role, thunkAPI) => {
-    try {
-        return await adminService.getUsersByRole(role);
-    } catch (error) {
-        const message = (error.response?.data?.message) || error.message || error.toString();
-        return thunkAPI.rejectWithValue(message);
+/**
+ * Get users by their role with pagination and search
+ * @param {Object} params - { role, page, limit, search }
+ */
+export const getUsersByRole = createAsyncThunk(
+    'adminUsers/getByRole', 
+    async (params, thunkAPI) => {
+        try {
+            // Support both old format (just role) and new format (object with params)
+            if (typeof params === 'string') {
+                return await adminService.getUsersByRole(params);
+            }
+            return await adminService.getUsersByRole(params.role, {
+                page: params.page,
+                limit: params.limit,
+                search: params.search,
+            });
+        } catch (error) {
+            const message = (error.response?.data?.message) || error.message || error.toString();
+            return thunkAPI.rejectWithValue(message);
+        }
     }
-});
+);
 
 // Promote a user to a faculty role
 export const promoteToFaculty = createAsyncThunk('adminUsers/promote', async (data, thunkAPI) => {
@@ -71,7 +91,23 @@ export const updateStudentEnrollment = createAsyncThunk('adminUsers/updateEnroll
 // --- Slice Definition ---
 const initialState = {
     pendingApplications: [],
+    applicationsPagination: {
+        page: 1,
+        limit: 20,
+        total: 0,
+        totalPages: 0,
+        hasMore: false,
+    },
     userList: [],
+    usersPagination: {
+        page: 1,
+        limit: 20,
+        total: 0,
+        totalPages: 0,
+        hasMore: false,
+    },
+    currentRole: null,
+    searchTerm: '',
     isLoading: false,
     isSuccess: false,
     isError: false,
@@ -88,6 +124,13 @@ export const adminUserSlice = createSlice({
             state.isError = false;
             state.message = '';
         },
+        setSearchTerm: (state, action) => {
+            state.searchTerm = action.payload;
+        },
+        clearUsers: (state) => {
+            state.userList = [];
+            state.usersPagination = initialState.usersPagination;
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -98,15 +141,21 @@ export const adminUserSlice = createSlice({
             .addCase(getPendingApplications.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.isSuccess = true;
-                // Normalize wrapped or raw responses into an array
+                // Handle new paginated response format
                 const payload = action.payload;
-                state.pendingApplications = Array.isArray(payload)
-                    ? payload
-                    : payload && Array.isArray(payload.data)
-                        ? payload.data
-                        : payload && Array.isArray(payload.applications)
-                            ? payload.applications
-                            : [];
+                if (payload && payload.data && payload.pagination) {
+                    state.pendingApplications = payload.data;
+                    state.applicationsPagination = payload.pagination;
+                } else {
+                    // Fallback for old format
+                    state.pendingApplications = Array.isArray(payload)
+                        ? payload
+                        : payload && Array.isArray(payload.data)
+                            ? payload.data
+                            : payload && Array.isArray(payload.applications)
+                                ? payload.applications
+                                : [];
+                }
             })
             .addCase(getPendingApplications.rejected, (state, action) => {
                 state.isLoading = false;
@@ -142,18 +191,23 @@ export const adminUserSlice = createSlice({
             // Get Users by Role
             .addCase(getUsersByRole.pending, (state) => {
                 state.isLoading = true;
-                state.userList = [];  // Clear previous list while loading
             })
             .addCase(getUsersByRole.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.isSuccess = true;
-                // Normalize various response shapes into an array for the UI.
+                // Handle new paginated response format
                 const payload = action.payload;
-                if (Array.isArray(payload)) state.userList = payload;
-                else if (payload && Array.isArray(payload.data)) state.userList = payload.data;
-                else if (payload && Array.isArray(payload.users)) state.userList = payload.users;
-                else if (payload && Array.isArray(payload.docs)) state.userList = payload.docs;
-                else state.userList = [];
+                if (payload && payload.data && payload.pagination) {
+                    state.userList = payload.data;
+                    state.usersPagination = payload.pagination;
+                } else {
+                    // Fallback for old format
+                    if (Array.isArray(payload)) state.userList = payload;
+                    else if (payload && Array.isArray(payload.data)) state.userList = payload.data;
+                    else if (payload && Array.isArray(payload.users)) state.userList = payload.users;
+                    else if (payload && Array.isArray(payload.docs)) state.userList = payload.docs;
+                    else state.userList = [];
+                }
             })
             .addCase(getUsersByRole.rejected, (state, action) => {
                 state.isLoading = false;
@@ -236,5 +290,5 @@ export const adminUserSlice = createSlice({
     },
 });
 
-export const { reset } = adminUserSlice.actions;
+export const { reset, setSearchTerm, clearUsers } = adminUserSlice.actions;
 export default adminUserSlice.reducer;

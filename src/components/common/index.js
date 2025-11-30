@@ -10,7 +10,7 @@
  * @example
  * ```js
  * // Common components:
- * import { EmptyState, EnhancedDataGrid, DataGridSkeleton } from '@/components/common';
+ * import { EmptyState, EnhancedDataGrid, DataGridSkeleton, SearchInput } from '@/components/common';
  * 
  * // Confirmation dialog (separate component):
  * import ConfirmationDialog from '@/components/ConfirmationDialog';
@@ -19,6 +19,9 @@
 
 // State components
 export { default as EmptyState } from './EmptyState';
+
+// Input components
+export { default as SearchInput } from './SearchInput';
 
 // Loading components
 export {

@@ -9,12 +9,19 @@ const APPLICATIONS_API_URL = '/admin/applications';
 
 /**
  * Fetches all pending student applications that require review.
+ * Supports pagination and search.
  * @route GET /api/admin/applications
- * @param {string} token - The JWT for authentication.
- * @returns {Promise<Array<object>>} An array of user objects with application data.
+ * @param {Object} params - Query parameters
+ * @param {number} [params.page=1] - Page number
+ * @param {number} [params.limit=20] - Items per page
+ * @param {string} [params.search=''] - Search term for name, email, or USN
+ * @returns {Promise<Object>} Paginated applications with pagination metadata
  */
-const getPendingApplications = async () => {
-    const response = await apiClient.get(`${APPLICATIONS_API_URL}`);
+const getPendingApplications = async (params = {}) => {
+    const { page = 1, limit = 20, search = '' } = params;
+    const response = await apiClient.get(`${APPLICATIONS_API_URL}`, {
+        params: { page, limit, search }
+    });
     return response.data;
 };
 
@@ -24,7 +31,6 @@ const getPendingApplications = async () => {
  * @route PATCH /api/admin/applications/:userId/review
  * @param {string} userId - The ID of the applicant user.
  * @param {string} action - The action to perform ('approve' or 'reject').
- * @param {string} token - The JWT for authentication.
  * @returns {Promise<object>} A success confirmation message.
  */
 const reviewApplication = async (userId, action) => {
@@ -36,13 +42,20 @@ const reviewApplication = async (userId, action) => {
 
 /**
  * Retrieves a list of users, filtered by their role.
+ * Supports pagination and search.
  * @route GET /api/admin/management/users
  * @param {string} role - The role to filter by (e.g., 'student', 'user').
- * @param {string} token - The JWT for authentication.
- * @returns {Promise<Array<object>>} An array of user objects matching the role.
+ * @param {Object} params - Query parameters
+ * @param {number} [params.page=1] - Page number
+ * @param {number} [params.limit=20] - Items per page
+ * @param {string} [params.search=''] - Search term for name, email, or USN
+ * @returns {Promise<Object>} Paginated users with pagination metadata
  */
-const getUsersByRole = async (role) => {
-    const response = await apiClient.get(`${MANAGEMENT_API_URL}/users`, { params: { role } });
+const getUsersByRole = async (role, params = {}) => {
+    const { page = 1, limit = 20, search = '' } = params;
+    const response = await apiClient.get(`${MANAGEMENT_API_URL}/users`, { 
+        params: { role, page, limit, search } 
+    });
     return response.data;
 };
 

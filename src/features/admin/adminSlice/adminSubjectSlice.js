@@ -49,6 +49,16 @@ export const deleteSubject = createAsyncThunk('adminSubjects/delete', async (sub
 // --- Slice Definition ---
 const initialState = {
     subjects: [],
+    pagination: {
+        page: 1,
+        limit: 20,
+        total: 0,
+        totalPages: 0,
+        hasMore: false,
+    },
+    searchTerm: '',
+    filterSemester: null,
+    filterDepartment: '',
     isLoading: false,
     isSuccess: false,
     isError: false,
@@ -65,6 +75,18 @@ export const adminSubjectSlice = createSlice({
             state.isError = false;
             state.message = '';
         },
+        setSubjectSearchTerm: (state, action) => {
+            state.searchTerm = action.payload;
+        },
+        setSubjectFilters: (state, action) => {
+            const { semester, department } = action.payload;
+            if (semester !== undefined) state.filterSemester = semester;
+            if (department !== undefined) state.filterDepartment = department;
+        },
+        clearSubjects: (state) => {
+            state.subjects = [];
+            state.pagination = initialState.pagination;
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -75,13 +97,19 @@ export const adminSubjectSlice = createSlice({
             .addCase(getSubjects.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.isSuccess = true;
-                // Backend responses are wrapped as { success, count, data }
+                // Handle new paginated response format
                 const payload = action.payload;
-                state.subjects = Array.isArray(payload)
-                    ? payload
-                    : payload && Array.isArray(payload.data)
-                        ? payload.data
-                        : [];
+                if (payload && payload.data && payload.pagination) {
+                    state.subjects = payload.data;
+                    state.pagination = payload.pagination;
+                } else {
+                    // Fallback for old format { success, count, data }
+                    state.subjects = Array.isArray(payload)
+                        ? payload
+                        : payload && Array.isArray(payload.data)
+                            ? payload.data
+                            : [];
+                }
             })
             .addCase(getSubjects.rejected, (state, action) => {
                 state.isLoading = false;
@@ -153,5 +181,5 @@ export const adminSubjectSlice = createSlice({
     },
 });
 
-export const { reset } = adminSubjectSlice.actions;
+export const { reset, setSubjectSearchTerm, setSubjectFilters, clearSubjects } = adminSubjectSlice.actions;
 export default adminSubjectSlice.reducer;
