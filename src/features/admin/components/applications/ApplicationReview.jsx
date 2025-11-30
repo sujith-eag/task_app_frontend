@@ -52,12 +52,7 @@ const ApplicationReview = () => {
         pageSize: 20,
     });
 
-    // Fetch applications on mount and when pagination/search changes
-    useEffect(() => {
-        logger.mount({ applicationsCount: pendingApplications.length });
-        fetchApplications();
-    }, [paginationModel.page, paginationModel.pageSize, searchTerm]);
-
+    // Define fetch function before useEffect to avoid "access before declaration" error
     const fetchApplications = useCallback(() => {
         dispatch(getPendingApplications({
             page: paginationModel.page + 1, // API uses 1-indexed pages
@@ -65,6 +60,12 @@ const ApplicationReview = () => {
             search: searchTerm,
         }));
     }, [dispatch, paginationModel.page, paginationModel.pageSize, searchTerm]);
+
+    // Fetch applications on mount and when pagination/search changes
+    useEffect(() => {
+        logger.mount({ applicationsCount: pendingApplications.length });
+        fetchApplications();
+    }, [fetchApplications, pendingApplications.length]);
 
     /**
      * Handle pagination model change from DataGrid

@@ -1,6 +1,6 @@
+/* global describe, test, expect, beforeAll, beforeEach, afterEach */
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import chatService from '../chatService.js';
 
 describe('chatService - URL and header construction', () => {
   let mock;

@@ -83,7 +83,7 @@ export const aiTaskSlice = createSlice({
             state.error = null;
         },
         // This action discards the current plan
-        discardAIPlan: (state) => {
+        discardAIPlan: () => {
             return ({ ...initialState }); // Reset to the initial state
         },
     },
@@ -116,7 +116,7 @@ export const aiTaskSlice = createSlice({
                 state.error = action.payload;
                 toast.error(action.payload || 'Something went wrong with AI plan generation');
             })
-            .addCase(saveAIPlan.fulfilled, (state, action) => {
+            .addCase(saveAIPlan.fulfilled, (state) => {
                 state.status = 'succeeded'; // Just change the status to 'succeeded'
                 toast.success('New task plan has been added successfully!');
                 // no resettin of state

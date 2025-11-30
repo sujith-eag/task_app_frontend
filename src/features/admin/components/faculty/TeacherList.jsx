@@ -21,7 +21,7 @@ import AssignmentIcon from '@mui/icons-material/Assignment';
 import { EnhancedDataGrid, SearchInput } from '../../../../components/common';
 
 // Redux
-import { getAllTeachers, setTeacherSearchTerm, clearTeachers } from '../../adminSlice/adminTeacherSlice.js';
+import { getAllTeachers, setTeacherSearchTerm } from '../../adminSlice/adminTeacherSlice.js';
 
 // Logger
 import { createLogger } from '../../../../utils/logger.js';
@@ -42,13 +42,8 @@ const TeacherList = ({ onAssign }) => {
         page: 0, // DataGrid uses 0-indexed pages
         pageSize: 20,
     });
-    
-    // Fetch teachers when pagination/search changes
-    useEffect(() => {
-        logger.mount({ teachersCount: teachers.length });
-        fetchTeachers();
-    }, [paginationModel.page, paginationModel.pageSize, searchTerm]);
 
+    // Define fetch function before useEffect to avoid "access before declaration" error
     const fetchTeachers = useCallback(() => {
         dispatch(getAllTeachers({
             page: paginationModel.page + 1, // API uses 1-indexed pages
@@ -56,6 +51,12 @@ const TeacherList = ({ onAssign }) => {
             search: searchTerm,
         }));
     }, [dispatch, paginationModel.page, paginationModel.pageSize, searchTerm]);
+    
+    // Fetch teachers when pagination/search changes
+    useEffect(() => {
+        logger.mount({ teachersCount: teachers.length });
+        fetchTeachers();
+    }, [fetchTeachers, teachers.length]);
 
     /**
      * Handle pagination model change from DataGrid

@@ -77,7 +77,7 @@ const Register = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { user, isLoading, isError, isSuccess, message } = useSelector(
+  const { user, isLoading, isError, message } = useSelector(
       (state) => state.auth
     );
   
@@ -88,7 +88,7 @@ const Register = () => {
     }));
   };
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
     if(!canSubmit){
         toast.error('Please fix form errors before submitting');
@@ -99,7 +99,26 @@ const Register = () => {
         email: email.trim().toLowerCase(),
         password 
     };
-    dispatch(register(userData));
+    
+    try {
+      const resultAction = await dispatch(register(userData));
+      if (register.fulfilled.match(resultAction)) {
+        toast.success(resultAction.payload.message || 'Registration successful!', {
+            autoClose: false,
+            closeOnClick: true,
+            draggable: false,
+        });
+        // Reset the form fields to their initial state on success.
+        setFormData({
+          name: '',
+          email: '',
+          password: '',
+          password2: '',
+        });
+      }
+    } catch {
+      // Error handled by rejected case in slice
+    }
 }; 
 
   useEffect(() => {
@@ -110,26 +129,12 @@ const Register = () => {
     if (isError) {
       toast.error(message);
     }
-    else if (isSuccess) {
-      toast.success(message, {
-          autoClose: false, // persistent
-          closeOnClick: true,
-          draggable: false,
-      });
-      // Reset the form fields to their initial state on success.
-      setFormData({
-        name: '',
-        email: '',
-        password: '',
-        password2: '',
-      });
-    }
     
-  return () => {
-      dispatch(reset());
-  };
+    return () => {
+        dispatch(reset());
+    };
   
-  }, [isError, isSuccess, message, dispatch]);
+  }, [isError, message, dispatch, user, navigate]);
 
   
 return (

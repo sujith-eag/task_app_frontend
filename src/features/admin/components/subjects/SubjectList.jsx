@@ -31,8 +31,7 @@ import {
     getSubjects, 
     deleteSubject, 
     setSubjectSearchTerm, 
-    setSubjectFilters,
-    clearSubjects 
+    setSubjectFilters 
 } from '../../adminSlice/adminSubjectSlice.js';
 
 // Hook
@@ -63,12 +62,7 @@ const SubjectList = ({ onEdit }) => {
         pageSize: 20,
     });
 
-    // Fetch subjects on mount and when pagination/search/filters change
-    useEffect(() => {
-        logger.mount({ subjectsCount: subjects.length });
-        fetchSubjects();
-    }, [paginationModel.page, paginationModel.pageSize, searchTerm, filterSemester, filterDepartment]);
-
+    // Define fetch function before useEffect to avoid "access before declaration" error
     const fetchSubjects = useCallback(() => {
         const params = {
             page: paginationModel.page + 1, // API uses 1-indexed pages
@@ -80,6 +74,12 @@ const SubjectList = ({ onEdit }) => {
         
         dispatch(getSubjects(params));
     }, [dispatch, paginationModel.page, paginationModel.pageSize, searchTerm, filterSemester, filterDepartment]);
+
+    // Fetch subjects on mount and when pagination/search/filters change
+    useEffect(() => {
+        logger.mount({ subjectsCount: subjects.length });
+        fetchSubjects();
+    }, [fetchSubjects, subjects.length]);
 
     /**
      * Handle pagination model change from DataGrid

@@ -63,7 +63,7 @@ const PromoteUserModal = ({ open, handleClose, user }) => {
     handleSubmit,
     reset,
     watch,
-    formState: { errors, isDirty, isValid },
+    formState: { errors, isValid },
   } = useForm({
     resolver: yupResolver(promoteUserSchema),
     mode: 'onChange',

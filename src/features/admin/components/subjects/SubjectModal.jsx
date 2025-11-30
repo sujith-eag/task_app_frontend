@@ -67,7 +67,7 @@ const SubjectModal = ({ open, handleClose, subject }) => {
     control,
     handleSubmit,
     reset,
-    formState: { errors, isDirty, isValid },
+    formState: { errors, isDirty },
   } = useForm({
     resolver: yupResolver(subjectSchema),
     mode: 'onChange', // Validate on change for real-time feedback
@@ -108,13 +108,13 @@ const SubjectModal = ({ open, handleClose, subject }) => {
 
     try {
       if (isEditMode) {
-        const result = await dispatch(
+        await dispatch(
           updateSubject({ id: subject._id, ...data })
         ).unwrap();
         logger.success('Subject updated', { id: subject._id });
         toast.success('Subject updated successfully!');
       } else {
-        const result = await dispatch(createSubject(data)).unwrap();
+        await dispatch(createSubject(data)).unwrap();
         logger.success('Subject created', { subjectCode: data.subjectCode });
         toast.success('Subject created successfully!');
       }

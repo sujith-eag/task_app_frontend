@@ -1,5 +1,5 @@
 import apiClient from '../../app/apiClient.js';
-import { getDeviceId, clearDeviceId } from '../../utils/deviceId.js';
+import { getDeviceId } from '../../utils/deviceId.js';
 
 
 const AUTH_API_URL = '/auth/';
@@ -47,17 +47,13 @@ const verifyEmail = async (token) => {
  * This tells the backend to clear the httpOnly cookie AND remove the current device session.
  */
 const logout = async () => {
-    try {
-        // Get the persistent device ID
-        const deviceId = await getDeviceId(); 
-        
-        // Send the deviceId in the request body (or as a header)
-        // so the backend knows which session to remove.
-        await apiClient.post(AUTH_API_URL + 'logout', { deviceId });
-        
-    } catch (e) {
-        // ignore network errors on logout
-    }
+    // Get the persistent device ID
+    const deviceId = await getDeviceId(); 
+    
+    // Send the deviceId in the request body (or as a header)
+    // so the backend knows which session to remove.
+    // Ignore errors on logout - it's non-critical
+    await apiClient.post(AUTH_API_URL + 'logout', { deviceId }).catch(() => {});
 }
 
 

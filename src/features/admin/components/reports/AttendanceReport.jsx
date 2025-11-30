@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Box, Typography, Grid, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
@@ -22,28 +22,24 @@ const AttendanceReport = () => {
         semester: '',
     });
 
-    // --- State for filtered subjects ---
-    const [filteredSubjects, setFilteredSubjects] = useState([]);
+    // --- Derive filtered subjects using useMemo instead of useState + useEffect ---
+    const filteredSubjects = useMemo(() => {
+        if (filters.semester) {
+            return subjects.filter(s => s.semester === parseInt(filters.semester, 10));
+        }
+        return subjects; // If no semester, show all
+    }, [filters.semester, subjects]);
 
-    // --- Data Fetching and Filter Logic ---
+    // --- Data Fetching ---
     useEffect(() => {
         dispatch(getAllTeachers());
         dispatch(getSubjects());
     }, [dispatch]);
-
-    // This effect filters the subjects whenever the semester or main subject list changes
-    useEffect(() => {
-        if (filters.semester) {
-            setFilteredSubjects(subjects.filter(s => s.semester === parseInt(filters.semester, 10)));
-        } else {
-            setFilteredSubjects(subjects); // If no semester, show all
-        }
-    }, [filters.semester, subjects]);
     
     useEffect(() => {
         // runs whenever the filters change to re-fetch the report data.
         const activeFilters = Object.fromEntries(
-            Object.entries(filters).filter(([_, value]) => value !== '')
+            Object.entries(filters).filter(([, value]) => value !== '')
         );
         dispatch(getAttendanceStats(activeFilters));
     }, [dispatch, filters]);
@@ -77,7 +73,6 @@ const AttendanceReport = () => {
         { field: 'presentStudents', headerName: 'Present', width: 100 },
         { field: 'totalStudents', headerName: 'Total', width: 100 },
     ];
-
 
     return (
         <Box>

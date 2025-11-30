@@ -45,13 +45,9 @@ createRoot(document.getElementById('root')).render(
 
 // Global listener: when axios interceptor emits auth:sessionExpired, clear auth and show toast
 window.addEventListener('auth:sessionExpired', (e) => {
-  try {
-    const message = e?.detail?.message || 'Your session has expired. Please log in again.';
-    // Clear client auth state immediately
-    store.dispatch(forceLogout());
-    // Show a user-friendly toast (login page also listens, but a global toast helps notify in-app)
-    toast.error(message, { position: 'top-center', autoClose: 4000, toastId: 'session-expired' });
-  } catch (err) {
-    // swallow
-  }
+  const message = e?.detail?.message || 'Your session has expired. Please log in again.';
+  // Clear client auth state immediately
+  store.dispatch(forceLogout());
+  // Show a user-friendly toast (login page also listens, but a global toast helps notify in-app)
+  toast.error(message, { position: 'top-center', autoClose: 4000, toastId: 'session-expired' });
 });

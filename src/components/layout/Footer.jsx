@@ -22,7 +22,7 @@ const Footer = () => {
             ? 'linear-gradient(135deg, rgba(26, 31, 58, 0.95) 0%, rgba(18, 18, 18, 0.95) 100%)'
             : 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(245, 247, 250, 0.95) 100%)',
         backdropFilter: 'blur(10px)',
-        borderTop: (theme) => `2px solid transparent`,
+        borderTop: '2px solid transparent',
         backgroundImage: (theme) => theme.palette.mode === 'dark'
           ? 'linear-gradient(90deg, rgba(144, 202, 249, 0.3) 0%, rgba(100, 181, 246, 0.3) 50%, rgba(144, 202, 249, 0.3) 100%)'
           : 'linear-gradient(90deg, rgba(25, 118, 210, 0.2) 0%, rgba(21, 101, 192, 0.2) 50%, rgba(25, 118, 210, 0.2) 100%)',

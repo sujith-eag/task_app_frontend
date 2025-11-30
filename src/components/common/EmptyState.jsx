@@ -35,6 +35,7 @@ import InboxIcon from '@mui/icons-material/Inbox';
  * ```
  */
 const EmptyState = ({
+  // eslint-disable-next-line no-unused-vars
   icon: Icon = InboxIcon,
   title = 'No data found',
   description = 'There are no items to display',

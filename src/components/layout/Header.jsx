@@ -14,7 +14,7 @@ import { getUserRoles } from '../../utils/roles.js';
 
 import {
     AppBar, Toolbar, Typography, Button, Box, Stack, IconButton, Tooltip,
-    Menu, MenuItem, useMediaQuery, Avatar, ListItemIcon, Divider
+    Menu, MenuItem, Avatar, ListItemIcon, Divider
 } from '@mui/material';
 import Badge from '@mui/material/Badge';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -47,7 +47,6 @@ const Header = () => {
     const [anchorEl, setAnchorEl] = useState(null);
     const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
     
-    const isDesktop = useMediaQuery(theme.breakpoints.up('md'));  
     const isMenuOpen = Boolean(anchorEl);
 
     const handleMenuOpen = (event) => {

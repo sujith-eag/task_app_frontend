@@ -25,7 +25,7 @@ apiClient.interceptors.response.use(
           // Emit an event so higher-level code can handle session expiration.
           // Do NOT perform a hard redirect here — let the app decide.
           const event = new CustomEvent('auth:sessionExpired', { detail: { message: 'Your session has expired. Please log in again.' } });
-          try { window.dispatchEvent(event); } catch (e) { /* ignore */ }
+          window.dispatchEvent(event);
         }
       }
     return Promise.reject(error);

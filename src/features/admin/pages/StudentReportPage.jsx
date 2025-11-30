@@ -4,7 +4,7 @@ import { Container, Typography, Autocomplete, TextField } from '@mui/material';
 import { toast } from 'react-toastify';
 
 import { getUsersByRole } from '../adminSlice/adminUserSlice';
-import { getStudentReport } from '../adminSlice/adminReportingSlice';
+import { getStudentReport, reset } from '../adminSlice/adminReportingSlice';
 import StudentReportDisplay from '../components/reports/StudentReportDisplay.jsx';
 
 

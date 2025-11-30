@@ -70,12 +70,7 @@ const UserManagement = () => {
 
     const validUserList = normalizeUserList(userList).filter((user) => user && user._id);
 
-    // Fetch users when tab, pagination, or search changes
-    useEffect(() => {
-        logger.mount({ activeTab, usersCount: validUserList.length });
-        fetchUsers();
-    }, [activeTab, paginationModel.page, paginationModel.pageSize, searchTerm]);
-
+    // Define fetch function before useEffect to avoid "access before declaration" error
     const fetchUsers = useCallback(() => {
         dispatch(getUsersByRole({
             role: activeTab,
@@ -84,6 +79,12 @@ const UserManagement = () => {
             search: searchTerm,
         }));
     }, [dispatch, activeTab, paginationModel.page, paginationModel.pageSize, searchTerm]);
+
+    // Fetch users when tab, pagination, or search changes
+    useEffect(() => {
+        logger.mount({ activeTab, usersCount: validUserList.length });
+        fetchUsers();
+    }, [fetchUsers, activeTab, validUserList.length]);
 
     /**
      * Handle tab change
