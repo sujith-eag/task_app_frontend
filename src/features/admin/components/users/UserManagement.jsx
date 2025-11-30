@@ -6,13 +6,18 @@
  * - DataGrid with enhanced UX
  * - User promotion, editing, and enrollment management
  * - Loading states and empty states
+ * - Development logging
  */
 
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Box, Typography, Tabs, Tab, Button, Alert, Chip } from '@mui/material';
+import { Box, Typography, Tabs, Tab, Button, Alert, Chip, Tooltip } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
 import SchoolIcon from '@mui/icons-material/School';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import EditIcon from '@mui/icons-material/Edit';
+import BookIcon from '@mui/icons-material/Book';
+import UpgradeIcon from '@mui/icons-material/Upgrade';
 
 // Components
 import { EnhancedDataGrid } from '../../../../components/common';
@@ -22,6 +27,11 @@ import EditStudentModal from './EditStudentModal.jsx';
 
 // Redux
 import { getUsersByRole } from '../../adminSlice/adminUserSlice.js';
+
+// Logger
+import { createLogger } from '../../../../utils/logger.js';
+
+const logger = createLogger('UserManagement');
 
 const UserManagement = () => {
     const dispatch = useDispatch();
@@ -48,31 +58,53 @@ const UserManagement = () => {
 
     // Fetch users when tab changes
     useEffect(() => {
+        logger.mount({ activeTab, usersCount: validUserList.length });
         dispatch(getUsersByRole(activeTab));
     }, [dispatch, activeTab]);
 
     const handleTabChange = (event, newValue) => {
+        logger.action('Tab changed', { from: activeTab, to: newValue });
         setActiveTab(newValue);
+    };
+
+    /**
+     * Handle refresh
+     */
+    const handleRefresh = () => {
+        logger.action('Refresh clicked', { activeTab });
+        dispatch(getUsersByRole(activeTab));
     };
 
     // Modal Handlers
     const handleOpenEnrollmentModal = (user) => {
+        logger.action('Open enrollment modal', { userId: user._id, userName: user.name });
         setSelectedUser(user);
         setIsEnrollmentModalOpen(true);
     };
-    const handleCloseEnrollmentModal = () => setIsEnrollmentModalOpen(false);
+    const handleCloseEnrollmentModal = () => {
+        logger.info('Close enrollment modal');
+        setIsEnrollmentModalOpen(false);
+    };
 
     const handleOpenPromoteModal = (user) => {
+        logger.action('Open promote modal', { userId: user._id, userName: user.name });
         setSelectedUser(user);
         setIsPromoteModalOpen(true);
     };
-    const handleClosePromoteModal = () => setIsPromoteModalOpen(false);
+    const handleClosePromoteModal = () => {
+        logger.info('Close promote modal');
+        setIsPromoteModalOpen(false);
+    };
 
     const handleOpenEditModal = (user) => {
+        logger.action('Open edit modal', { userId: user._id, userName: user.name });
         setSelectedUser(user);
         setIsEditModalOpen(true);
     };
-    const handleCloseEditModal = () => setIsEditModalOpen(false);
+    const handleCloseEditModal = () => {
+        logger.info('Close edit modal');
+        setIsEditModalOpen(false);
+    };
 
     // DataGrid Column Definitions
     const userColumns = [
@@ -95,14 +127,17 @@ const UserManagement = () => {
             minWidth: 180,
             sortable: false,
             renderCell: (params) => (
-                <Button 
-                    variant="outlined" 
-                    size="small" 
-                    onClick={() => handleOpenPromoteModal(params.row)}
-                    sx={{ textTransform: 'none' }}
-                >
-                    Promote to Faculty
-                </Button>
+                <Tooltip title="Promote this user to faculty role">
+                    <Button 
+                        variant="outlined" 
+                        size="small" 
+                        onClick={() => handleOpenPromoteModal(params.row)}
+                        startIcon={<UpgradeIcon />}
+                        sx={{ textTransform: 'none' }}
+                    >
+                        Promote
+                    </Button>
+                </Tooltip>
             ),
         },
     ];
@@ -171,23 +206,29 @@ const UserManagement = () => {
             sortable: false,
             renderCell: (params) => (
                 <Box sx={{ display: 'flex', gap: 1 }}>
-                    <Button 
-                        variant="outlined" 
-                        size="small" 
-                        onClick={() => handleOpenEditModal(params.row)}
-                        sx={{ textTransform: 'none' }}
-                    >
-                        Edit Details
-                    </Button>
-                    <Button 
-                        variant="outlined" 
-                        size="small" 
-                        color="secondary" 
-                        onClick={() => handleOpenEnrollmentModal(params.row)}
-                        sx={{ textTransform: 'none' }}
-                    >
-                        Enrollment
-                    </Button>
+                    <Tooltip title="Edit student details">
+                        <Button 
+                            variant="outlined" 
+                            size="small" 
+                            onClick={() => handleOpenEditModal(params.row)}
+                            startIcon={<EditIcon />}
+                            sx={{ textTransform: 'none' }}
+                        >
+                            Edit
+                        </Button>
+                    </Tooltip>
+                    <Tooltip title="Manage subject enrollment">
+                        <Button 
+                            variant="outlined" 
+                            size="small" 
+                            color="secondary" 
+                            onClick={() => handleOpenEnrollmentModal(params.row)}
+                            startIcon={<BookIcon />}
+                            sx={{ textTransform: 'none' }}
+                        >
+                            Enroll
+                        </Button>
+                    </Tooltip>
                 </Box>
             ),
         },
@@ -197,12 +238,23 @@ const UserManagement = () => {
 
     return (
         <Box>
-            <Typography variant="h5" gutterBottom>User Management</Typography>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                <Typography variant="h5">User Management</Typography>
+                <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={handleRefresh}
+                    startIcon={<RefreshIcon />}
+                    disabled={isLoading}
+                >
+                    Refresh
+                </Button>
+            </Box>
             
-            <Box sx={{ borderBottom: 1, borderColor: 'divider', mt: 2 }}>
+            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                 <Tabs value={activeTab} onChange={handleTabChange}>
-                    <Tab label="Students" value="student" />
-                    <Tab label="General Users" value="user" />                    
+                    <Tab label="Students" value="student" icon={<SchoolIcon />} iconPosition="start" />
+                    <Tab label="General Users" value="user" icon={<PersonIcon />} iconPosition="start" />                    
                 </Tabs>
             </Box>
 

@@ -7,17 +7,19 @@
  * - Loading states and skeleton loaders
  * - Empty state handling
  * - Edit and delete actions
+ * - Development logging
  */
 
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Box, Button, IconButton, Chip } from '@mui/material';
+import { Box, Button, IconButton, Chip, Tooltip } from '@mui/material';
 import { toast } from 'react-toastify';
 
 // Icons
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SchoolIcon from '@mui/icons-material/School';
+import RefreshIcon from '@mui/icons-material/Refresh';
 
 // Components
 import { EnhancedDataGrid } from '../../../../components/common';
@@ -29,6 +31,11 @@ import { getSubjects, deleteSubject } from '../../adminSlice/adminSubjectSlice.j
 // Hook
 import useConfirmDialog from '../../../../hooks/useConfirmDialog';
 
+// Logger
+import { createLogger } from '../../../../utils/logger.js';
+
+const logger = createLogger('SubjectList');
+
 const SubjectList = ({ onEdit }) => {
     const dispatch = useDispatch();
     const { subjects, isLoading, isError, message } = useSelector((state) => state.adminSubjects);
@@ -36,6 +43,7 @@ const SubjectList = ({ onEdit }) => {
 
     // Fetch subjects on mount if not already loaded
     useEffect(() => {
+        logger.mount({ subjectsCount: subjects.length });
         if (subjects.length === 0) {
             dispatch(getSubjects());
         }
@@ -46,6 +54,8 @@ const SubjectList = ({ onEdit }) => {
      * Uses professional ConfirmationDialog instead of window.confirm
      */
     const handleDelete = (subject) => {
+        logger.action('Delete clicked', { subjectId: subject._id, subjectName: subject.name });
+        
         showDialog({
             title: 'Delete Subject',
             message: `Are you sure you want to delete "${subject.name}" (${subject.subjectCode})?`,
@@ -56,13 +66,31 @@ const SubjectList = ({ onEdit }) => {
             onConfirm: async () => {
                 try {
                     const result = await dispatch(deleteSubject(subject._id)).unwrap();
+                    logger.success('Subject deleted', { subjectId: subject._id });
                     toast.success(result.message || 'Subject deleted successfully');
                 } catch (err) {
+                    logger.error('Delete failed', { error: err, subjectId: subject._id });
                     toast.error(err || 'Failed to delete subject');
                     throw err; // Keep dialog open on error
                 }
             }
         });
+    };
+
+    /**
+     * Handle edit subject
+     */
+    const handleEdit = (subject) => {
+        logger.action('Edit clicked', { subjectId: subject._id, subjectName: subject.name });
+        onEdit(subject);
+    };
+
+    /**
+     * Handle refresh
+     */
+    const handleRefresh = () => {
+        logger.action('Refresh clicked');
+        dispatch(getSubjects());
     };
 
     // DataGrid columns configuration
@@ -107,22 +135,26 @@ const SubjectList = ({ onEdit }) => {
             sortable: false,
             renderCell: (params) => (
                 <Box sx={{ display: 'flex', gap: 1 }}>
-                    <IconButton
-                        size="small"
-                        color="primary"
-                        onClick={() => onEdit(params.row)}
-                        aria-label={`Edit ${params.row.name}`}
-                    >
-                        <EditIcon fontSize="small" />
-                    </IconButton>
-                    <IconButton
-                        size="small"
-                        color="error"
-                        onClick={() => handleDelete(params.row)}
-                        aria-label={`Delete ${params.row.name}`}
-                    >
-                        <DeleteIcon fontSize="small" />
-                    </IconButton>
+                    <Tooltip title="Edit subject">
+                        <IconButton
+                            size="small"
+                            color="primary"
+                            onClick={() => handleEdit(params.row)}
+                            aria-label={`Edit ${params.row.name}`}
+                        >
+                            <EditIcon fontSize="small" />
+                        </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Delete subject">
+                        <IconButton
+                            size="small"
+                            color="error"
+                            onClick={() => handleDelete(params.row)}
+                            aria-label={`Delete ${params.row.name}`}
+                        >
+                            <DeleteIcon fontSize="small" />
+                        </IconButton>
+                    </Tooltip>
                 </Box>
             ),
         },
@@ -137,7 +169,8 @@ const SubjectList = ({ onEdit }) => {
                 </Box>
                 <Button
                     variant="outlined"
-                    onClick={() => dispatch(getSubjects())}
+                    onClick={handleRefresh}
+                    startIcon={<RefreshIcon />}
                 >
                     Retry
                 </Button>
@@ -147,6 +180,18 @@ const SubjectList = ({ onEdit }) => {
 
     return (
         <Box sx={{ mt: 2 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 1 }}>
+                <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={handleRefresh}
+                    startIcon={<RefreshIcon />}
+                    disabled={isLoading}
+                >
+                    Refresh
+                </Button>
+            </Box>
+            
             <EnhancedDataGrid
                 rows={subjects}
                 columns={columns}

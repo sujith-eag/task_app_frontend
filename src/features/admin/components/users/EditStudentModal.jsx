@@ -1,10 +1,30 @@
-import React, { useState, useEffect } from 'react';
+/**
+ * Edit Student Modal Component
+ * 
+ * Edit student details with:
+ * - Form validation with react-hook-form + yup
+ * - Pre-populated form on open
+ * - Loading states
+ * - Development logging
+ */
+
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useForm, Controller } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { Modal, Box, Typography, Button, TextField, 
     MenuItem, CircularProgress } from '@mui/material';
 import { toast } from 'react-toastify';
 
 import { updateStudentDetails } from '../../adminSlice/adminUserSlice.js';
+
+// Validation
+import { editStudentSchema } from '../../validation/schemas.js';
+
+// Logger
+import { createLogger } from '../../../../utils/logger.js';
+
+const logger = createLogger('EditStudentModal');
 
 const style = {
     position: 'absolute',
@@ -24,102 +44,166 @@ const EditStudentModal = ({ open, handleClose, student }) => {
     const dispatch = useDispatch();
     const { isLoading } = useSelector((state) => state.adminUsers);
 
-    const [formData, setFormData] = useState({
-        usn: '',
-        batch: '',
-        section: '',
-        semester: '',
+    // Form setup with validation
+    const { control, handleSubmit, reset, formState: { errors, isDirty } } = useForm({
+        resolver: yupResolver(editStudentSchema),
+        defaultValues: {
+            usn: '',
+            batch: '',
+            section: '',
+            semester: '',
+        }
     });
 
     // Pre-populate the form when the modal opens with a student's data
     useEffect(() => {
-        if (student) {
-            setFormData({
+        if (open && student) {
+            logger.mount({ studentId: student._id, studentName: student.name });
+            reset({
                 usn: student.studentDetails?.usn || '',
                 batch: student.studentDetails?.batch || '',
                 section: student.studentDetails?.section || '',
                 semester: student.studentDetails?.semester || '',
             });
         }
-    }, [student, open]);
+    }, [student, open, reset]);
 
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+    // Reset form when modal closes
+    useEffect(() => {
+        if (!open) {
+            reset({
+                usn: '',
+                batch: '',
+                section: '',
+                semester: '',
+            });
+        }
+    }, [open, reset]);
+
+    /**
+     * Handle form submission
+     */
+    const onSubmit = async (data) => {
+        logger.action('Save changes', { studentId: student._id, data });
+        
+        try {
+            const result = await dispatch(updateStudentDetails({ 
+                studentId: student._id, 
+                studentData: data 
+            })).unwrap();
+            
+            logger.success('Student updated', { studentId: student._id });
+            toast.success(result.message || 'Student details updated successfully');
+            handleClose();
+        } catch (err) {
+            logger.error('Update failed', { error: err, studentId: student._id });
+            toast.error(err || 'Failed to update student details');
+        }
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        if (!formData.usn || !formData.batch || !formData.section) {
-            return toast.error('All fields are required.');
+    /**
+     * Handle cancel with unsaved changes warning
+     */
+    const handleCancel = () => {
+        if (isDirty) {
+            logger.info('Cancel with unsaved changes');
         }
-
-        dispatch(updateStudentDetails({ studentId: student._id, studentData: formData }))
-            .unwrap()
-            .then((res) => {
-                toast.success(res.message);
-                handleClose();
-            })
-            .catch((err) => {
-                toast.error(err);
-            });
+        handleClose();
     };
 
     return (
-        <Modal open={open} onClose={handleClose}>
-            <Box sx={style} component="form" onSubmit={handleSubmit}>
+        <Modal open={open} onClose={handleCancel}>
+            <Box sx={style} component="form" onSubmit={handleSubmit(onSubmit)}>
                 <Typography variant="h6" component="h2" gutterBottom>
                     Edit Details for {student?.name}
                 </Typography>
-                <TextField
-                    label="University Seat Number (USN)"
+                
+                <Controller
                     name="usn"
-                    value={formData.usn}
-                    onChange={handleChange}
-                    fullWidth
-                    required
-                    margin="normal"
+                    control={control}
+                    render={({ field }) => (
+                        <TextField
+                            {...field}
+                            label="University Seat Number (USN)"
+                            fullWidth
+                            required
+                            margin="normal"
+                            error={!!errors.usn}
+                            helperText={errors.usn?.message}
+                            placeholder="e.g., 4VP22CS001"
+                        />
+                    )}
                 />
-                <TextField
-                    label="Batch"
+                
+                <Controller
                     name="batch"
-                    type="number"
-                    value={formData.batch}
-                    onChange={handleChange}
-                    fullWidth
-                    required
-                    margin="normal"
+                    control={control}
+                    render={({ field }) => (
+                        <TextField
+                            {...field}
+                            label="Batch Year"
+                            type="number"
+                            inputProps={{ min: 2000, max: 2100 }}
+                            fullWidth
+                            required
+                            margin="normal"
+                            error={!!errors.batch}
+                            helperText={errors.batch?.message}
+                        />
+                    )}
                 />
-                <TextField
-                    label="Semester"
+                
+                <Controller
                     name="semester"
-                    type="number"
-                    value={formData.semester}
-                    onChange={handleChange}
-                    fullWidth
-                    required
-                    margin="normal"
+                    control={control}
+                    render={({ field }) => (
+                        <TextField
+                            {...field}
+                            label="Semester"
+                            type="number"
+                            inputProps={{ min: 1, max: 4 }}
+                            fullWidth
+                            required
+                            margin="normal"
+                            error={!!errors.semester}
+                            helperText={errors.semester?.message || 'Semester must be between 1-4'}
+                        />
+                    )}
                 />
-                <TextField
-                    select
-                    label="Section"
+                
+                <Controller
                     name="section"
-                    value={formData.section}
-                    onChange={handleChange}
-                    fullWidth
-                    required
-                    margin="normal"
-                >
-                {sections.map((sec) => (
-                    <MenuItem key={sec} value={sec}>{sec}</MenuItem>
-                ))}
-                </TextField>
+                    control={control}
+                    render={({ field }) => (
+                        <TextField
+                            {...field}
+                            select
+                            label="Section"
+                            fullWidth
+                            required
+                            margin="normal"
+                            error={!!errors.section}
+                            helperText={errors.section?.message}
+                        >
+                            {sections.map((sec) => (
+                                <MenuItem key={sec} value={sec}>{sec}</MenuItem>
+                            ))}
+                        </TextField>
+                    )}
+                />
 
-                <Button type="submit" variant="contained" sx={{ mt: 2 }} disabled={isLoading}>
-                    {isLoading ? <CircularProgress size={24} /> : 'Save Changes'}
-                </Button>
-                <Button onClick={handleClose} sx={{ mt: 2, ml: 1 }}>
-                    Cancel
-                </Button>
+                <Box sx={{ mt: 3, display: 'flex', gap: 1 }}>
+                    <Button 
+                        type="submit" 
+                        variant="contained" 
+                        disabled={isLoading || !isDirty}
+                    >
+                        {isLoading ? <CircularProgress size={24} /> : 'Save Changes'}
+                    </Button>
+                    <Button onClick={handleCancel} variant="outlined">
+                        Cancel
+                    </Button>
+                </Box>
             </Box>
         </Modal>
     );

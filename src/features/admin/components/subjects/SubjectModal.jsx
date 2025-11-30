@@ -1,93 +1,303 @@
-import React, { useState, useEffect } from 'react';
+/**
+ * SubjectModal Component
+ * 
+ * Modal for creating and editing subjects with:
+ * - React Hook Form + Yup validation
+ * - Inline error messages
+ * - Loading states
+ * - Development logging
+ * 
+ * @example
+ * <SubjectModal
+ *   open={isOpen}
+ *   handleClose={() => setIsOpen(false)}
+ *   subject={selectedSubject} // null for create, object for edit
+ * />
+ */
+
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Modal, Box, Typography, Button, TextField, MenuItem, CircularProgress } from '@mui/material';
+import { useForm, Controller } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import {
+  Modal,
+  Box,
+  Typography,
+  Button,
+  TextField,
+  CircularProgress,
+  Alert,
+  Fade,
+  IconButton,
+} from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import { toast } from 'react-toastify';
 
+// Validation
+import { subjectSchema } from '../../validation/schemas.js';
+
+// Redux
 import { createSubject, updateSubject } from '../../adminSlice/adminSubjectSlice.js';
 
-const style = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 500,
-    bgcolor: 'background.paper',
-    boxShadow: 24,
-    p: 4,
-    borderRadius: 2,
+// Logger
+import { createLogger } from '../../../../utils/logger.js';
+
+const logger = createLogger('SubjectModal');
+
+const modalStyle = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: { xs: '95%', sm: 500 },
+  maxHeight: '90vh',
+  bgcolor: 'background.paper',
+  boxShadow: 24,
+  borderRadius: 3,
+  overflow: 'hidden',
 };
 
 const SubjectModal = ({ open, handleClose, subject }) => {
-    const dispatch = useDispatch();
-    const { isLoading } = useSelector((state) => state.adminSubjects);
-    const [formData, setFormData] = useState({
-        name: '',
-        subjectCode: '',
-        semester: '',
-        department: '',
-    });
+  const dispatch = useDispatch();
+  const { isLoading } = useSelector((state) => state.adminSubjects);
+  const isEditMode = Boolean(subject);
 
-    
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
-    
-    useEffect(() => {
-        if (subject) {
-            setFormData({
-                name: subject.name || '',
-                subjectCode: subject.subjectCode || '',
-                semester: subject.semester || '',
-                department: subject.department || '',
-            }); // Populate form if in edit mode
-        } else {
-            setFormData({ 
-                name: '', 
-                subjectCode: '', 
-                semester: '', 
-                department: '' 
-            }); // Clear form for create mode
-        }
-    }, [subject, open]);
+  // Form setup with validation
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors, isDirty, isValid },
+  } = useForm({
+    resolver: yupResolver(subjectSchema),
+    mode: 'onChange', // Validate on change for real-time feedback
+    defaultValues: {
+      name: '',
+      subjectCode: '',
+      semester: '',
+      department: '',
+    },
+  });
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        
-        const action = subject 
-            ? updateSubject({ id: subject._id, ...formData }) 
-            : createSubject(formData);
+  // Reset form when modal opens/closes or subject changes
+  useEffect(() => {
+    if (open) {
+      if (subject) {
+        logger.debug('Opening in edit mode', { subjectId: subject._id });
+        reset({
+          name: subject.name || '',
+          subjectCode: subject.subjectCode || '',
+          semester: subject.semester || '',
+          department: subject.department || '',
+        });
+      } else {
+        logger.debug('Opening in create mode');
+        reset({
+          name: '',
+          subjectCode: '',
+          semester: '',
+          department: '',
+        });
+      }
+    }
+  }, [open, subject, reset]);
 
-        dispatch(action)
-            .unwrap()
-            .then(() => {
-                toast.success(`Subject ${subject ? 'updated' : 'created'} successfully!`);
-                handleClose();
-            })
-            .catch((err) => toast.error(err));
-    };
+  // Handle form submission
+  const onSubmit = async (data) => {
+    logger.form('SubjectForm', { mode: isEditMode ? 'edit' : 'create', data });
 
-    return (
-        
-        <Modal open={open} onClose={handleClose}>
-            <Box sx={style} component="form" onSubmit={handleSubmit}>
-                <Typography variant="h6" component="h2" gutterBottom>
-                    {subject ? 'Edit Subject' : 'Create New Subject'}
-                </Typography>
-                {/* Add the value prop to all TextFields */}
-                <TextField label="Subject Name" name="name" value={formData.name} onChange={handleChange} fullWidth required margin="normal" />
-                <TextField label="Subject Code" name="subjectCode" value={formData.subjectCode} onChange={handleChange} fullWidth required margin="normal" />
-                <TextField label="Semester" name="semester" type="number" value={formData.semester} onChange={handleChange} fullWidth required margin="normal" />
-                <TextField label="Department" name="department" value={formData.department} onChange={handleChange} fullWidth required margin="normal" />
+    try {
+      if (isEditMode) {
+        const result = await dispatch(
+          updateSubject({ id: subject._id, ...data })
+        ).unwrap();
+        logger.success('Subject updated', { id: subject._id });
+        toast.success('Subject updated successfully!');
+      } else {
+        const result = await dispatch(createSubject(data)).unwrap();
+        logger.success('Subject created', { subjectCode: data.subjectCode });
+        toast.success('Subject created successfully!');
+      }
+      handleClose();
+    } catch (err) {
+      logger.error('Form submission failed', { error: err });
+      toast.error(err || `Failed to ${isEditMode ? 'update' : 'create'} subject`);
+    }
+  };
 
-                <Button type="submit" variant="contained" sx={{ mt: 2 }} disabled={isLoading}>
-                    {isLoading ? <CircularProgress size={24} /> : (subject ? 'Save Changes' : 'Create Subject')}
-                </Button>
+  // Handle validation errors
+  useEffect(() => {
+    if (Object.keys(errors).length > 0) {
+      logger.validation(errors);
+    }
+  }, [errors]);
 
-                <Button onClick={handleClose} sx={{ mt: 2, ml: 1 }}>
-                    Cancel
-                </Button>
+  // Handle close with unsaved changes warning
+  const handleModalClose = () => {
+    if (isDirty && !isLoading) {
+      // Could show a confirmation dialog here
+      logger.debug('Closing modal with unsaved changes');
+    }
+    handleClose();
+  };
+
+  return (
+    <Modal
+      open={open}
+      onClose={handleModalClose}
+      closeAfterTransition
+      aria-labelledby="subject-modal-title"
+    >
+      <Fade in={open}>
+        <Box sx={modalStyle}>
+          {/* Header */}
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              p: 3,
+              pb: 2,
+              borderBottom: 1,
+              borderColor: 'divider',
+            }}
+          >
+            <Typography id="subject-modal-title" variant="h6" component="h2">
+              {isEditMode ? 'Edit Subject' : 'Create New Subject'}
+            </Typography>
+            <IconButton
+              onClick={handleModalClose}
+              disabled={isLoading}
+              size="small"
+              aria-label="close"
+            >
+              <CloseIcon />
+            </IconButton>
+          </Box>
+
+          {/* Form */}
+          <Box
+            component="form"
+            onSubmit={handleSubmit(onSubmit)}
+            sx={{ p: 3 }}
+          >
+            {/* Subject Name */}
+            <Controller
+              name="name"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Subject Name"
+                  fullWidth
+                  margin="normal"
+                  error={!!errors.name}
+                  helperText={errors.name?.message}
+                  disabled={isLoading}
+                  placeholder="e.g., Data Structures and Algorithms"
+                  autoFocus
+                />
+              )}
+            />
+
+            {/* Subject Code */}
+            <Controller
+              name="subjectCode"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Subject Code"
+                  fullWidth
+                  margin="normal"
+                  error={!!errors.subjectCode}
+                  helperText={errors.subjectCode?.message}
+                  disabled={isLoading || isEditMode} // Don't allow editing code
+                  placeholder="e.g., CS201"
+                  inputProps={{ style: { textTransform: 'uppercase' } }}
+                />
+              )}
+            />
+
+            {/* Semester */}
+            <Controller
+              name="semester"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Semester"
+                  type="number"
+                  fullWidth
+                  margin="normal"
+                  error={!!errors.semester}
+                  helperText={errors.semester?.message || 'Enter semester (1-8)'}
+                  disabled={isLoading}
+                  inputProps={{ min: 1, max: 8 }}
+                />
+              )}
+            />
+
+            {/* Department */}
+            <Controller
+              name="department"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Department"
+                  fullWidth
+                  margin="normal"
+                  error={!!errors.department}
+                  helperText={errors.department?.message}
+                  disabled={isLoading}
+                  placeholder="e.g., Computer Science"
+                />
+              )}
+            />
+
+            {/* Edit mode warning */}
+            {isEditMode && (
+              <Alert severity="info" sx={{ mt: 2 }}>
+                Changing semester will remove all existing teacher assignments and
+                student enrollments for this subject.
+              </Alert>
+            )}
+
+            {/* Actions */}
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'flex-end',
+                gap: 1,
+                mt: 3,
+              }}
+            >
+              <Button
+                onClick={handleModalClose}
+                disabled={isLoading}
+                color="inherit"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                variant="contained"
+                disabled={isLoading || !isDirty}
+                startIcon={isLoading && <CircularProgress size={16} />}
+              >
+                {isLoading
+                  ? 'Saving...'
+                  : isEditMode
+                  ? 'Save Changes'
+                  : 'Create Subject'}
+              </Button>
             </Box>
-        </Modal>
-    );
+          </Box>
+        </Box>
+      </Fade>
+    </Modal>
+  );
 };
+
 export default SubjectModal;

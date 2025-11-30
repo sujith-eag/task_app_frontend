@@ -1,12 +1,32 @@
-import React, { useState, useEffect } from 'react';
+/**
+ * Manage Enrollment Modal Component
+ * 
+ * Manage student subject enrollments with:
+ * - Semester-filtered subject list
+ * - Checkbox selection for subjects
+ * - Form validation with react-hook-form + yup
+ * - Loading states
+ * - Development logging
+ */
+
+import React, { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useForm, Controller } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { Modal, Box, Typography, Button, FormGroup, 
         FormControlLabel, Checkbox, CircularProgress, 
-        Paper } from '@mui/material';
+        Paper, Alert, FormHelperText, Chip } from '@mui/material';
 import { toast } from 'react-toastify';
 
 import { updateStudentEnrollment } from '../../adminSlice/adminUserSlice.js';
-// import { getSubjects } from '../../adminSlice/adminSubjectSlice.js';
+
+// Validation
+import { enrollmentSchema } from '../../validation/schemas.js';
+
+// Logger
+import { createLogger } from '../../../../utils/logger.js';
+
+const logger = createLogger('ManageEnrollmentModal');
 
 const style = {
     position: 'absolute',
@@ -26,93 +46,174 @@ const ManageEnrollmentModal = ({ open, handleClose, student }) => {
     const { isLoading: isUserLoading } = useSelector((state) => state.adminUsers);
     const isLoading = isSubjectsLoading || isUserLoading;
 
-    // local component state to store the filtered list of subjects.
-    const [filteredSubjects, setFilteredSubjects] = useState([]);    
-    const [selectedSubjects, setSelectedSubjects] = useState([]);
-
-    useEffect(() => {
-        // Fetch subjects if the modal is open AND student has a semester assigned
-        // if (open && student?.studentDetails?.semester){
-        //     // Fetch the list of all subjects when the modal opens
-        //     dispatch(getSubjects());
-        // }
-        if (student && subjects.length>0) {
-            const studentSemester = student.studentDetails?.semester;
-            if (studentSemester) {
-                const filtered = subjects.filter(s => s.semester === studentSemester);
-                setFilteredSubjects(filtered);
-            }
-            // Initialize the checkboxes with the student's currently enrolled subjects.
-            setSelectedSubjects(student.studentDetails?.enrolledSubjects || []);
-        }
-    }, [student, open, subjects, dispatch]);
-
-    const handleSubjectChange = (e) => {
-        const { value, checked } = e.target;
-        setSelectedSubjects(prev => 
-            checked ? [...prev, value] : prev.filter(id => id !== value)
-        );
-    };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        dispatch(updateStudentEnrollment({ studentId: student._id, subjectIds: selectedSubjects }))
-            .unwrap()
-            .then((res) => {
-                toast.success(res.message);
-                handleClose();
-            })
-            .catch((err) => toast.error(err));
-    };
-
-    // A conditional render for when a student has no semester
+    // Filter subjects based on student's semester
     const studentSemester = student?.studentDetails?.semester;
+    const filteredSubjects = useMemo(() => {
+        if (!studentSemester || !subjects.length) return [];
+        return subjects.filter(s => s.semester === studentSemester);
+    }, [subjects, studentSemester]);
+
+    // Form setup with validation
+    const { control, handleSubmit, reset, watch, formState: { errors, isDirty } } = useForm({
+        resolver: yupResolver(enrollmentSchema),
+        defaultValues: {
+            subjectIds: [],
+        }
+    });
+
+    const selectedSubjects = watch('subjectIds');
+
+    // Initialize form with student's current enrollments
+    useEffect(() => {
+        if (open && student) {
+            logger.mount({ 
+                studentId: student._id, 
+                studentName: student.name,
+                semester: studentSemester,
+                availableSubjects: filteredSubjects.length
+            });
+            
+            reset({
+                subjectIds: student.studentDetails?.enrolledSubjects || [],
+            });
+        }
+    }, [student, open, reset, studentSemester, filteredSubjects.length]);
+
+    // Reset form when modal closes
+    useEffect(() => {
+        if (!open) {
+            reset({ subjectIds: [] });
+        }
+    }, [open, reset]);
+
+    /**
+     * Handle checkbox change for subjects
+     */
+    const handleSubjectChange = (subjectId, checked, currentIds) => {
+        return checked 
+            ? [...currentIds, subjectId] 
+            : currentIds.filter(id => id !== subjectId);
+    };
+
+    /**
+     * Handle form submission
+     */
+    const onSubmit = async (data) => {
+        logger.action('Save enrollment', { 
+            studentId: student._id, 
+            selectedCount: data.subjectIds.length 
+        });
+        
+        try {
+            const result = await dispatch(updateStudentEnrollment({ 
+                studentId: student._id, 
+                subjectIds: data.subjectIds 
+            })).unwrap();
+            
+            logger.success('Enrollment updated', { studentId: student._id });
+            toast.success(result.message || 'Enrollment updated successfully');
+            handleClose();
+        } catch (err) {
+            logger.error('Enrollment update failed', { error: err });
+            toast.error(err || 'Failed to update enrollment');
+        }
+    };
     
     return (
         <Modal open={open} onClose={handleClose}>
-            <Box sx={style} component="form" onSubmit={handleSubmit}>
+            <Box sx={style} component="form" onSubmit={handleSubmit(onSubmit)}>
                 <Typography variant="h6" component="h2" gutterBottom>
                     Manage Enrollment for {student?.name}
                 </Typography>
 
+                {studentSemester && (
+                    <Chip 
+                        label={`Semester ${studentSemester}`} 
+                        color="primary" 
+                        size="small" 
+                        sx={{ mb: 2 }}
+                    />
+                )}
+
                 {!studentSemester ? (
-                    <Typography color="error" sx={{ mt: 2 }}>
+                    <Alert severity="warning" sx={{ mt: 2 }}>
                         Please assign a semester to this student before managing enrollment.
-                    </Typography>
+                    </Alert>
+                ) : filteredSubjects.length === 0 ? (
+                    <Alert severity="info" sx={{ mt: 2 }}>
+                        No subjects found for semester {studentSemester}. Please add subjects first.
+                    </Alert>
                 ) : (
-                <Paper variant="outlined" sx={{ p: 2, mt: 2, maxHeight: 300, overflowY: 'auto' }}>
-                    <FormGroup>
-                        {filteredSubjects.map(subject => (
-                            <FormControlLabel
-                                key={subject._id}
-                                control={
-                                    <Checkbox
-                                        checked={selectedSubjects.includes(subject._id)}
-                                        onChange={handleSubjectChange}
-                                        value={subject._id}
-                                    />
-                                }
-                                label={`${subject.name} (${subject.subjectCode})`}
+                    <>
+                        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                            Select subjects to enroll ({selectedSubjects.length} selected)
+                        </Typography>
+                        <Paper 
+                            variant="outlined" 
+                            sx={{ 
+                                p: 2, 
+                                maxHeight: 300, 
+                                overflowY: 'auto',
+                                borderColor: errors.subjectIds ? 'error.main' : 'divider'
+                            }}
+                        >
+                            <Controller
+                                name="subjectIds"
+                                control={control}
+                                render={({ field }) => (
+                                    <FormGroup>
+                                        {filteredSubjects.map(subject => (
+                                            <FormControlLabel
+                                                key={subject._id}
+                                                control={
+                                                    <Checkbox
+                                                        checked={field.value.includes(subject._id)}
+                                                        onChange={(e) => {
+                                                            const newValue = handleSubjectChange(
+                                                                subject._id, 
+                                                                e.target.checked, 
+                                                                field.value
+                                                            );
+                                                            field.onChange(newValue);
+                                                        }}
+                                                    />
+                                                }
+                                                label={
+                                                    <Box>
+                                                        <Typography variant="body2">
+                                                            {subject.name}
+                                                        </Typography>
+                                                        <Typography variant="caption" color="text.secondary">
+                                                            {subject.subjectCode}
+                                                            {subject.isElective && ' • Elective'}
+                                                        </Typography>
+                                                    </Box>
+                                                }
+                                            />
+                                        ))}
+                                    </FormGroup>
+                                )}
                             />
-                        ))}
-                    </FormGroup>
-                </Paper>
+                        </Paper>
+                        {errors.subjectIds && (
+                            <FormHelperText error>{errors.subjectIds.message}</FormHelperText>
+                        )}
+                    </>
                 )}
                                 
-                <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
-
-                    <Button onClick={handleClose}>
+                <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
+                    <Button onClick={handleClose} variant="outlined">
                         Cancel
                     </Button>
                     
                     <Button 
                         type="submit" 
                         variant="contained" 
-                        disabled={isLoading}>
-                            {isLoading ? <CircularProgress size={24} /> : 'Save Enrollment'}
+                        disabled={isLoading || !studentSemester || !isDirty}
+                    >
+                        {isLoading ? <CircularProgress size={24} /> : 'Save Enrollment'}
                     </Button>
                 </Box>
-
             </Box>
         </Modal>
     );
