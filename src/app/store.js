@@ -4,6 +4,7 @@ import adminSubjectReducer from '../features/admin/adminSlice/adminSubjectSlice.
 import adminUserReducer from '../features/admin/adminSlice/adminUserSlice.js';
 import adminTeacherReducer from '../features/admin/adminSlice/adminTeacherSlice.js';
 import adminReportingReducer from '../features/admin/adminSlice/adminReportingSlice.js';
+import adminDashboardReducer from '../features/admin/adminSlice/adminDashboardSlice.js';
 
 import aiReducer from '../features/ai/aiTaskSlice.js';
 import authReducer from '../features/auth/authSlice.js';
@@ -22,6 +23,7 @@ export const store = configureStore({
     adminUsers: adminUserReducer,
     adminTeachers: adminTeacherReducer,
     adminReporting: adminReportingReducer,
+    adminDashboard: adminDashboardReducer,
 
     ai: aiReducer,
     auth: authReducer,

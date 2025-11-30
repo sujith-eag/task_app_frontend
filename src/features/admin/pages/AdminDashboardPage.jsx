@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { Box, Container, Typography, Tabs, Tab, Paper } from '@mui/material';
+import DashboardIcon from '@mui/icons-material/Dashboard';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 import SchoolIcon from '@mui/icons-material/School';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 
+import { DashboardOverview } from '../components/dashboard';
 import ApplicationReview from '../components/applications/ApplicationReview.jsx';
 import FacultyManager from '../components/faculty/FacultyManager.jsx';
 import SubjectManager from '../components/subjects/SubjectManager.jsx'
@@ -52,6 +54,8 @@ const AdminDashboardPage = () => {
                         aria-label="admin dashboard tabs"
                         variant="scrollable" scrollButtons="auto"
                         >
+                        <Tab icon={<DashboardIcon />} iconPosition="start"
+                            label="Overview" />
                         <Tab icon={<PeopleAltIcon />} iconPosition="start"
                             label="Student Applications" />
                         <Tab icon={<LibraryBooksIcon />} iconPosition="start"
@@ -62,15 +66,18 @@ const AdminDashboardPage = () => {
                     </Tabs>
                 </Box>
                 <TabPanel value={tabIndex} index={0}>
-                    <ApplicationReview />
+                    <DashboardOverview />
                 </TabPanel>
                 <TabPanel value={tabIndex} index={1}>
-                    <SubjectManager />
+                    <ApplicationReview />
                 </TabPanel>
                 <TabPanel value={tabIndex} index={2}>
-                    <FacultyManager />
+                    <SubjectManager />
                 </TabPanel>
                 <TabPanel value={tabIndex} index={3}>
+                    <FacultyManager />
+                </TabPanel>
+                <TabPanel value={tabIndex} index={4}>
                     <UserManagement />
                 </TabPanel>
             </Paper>
