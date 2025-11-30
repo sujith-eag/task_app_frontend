@@ -96,7 +96,7 @@ const FeaturesSection = () => {
         },
         {
             title: 'Input Validation & Sanitization',
-            description: 'Server-side validatin), input sanitization, CSRF protections, helmet headers and Content Security Policy to reduce injection and XSS risks.',
+            description: 'Server-side validation, input sanitization, CSRF protections, helmet headers and Content Security Policy to reduce injection and XSS risks.',
             icon: <HistoryIcon fontSize="large" />,
             badge: 'Security',
         },
@@ -140,8 +140,6 @@ const FeaturesSection = () => {
             badge: null,
         },
     ];
-
-    const allFeatures = [...academicFeatures, ...securityFeatures, ...productivityFeatures];
 
     const getDisplayedFeatures = () => {
         if (selectedTab === 0) return academicFeatures;

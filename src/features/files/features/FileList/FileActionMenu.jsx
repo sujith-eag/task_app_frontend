@@ -45,7 +45,8 @@ const FileActionMenu = ({ file, onDelete, onShare, onManageShare, onPublicShare,
         gcTime: 300000, // Keep in cache for 5 minutes (formerly cacheTime)
     });
 
-    const folderStats = folderDetails?.stats || null;    const isFolderEmpty = file?.isFolder && (!folderStats || folderStats.fileCount === 0);
+    const folderStats = folderDetails?.stats || null;
+    const isFolderEmpty = file?.isFolder && (!folderStats || folderStats.fileCount === 0);
 
     return (
         <>

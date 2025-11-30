@@ -19,8 +19,6 @@ const style = {
 const ManageShareModal = ({ open, onClose, file }) => {
     const [revokingUserId, setRevokingUserId] = useState(null);
     const [sharedList, setSharedList] = useState([]);
-    // local retry tracker to avoid infinite retry loops
-    const [retriedFor, setRetriedFor] = useState(null);
     const currentParentId = useSelector((state) => state.files.currentParentId);
 
     const { mutateAsync: manageShareAccessMutate } = useManageShareAccess();
@@ -43,8 +41,7 @@ const ManageShareModal = ({ open, onClose, file }) => {
             await manageShareAccessMutate({ fileId: file._id, userIdToRemove: userIdToRevoke });
             // onSuccess invalidates queries and shows toast
         } catch (err) {
-            // If desired, implement a single refresh+retry logic here. For now the mutation will surface errors.
-            console.warn('Revoke failed:', err);
+            // Error toast is shown by the mutation's onError
         } finally {
             setRevokingUserId(null);
         }
@@ -86,7 +83,6 @@ const ManageShareModal = ({ open, onClose, file }) => {
     // Clean up local state on close
     const handleClose = () => {
         setRevokingUserId(null);
-        setRetriedFor(null);
         onClose();
     };
 
