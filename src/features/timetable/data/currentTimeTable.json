@@ -966,7 +966,7 @@
       "subjectCode": "24MCAP1",
       "subjectTitle": "Project - Phase 1",
       "componentType": "practical",
-      "facultyId": "ALL",
+      "facultyId": "ALL_FACULTY",
       "facultyName": "All Faculty",
       "studentGroupIds": [
         "MCA_SEM3_A",
@@ -990,7 +990,7 @@
       "subjectCode": "PROCTOR_SEM3",
       "subjectTitle": "Proctor Meeting",
       "componentType": "tutorial",
-      "facultyId": "ALLL_FACULTY",
+      "facultyId": "ALL_FACULTY",
       "facultyName": "All Faculty",
       "studentGroupIds": [
         "MCA_SEM3_A",
@@ -1518,7 +1518,7 @@
       "supportingStaff": [
         {
           "id": "RG",
-  	      "name": "Ms Geethanjali R"
+          "name": "Ms Geethanjali R"
         },
         {
           "id": "SK",
@@ -1884,7 +1884,7 @@
       "supportingStaff": [],
       "shortCode": "DS"
     },
-  	{
+    {
       "sessionId": "S_077",
       "day": "Wed",
       "slotId": "S1+S2",
@@ -2113,8 +2113,8 @@
       "startTime": "11:05",
       "endTime": "12:55",
       "roomId": "AB-402",
-      "subjectCode": "MCAAEC1",
-      "subjectTitle": "Professional Communication and Skill Development",
+      "subjectCode": "25MCAAEC1",
+      "subjectTitle": "Technical and Professional Competence Development",
       "componentType": "tutorial",
       "facultyId": "DEG",
       "facultyName": "Dr D. Evangelin Geetha",
@@ -2140,8 +2140,8 @@
       "startTime": "11:05",
       "endTime": "12:55",
       "roomId": "AB-411",
-      "subjectCode": "MCAAEC1",
-      "subjectTitle": "Professional Communication and Skill Development",
+      "subjectCode": "25MCAAEC1",
+      "subjectTitle": "Technical and Professional Competence Development",
       "componentType": "tutorial",
       "facultyId": "PNP",
       "facultyName": "Dr Preethi N Patil",
@@ -2167,8 +2167,8 @@
       "startTime": "13:45",
       "endTime": "14:40",
       "roomId": "AB-411",
-      "subjectCode": "MCAAEC1",
-      "subjectTitle": "Professional Communication and Skill Development",
+      "subjectCode": "25MCAAEC1",
+      "subjectTitle": "Technical and Professional Competence Development",
       "componentType": "theory",
       "facultyId": "SM",
       "facultyName": "Ms Swathi M",
@@ -2189,8 +2189,8 @@
       "startTime": "09:55",
       "endTime": "10:50",
       "roomId": "AB-402",
-      "subjectCode": "MCAAEC1",
-      "subjectTitle": "Professional Communication and Skill Development",
+      "subjectCode": "25MCAAEC1",
+      "subjectTitle": "Technical and Professional Competence Development",
       "componentType": "theory",
       "facultyId": "KR",
       "facultyName": "Mrs Komala R",

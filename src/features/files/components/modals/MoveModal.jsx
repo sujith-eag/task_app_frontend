@@ -62,8 +62,9 @@ const MoveModal = ({ open, onClose, onMove, itemToMove }) => {
 
     const breadcrumbs = data?.breadcrumbs || [];
     // Fallback: if breadcrumbs are empty but we have a currentFolder (non-root), show its name
+    // FIXED: Normalize property names - backend uses 'fileName', we map to 'name' for consistency
     const breadcrumbNodes = (breadcrumbs && breadcrumbs.length > 0)
-        ? breadcrumbs
+        ? breadcrumbs.map(b => ({ ...b, name: b.fileName || b.name }))
         : (data?.currentFolder && currentMoveParentId != null)
             ? [{ _id: data.currentFolder._id || data.currentFolder.id, name: data.currentFolder.fileName || data.currentFolder.name }]
             : [];

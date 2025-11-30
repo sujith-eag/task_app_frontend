@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import fileService from '../../fileService.js';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
+import { useQuery } from '@tanstack/react-query';
 import { Menu, MenuItem, ListItemIcon, ListItemText, IconButton, Typography } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import DownloadIcon from '@mui/icons-material/Download';
@@ -10,6 +10,7 @@ import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import PublicIcon from '@mui/icons-material/Public';
 import LinkOffIcon from '@mui/icons-material/LinkOff';
 import PeopleIcon from '@mui/icons-material/People';
+import fileService from '../../fileService.js';
 
 // This component receives the file and simple on<Action> handlers
 const FileActionMenu = ({ file, onDelete, onShare, onManageShare, onPublicShare, onRemove, onRevokePublic, onDownload, onOpenRename, onOpenMove }) => {
@@ -33,33 +34,18 @@ const FileActionMenu = ({ file, onDelete, onShare, onManageShare, onPublicShare,
         handleClose();
     };
 
-    // If file is a folder, fetch folder stats to determine whether it is empty.
-    // Fetch lazily only when the actions menu is opened to avoid N requests on mount.
-    const [folderStats, setFolderStats] = useState(null);
-    useEffect(() => {
-        let mounted = true;
-        const fetchStats = async () => {
-            if (!file || !file.isFolder) return;
-            try {
-                const res = await fileService.getFolderDetails(file._id);
-                if (mounted) setFolderStats(res?.stats || null);
-            } catch (e) {
-                if (mounted) setFolderStats(null);
-            }
-        };
+    // IMPROVED: Use React Query for caching folder stats
+    // Only fetch when menu is open AND file is a folder
+    // Cache for 60 seconds to avoid repeated API calls
+    const { data: folderDetails } = useQuery({
+        queryKey: ['folderDetails', file?._id],
+        queryFn: () => fileService.getFolderDetails(file._id),
+        enabled: Boolean(anchorEl) && file?.isFolder,
+        staleTime: 60000, // Cache for 1 minute
+        gcTime: 300000, // Keep in cache for 5 minutes (formerly cacheTime)
+    });
 
-        if (anchorEl) {
-            // menu opened — fetch stats
-            fetchStats();
-        } else {
-            // menu closed — clear cached stats to avoid stale data and unnecessary memory
-            setFolderStats(null);
-        }
-
-        return () => { mounted = false; };
-    }, [file, anchorEl]);
-
-    const isFolderEmpty = file?.isFolder && (!folderStats || folderStats.fileCount === 0);
+    const folderStats = folderDetails?.stats || null;    const isFolderEmpty = file?.isFolder && (!folderStats || folderStats.fileCount === 0);
 
     return (
         <>

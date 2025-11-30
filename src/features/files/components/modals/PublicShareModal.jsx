@@ -71,7 +71,9 @@ const PublicShareModal = ({ open, onClose, file }) => {
             <DialogContent>
                 {shareData ? (
                     <Box>
-                        <Typography>Share this code with anyone:</Typography>
+                        <Typography variant="body2" gutterBottom>
+                            Share this code with anyone:
+                        </Typography>
                         <TextField
                             value={shareData.code}
                             fullWidth
@@ -86,8 +88,13 @@ const PublicShareModal = ({ open, onClose, file }) => {
                                 }
                             }}
                         />
-                        <Typography variant="caption">
-                            Link expires on: {new Date(shareData.expiresAt).toLocaleString()}
+                        {file?.isFolder && (
+                            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                                Recipients can download all folder contents as a ZIP file.
+                            </Typography>
+                        )}
+                        <Typography variant="caption" display="block" sx={{ mt: 1 }}>
+                            Expires: {new Date(shareData.expiresAt).toLocaleString()}
                         </Typography>
                     </Box>
                 ) : (

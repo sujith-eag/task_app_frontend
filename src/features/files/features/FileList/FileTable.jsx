@@ -4,7 +4,7 @@ import { Box, TableContainer, Table, TableHead,
     TableRow, TableCell, Checkbox, TableBody, 
     Paper, Typography } from '@mui/material';
 import { useDispatch } from 'react-redux';
-import { setBreadcrumbs, setCurrentFolder } from '../../fileSlice.js';
+import { setBreadcrumbs, setCurrentFolder, setIsSharedContext, setShareRootId } from '../../fileSlice.js';
 
 // Import selectors and hooks
 import { useFileActions } from '../../hooks/useFileActions.js';
@@ -50,8 +50,18 @@ const FileTable = () => {
     })();
 
     // Hook for actions
-    const { navigateToFolder, deleteSingleItem, 
+    const { navigateToFolder: baseNavigateToFolder, deleteSingleItem, 
         deleteBulkItems, downloadItems, removeBulkSharedAccess, renameItem, moveItemToFolder, bulkMoveItems } = useFileActions();
+
+    // Wrap navigateToFolder to switch to myFiles tab when navigating into a folder
+    // This ensures that when clicking a shared folder from "Shared with me" tab,
+    // the user sees the folder contents (via filesQuery) instead of the flat shared list
+    const navigateToFolder = (folderId) => {
+        if (folderId !== null && tabValue !== 'myFiles') {
+            setTabValue('myFiles');
+        }
+        baseNavigateToFolder(folderId);
+    };
 
     // Centralized modal state to avoid mounting per-row modals
     // activeModal.file will store the fileId (not the object) so we can derive the latest file
@@ -74,10 +84,14 @@ const FileTable = () => {
         if (!data) {
             dispatch(setBreadcrumbs([]));
             dispatch(setCurrentFolder(null));
+            dispatch(setIsSharedContext(false));
+            dispatch(setShareRootId(null));
             return;
         }
         dispatch(setBreadcrumbs(data.breadcrumbs || []));
         dispatch(setCurrentFolder(data.currentFolder || null));
+        dispatch(setIsSharedContext(data.isSharedContext || false));
+        dispatch(setShareRootId(data.shareRootId || null));
     }, [tabValue, filesQuery.data, dispatch]);
 
     const handleSelectAll = (event) => {

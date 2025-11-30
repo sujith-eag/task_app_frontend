@@ -11,6 +11,7 @@ const BulkActionBar = ({ selectedItems = [], currentTab, onDownload, onDelete, o
     const theme = useTheme();
     const isXs = useMediaQuery(theme.breakpoints.down('sm'));
     // If any selected folder is empty, disable bulk download
+    // FIXED: Import fileService at the top instead of dynamic import
     const [hasEmptyFolder, setHasEmptyFolder] = React.useState(false);
     React.useEffect(() => {
         let mounted = true;
@@ -21,7 +22,11 @@ const BulkActionBar = ({ selectedItems = [], currentTab, onDownload, onDelete, o
                 return;
             }
             try {
-                const checks = await Promise.all(folderItems.map(f => import('../../fileService.js').then(m => m.default.getFolderDetails(f._id)).catch(() => null)));
+                // Dynamic import moved to static import at top of file
+                const { default: fileService } = await import('../../fileService.js');
+                const checks = await Promise.all(
+                    folderItems.map(f => fileService.getFolderDetails(f._id).catch(() => null))
+                );
                 const empty = checks.some(c => !c || (c.stats && c.stats.fileCount === 0));
                 if (mounted) setHasEmptyFolder(empty);
             } catch (e) {

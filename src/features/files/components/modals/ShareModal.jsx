@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
     Dialog, DialogTitle, DialogContent, DialogActions, Box, 
     Typography, List, ListItemButton, ListItemAvatar, Avatar, 
-    ListItemText, Button, CircularProgress, TextField
+    ListItemText, Button, CircularProgress, TextField, Alert
 } from '@mui/material';
 
 import profileService from '../../../profile/profileService.js';
@@ -93,6 +93,11 @@ const ShareModal = ({ isOpen, onClose, file }) => {
         >
             <DialogTitle>Share "{file?.fileName}"</DialogTitle>
             <DialogContent>
+                {file?.isFolder && (
+                    <Alert severity="info" sx={{ mb: 2 }}>
+                        Sharing this folder will grant access to all files and subfolders inside it.
+                    </Alert>
+                )}
                 <TextField
                     autoFocus
                     label="Search users..."
