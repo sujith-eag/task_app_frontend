@@ -8,6 +8,9 @@ import { Close as CloseIcon, Edit as EditIcon } from '@mui/icons-material';
 import ConfirmationDialog from '../../../components/ConfirmationDialog.jsx';
 import { deleteTask, removeTaskOptimistic, 
   undoDeleteTask } from '../taskSlice.js';
+import { createLogger } from '../../../utils/logger.js';
+
+const logger = createLogger('TaskActions');
 
 const UndoToast = ({ onConfirmUndo, closeToast }) => {
   const handleConfirmAndClose = () => {
@@ -43,6 +46,7 @@ const TaskActions = ({ taskId, taskTitle, onOpenEdit }) => {
   const deleteTimeoutRef = useRef(null);
 
   const handleDeleteConfirm = useCallback(async () => {
+    logger.action('Delete confirmed', { taskId, taskTitle });
     setOpenDeleteDialog(false);
     dispatch(removeTaskOptimistic(taskId));
 
@@ -50,6 +54,7 @@ const TaskActions = ({ taskId, taskTitle, onOpenEdit }) => {
       if (deleteTimeoutRef.current) {
         clearTimeout(deleteTimeoutRef.current);
       }
+      logger.action('Delete undone', { taskId });
       dispatch(undoDeleteTask(taskId));
     };
 
@@ -62,10 +67,25 @@ const TaskActions = ({ taskId, taskTitle, onOpenEdit }) => {
             draggable: false,
         });
     
-    deleteTimeoutRef.current = setTimeout(() =>{
-      dispatch(deleteTask(taskId));
+    deleteTimeoutRef.current = setTimeout(async () =>{
+      try {
+        await dispatch(deleteTask(taskId)).unwrap();
+        logger.success('Task deleted', { taskId });
+      } catch (err) {
+        logger.error('Failed to delete task', { taskId, error: err });
+      }
     }, 4500);
-  }, [dispatch, taskId]);
+  }, [dispatch, taskId, taskTitle]);
+
+  const handleEditClick = useCallback(() => {
+    logger.action('Edit clicked', { taskId });
+    onOpenEdit();
+  }, [taskId, onOpenEdit]);
+
+  const handleDeleteClick = useCallback(() => {
+    logger.action('Delete clicked', { taskId });
+    setOpenDeleteDialog(true);
+  }, [taskId]);
 
   return (
     <>
@@ -73,7 +93,7 @@ const TaskActions = ({ taskId, taskTitle, onOpenEdit }) => {
         <Tooltip title="Edit task" arrow>
           <IconButton 
               size="small" 
-              onClick={onOpenEdit} 
+              onClick={handleEditClick} 
               aria-label="edit task"
               sx={{
                 transition: 'all 0.2s',
@@ -90,7 +110,7 @@ const TaskActions = ({ taskId, taskTitle, onOpenEdit }) => {
         <Tooltip title="Delete task" arrow>
           <IconButton 
               size="small" 
-              onClick={() => setOpenDeleteDialog(true)} 
+              onClick={handleDeleteClick} 
               aria-label="delete task"
               sx={{
                 transition: 'all 0.2s',

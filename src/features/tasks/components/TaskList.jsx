@@ -1,13 +1,15 @@
 import { useEffect, useState, useMemo, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Box, Typography, CircularProgress, Collapse } from "@mui/material";
+import { Box, Typography, CircularProgress, Collapse, Alert } from "@mui/material";
 import { TransitionGroup } from 'react-transition-group';
 import { toast } from 'react-toastify';
 
-import { getTasks } from '../taskSlice.js';
+import { getTasks, reset } from '../taskSlice.js';
 import TaskItem from './TaskItem.jsx';
 import TaskFilters from './TaskFilters.jsx';
+import { createLogger } from '../../../utils/logger.js';
 
+const logger = createLogger('TaskList');
 
 const TaskList = () => {
   const dispatch = useDispatch();
@@ -21,6 +23,12 @@ const TaskList = () => {
   // Track whether the initial load completed (used only for UX decisions).
   const [initialLoadDone, setInitialLoadDone] = useState(false);
 
+  // Log component mount
+  useEffect(() => {
+    logger.mount({ tasksCount: tasks.length });
+    return () => logger.unmount();
+  }, []);
+
   // Fetch tasks whenever filters or sort change. We build a small `filterData`
   // object and only include keys that are set to avoid sending empty params.
   useEffect(() => {
@@ -28,14 +36,27 @@ const TaskList = () => {
     if (filters.status) filterData.status = filters.status;
     if (filters.priority) filterData.priority = filters.priority;
 
+    logger.api('Fetching tasks', filterData);
+    
     // Dispatch the thunk; mark initial load done when the promise settles.
-    dispatch(getTasks(filterData)).finally(() => setInitialLoadDone(true));
+    dispatch(getTasks(filterData))
+      .unwrap()
+      .then((result) => {
+        logger.success('Tasks fetched', { count: Array.isArray(result) ? result.length : result?.tasks?.length || 0 });
+      })
+      .catch((err) => {
+        logger.error('Failed to fetch tasks', { error: err });
+      })
+      .finally(() => setInitialLoadDone(true));
   }, [dispatch, filters.status, filters.priority, sortBy]);
 
 
   // Error handling
   useEffect(() => {
-    if (isError) { toast.error(message); }
+    if (isError && message) { 
+      logger.error('Task error displayed', { message });
+      toast.error(message); 
+    }
   }, [isError, message]);
 
   // In-memory filtering + sorting. We keep this client-side so the UI can be
@@ -76,6 +97,7 @@ const TaskList = () => {
   // setFilter and setSort use stable function identities (useCallback) to
   // avoid unnecessary re-renders in child components.
   const setFilter = useCallback((name, value) => {
+    logger.action('Filter changed', { name, value });
     setFilters((prevState) => ({ ...prevState, [name]: value }));
   }, []);
 
@@ -86,7 +108,15 @@ const TaskList = () => {
     if (name) setFilter(name, value);
   }, [setFilter]);
 
-  const handleSortChange = useCallback((e) => setSortBy(e.target.value), []);
+  const handleSortChange = useCallback((e) => {
+    logger.action('Sort changed', { sortBy: e.target.value });
+    setSortBy(e.target.value);
+  }, []);
+
+  // Handle dismiss error
+  const handleDismissError = useCallback(() => {
+    dispatch(reset());
+  }, [dispatch]);
 
   if (isLoading && tasks.length === 0) {
     // Only show loader on initial load
@@ -99,6 +129,17 @@ const TaskList = () => {
 
   return (
     <Box sx={{ width: '100%' }}>
+      {/* Error Alert */}
+      {isError && message && (
+        <Alert 
+          severity="error" 
+          onClose={handleDismissError}
+          sx={{ mb: 2 }}
+        >
+          {message}
+        </Alert>
+      )}
+      
       {/* Filters UI */}
       <TaskFilters
         filters={filters}

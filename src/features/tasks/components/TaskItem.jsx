@@ -2,26 +2,44 @@ import React, { useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
 // MUI Components & Icons
-import { Card, CardContent, Box, Typography, Chip, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
+import { Card, CardContent, Box, Typography, Chip, Select, MenuItem, FormControl, InputLabel, CircularProgress } from '@mui/material';
 
 import { updateTask } from '../taskSlice.js';
 import EditTaskModal from './EditTaskModal.jsx';
 import SubTaskChecklist from './SubTaskChecklist.jsx';
 import TaskActions from './TaskActions.jsx';
+import { createLogger } from '../../../utils/logger.js';
+
+const logger = createLogger('TaskItem');
 
 const TaskItem = ({ taskId }) => {
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false); // Only manages its own modal
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
   const dispatch = useDispatch();
 
   const task = useSelector((state) => state.tasks.tasks.find((t) => t._id === taskId));
 
-  const handleStatusChange = useCallback((e) => {
-    dispatch(updateTask({ taskId, taskData: { status: e.target.value } }));
-  }, [dispatch, taskId]);
+  const handleStatusChange = useCallback(async (e) => {
+    const newStatus = e.target.value;
+    logger.action('Status change', { taskId, from: task?.status, to: newStatus });
+    
+    setIsUpdating(true);
+    try {
+      await dispatch(updateTask({ taskId, taskData: { status: newStatus } })).unwrap();
+      logger.success('Status updated', { taskId, status: newStatus });
+    } catch (err) {
+      logger.error('Failed to update status', { taskId, error: err });
+    } finally {
+      setIsUpdating(false);
+    }
+  }, [dispatch, taskId, task?.status]);
   
   const priorityColor = { High: 'error', Medium: 'warning', Low: 'info' };
 
-  if (!task) return null;
+  if (!task) {
+    logger.warn('Task not found in state', { taskId });
+    return null;
+  }
 
   return (
     <>
@@ -97,6 +115,7 @@ const TaskItem = ({ taskId }) => {
               value={task.status}
               label="Status"
               onChange={handleStatusChange}
+              disabled={isUpdating}
               sx={{
                 '& .MuiSelect-select': {
                   display: 'flex',
@@ -104,6 +123,7 @@ const TaskItem = ({ taskId }) => {
                   gap: 1
                 }
               }}
+              endAdornment={isUpdating ? <CircularProgress size={16} sx={{ mr: 2 }} /> : null}
             >
               <MenuItem value="To Do">To Do</MenuItem>
               <MenuItem value="In Progress">In Progress</MenuItem>
